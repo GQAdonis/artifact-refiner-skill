@@ -132,3 +132,47 @@ Rules
 	•	Only define the refinement blueprint
 
 This blueprint drives the Plan phase.
+
+## Degree of Freedom
+
+During Specify, the agent has **high creative latitude** for:
+- Interpreting ambiguous user intent
+- Suggesting constraint structures
+- Proposing target state descriptions
+
+The agent has **no latitude** for:
+- Generating artifact files
+- Executing code
+- Modifying existing state files
+
+## Domain Adapter
+
+Load the domain-specific reference from `references/domain/<artifact_type>.md` during this phase. The domain adapter informs constraint definitions and target state structure.
+
+## Example
+
+**Input**: "Refine my logo to be more modern and work on dark backgrounds"
+
+**Output specification**:
+```yaml
+specification:
+  artifact_type: logo
+  intent: "Modernize logo design with dark background compatibility"
+  constraints:
+    - id: c1
+      description: "Logo must be visible on #1a1a2e background"
+      severity: blocking
+      type: visual
+    - id: c2
+      description: "Maintain brand color palette"
+      severity: high
+      type: brand
+  target_state:
+    description: "Modern, minimal logo with dark/light variants"
+    required_outputs: ["svg", "png-set", "showcase-html"]
+  unknowns:
+    - "Current brand colors (need user input or existing guide)"
+  execution_risk:
+    requires_code_execution: true
+    likely_tools: ["code_interpreter", "image_generation"]
+```

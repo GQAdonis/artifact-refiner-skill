@@ -118,3 +118,39 @@ Rules
 
 If convergence = continue, control returns to Plan phase.
 If convergence = terminate, refinement ends.
+
+## Iteration Awareness
+
+Read `current_iteration` and `max_iterations` from the meta-controller state.
+If `current_iteration >= max_iterations`, force `convergence: terminate` regardless of constraint status.
+
+## Regression Detection Checklist
+
+Before declaring convergence, verify:
+- [ ] No previously satisfied constraints are now violated
+- [ ] No files that existed in `dist/` have been deleted
+- [ ] Manifest file count has not decreased from previous iteration
+- [ ] No constraint severity has been downgraded without explicit decision
+- [ ] Generated files are not empty (0 bytes)
+
+If any regression detected: set `convergence: continue` with `regression_detected: true`.
+
+## Structured Convergence Output
+
+```yaml
+reflection:
+  iteration: 2
+  max_iterations: 5
+  constraint_status:
+    blocking_satisfied: 3
+    blocking_violated: 0
+    high_satisfied: 2
+    high_violated: 1
+    medium_satisfied: 1
+  target_alignment: "85% — dark variant missing icon-only version"
+  regression_check: "No regressions detected"
+  convergence:
+    decision: continue
+    reason: "1 high constraint violated (icon-only dark variant)"
+    next_focus: "Generate dark variant icon and rasterize"
+```

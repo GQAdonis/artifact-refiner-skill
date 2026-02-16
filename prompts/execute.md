@@ -129,3 +129,47 @@ Transition
 Control passes to the Reflect phase.
 
 Reflection determines convergence or re-entry into Plan.
+
+## MCP Tool Integration
+
+When `code_interpreter` is not available, use the e2b MCP sandbox:
+- `mcp__e2b-sandbox__run_python_code` for Python execution
+- `mcp__e2b-sandbox__run_javascript_code` for JavaScript execution
+
+Prefer e2b sandbox for:
+- Image format conversion and resizing
+- JSON schema validation
+- HTML template population
+- File manipulation and verification
+
+## Template Injection
+
+When the plan specifies a template file:
+1. Read the template from `assets/templates/`
+2. Identify `{{VARIABLE_NAME}}` placeholders
+3. Generate replacement values from execution outputs
+4. Write the populated template to `dist/`
+
+## Example Execution Pipeline
+
+```
+Stage 1: Generate SVG (AI-only)
+  → image_generation tool → dist/logo.svg
+
+Stage 2: Rasterize (deterministic)
+  → code_interpreter / e2b sandbox:
+    from PIL import Image
+    import cairosvg
+    for size in [16, 32, 48, 64, 128, 192, 256, 512]:
+        cairosvg.svg2png(url='dist/logo.svg',
+                        write_to=f'dist/logo-{size}.png',
+                        output_width=size, output_height=size)
+  → Validate: check each file exists + dimensions match
+
+Stage 3: Populate showcase template (deterministic)
+  → code_interpreter: read template, replace placeholders, write to dist/
+  → Validate: HTML file exists and is non-empty
+
+Stage 4: Update manifest
+  → Write artifact_manifest.json with all generated files
+```

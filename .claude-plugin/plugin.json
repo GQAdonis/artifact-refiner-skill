@@ -1,11 +1,25 @@
 {
   "name": "artifact-refiner",
-  "description": "PMPO-driven artifact refinement engine for logos, UI, A2UI, images, and content.",
-  "version": "1.0.0",
+  "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, and A2UI specifications",
+  "version": "1.1.0",
   "author": {
-    "name": "Prometheus Meta Prompting Orchestration"
+    "name": "Travis James",
+    "url": "https://travisjames.ai"
   },
+  "homepage": "https://travisjames.ai/blog/artifact-refiner",
+  "repository": "https://github.com/GQAdonis/artifact-refiner-skill",
+  "license": "MIT",
   "skills": [
-    "./skills/artifact-refiner"
-  ]
+    "./skills/artifact-refiner",
+    "./skills/refine-logo",
+    "./skills/refine-ui",
+    "./skills/refine-content",
+    "./skills/refine-image",
+    "./skills/refine-a2ui",
+    "./skills/refine-status",
+    "./skills/refine-validate"
+  ],
+  "agents": "./agents",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
 }

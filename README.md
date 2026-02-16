@@ -1,335 +1,129 @@
-# PMPO Artifact Refiner Skill
+# Artifact Refiner
 
-## Overview
+A PMPO-driven, iterative artifact refinement engine for logos, UI components, content, images, and A2UI specifications. Built as a Claude Code plugin and [Agent Skills](https://agentskills.io) compliant skill.
 
-The **PMPO Artifact Refiner** is a domain-agnostic, stateful refinement engine designed to iteratively create and improve artifacts using a structured meta-orchestration model.
+## Quick Start
 
-This skill operationalizes **Prometheus Meta Prompting Orchestration (PMPO)** as a reproducible, tool-augmented workflow capable of generating production-ready outputs across multiple domains.
+Use domain-specific slash commands:
 
-For complete theoretical foundations and methodology, see [`docs/pmpo/README.md`](docs/pmpo/README.md).
+```
+/refine-logo     — Logo and brand system refinement
+/refine-ui       — React/HTML UI component refinement
+/refine-content  — Content/Markdown refinement
+/refine-image    — Image artifact refinement
+/refine-a2ui     — A2UI specification refinement
+/refine-status   — Check current refinement progress
+/refine-validate — Run validation checks on current state
+```
 
-It is not a prompt.
-It is not a single agent.
-It is a refinement compiler.
+Or invoke the general skill with a free-form request describing what you want to refine.
 
----
+## Installation
 
-# Core Philosophy
+### As a Claude Plugin
 
-Traditional conversational AI refinement fails when:
+```bash
+claude plugin install artifact-refiner
+```
 
-* Context overflows
-* State is lost
-* Iteration becomes non-deterministic
-* Outputs cannot be reproduced
+### Manual
 
-The PMPO Artifact Refiner solves this by being:
+Clone the repository into your Claude Code plugins directory:
 
-* **Artifact-centric, not chat-centric**
-* **Stateful, not ephemeral**
-* **Tool-augmented where required**
-* **Deterministic when necessary**
-* **Iterative with explicit convergence rules**
+```bash
+git clone https://github.com/GQAdonis/artifact-refiner-skill.git ~/.claude/plugins/artifact-refiner
+```
 
-Every refinement cycle persists structured state to disk and produces verifiable artifacts.
+### e2b Sandbox (Optional)
 
----
+For sandboxed code execution, set your e2b API key:
 
-# What This Skill Does
+```bash
+export E2B_API_KEY="your-key-here"
+```
 
-The Artifact Refiner supports iterative creation and refinement of:
+The skill works without e2b by falling back to the built-in `code_interpreter`.
 
-* Logos and brand systems
-* React / HTML UI artifacts
-* A2UI specifications
-* Generated and processed image assets
-* Written content artifacts
+## How It Works
 
-Each domain uses the same PMPO meta-loop but has its own execution adapter.
+The skill uses **PMPO** (Prometheus Meta-Prompting Orchestration) — a structured, iterative refinement loop:
 
----
+1. **Specify** — Transform intent into structured specification with constraints
+2. **Plan** — Convert specification into executable strategy
+3. **Execute** — Apply transformations via AI + deterministic tools
+4. **Reflect** — Evaluate outputs against constraints
+5. **Persist** — Write validated state to disk
+6. **Loop or Terminate** — Continue if constraints unsatisfied, stop if converged
 
-# The PMPO Meta-Loop
+For the full PMPO methodology, see [`references/pmpo-theory.md`](references/pmpo-theory.md).
 
-Every artifact refinement follows:
-
-1. **Specify** – Clarify intent and constraints
-2. **Plan** – Decompose into executable stages
-3. **Execute** – Perform AI + deterministic transformations
-4. **Reflect** – Validate against constraints
-5. **Persist** – Update artifact state
-6. **Loop or Terminate**
-
-This loop prevents drift and enforces reproducibility.
-
-## Entry Point
-
-The skill entry point is `prompts/meta-controller.md`, which orchestrates the complete PMPO loop and manages transitions between phases.
-
----
-
-# Directory Structure
+## Directory Structure
 
 ```
 artifact-refiner/
-│
-├── SKILL.md                      # Canonical PMPO skill behavior
-├── skill.yaml                    # Non-Claude skill metadata
-├── README.md                     # This overview document
-├── CLAUDE.md                     # Claude-specific development guidance
-├── AGENTS.md                     # Contributor workflow guide
-│
-├── .claude-plugin/               # Claude packaging files
-│   ├── plugin.json               # Claude plugin manifest
-│   └── marketplace.json          # Marketplace catalog
-│
-├── .github/workflows/            # CI workflows
-│   └── validate-marketplace.yml  # Runs plugin/marketplace validation
-│
-├── skills/                       # Claude plugin skill wrappers
-│   └── artifact-refiner/
-│       └── SKILL.md              # Thin adapter to canonical root SKILL.md
-│
-├── docs/                         # Theoretical foundations and documentation
-│   └── pmpo/
-│       └── README.md             # Complete PMPO methodology and theory
-│
-├── spec/                         # JSON schemas for structured state
-│   ├── artifact-manifest.schema.json  # Output contract schema
-│   └── constraints.schema.json   # Constraint definition schema
-│
-├── scripts/                      # Validation and maintenance scripts
-│   └── validate-marketplace.sh   # Validate plugin + marketplace setup
-│
-├── prompts/                      # Phase controllers and orchestration logic
-│   ├── meta-controller.md        # Main PMPO loop orchestrator (entry point)
-│   ├── specify.md                # Phase 1: Transform intent → specification
-│   ├── plan.md                   # Phase 2: Transform specification → executable plan
-│   ├── execute.md                # Phase 3: Execute plan via AI + tools
-│   ├── reflect.md                # Phase 4: Validate outputs & determine convergence
-│   └── domain/                   # Domain-specific execution adapters
-│       ├── logo.md               # Logo generation and rasterization
-│       ├── ui.md                 # React/HTML UI refinement
-│       ├── a2ui.md               # A2UI specification handling
-│       ├── image.md              # Image processing and validation
-│       └── content.md            # Content artifact refinement
-│
-└── templates/                    # Output templates for generated artifacts
-    ├── logo-showcase.template.html
-    ├── a2ui-preview-template.html
-    ├── content-report.template.html
-    └── react-components-shadcn-ui-template.tsx
+├── SKILL.md                    # Canonical skill definition (Agent Skills spec)
+├── agents/                     # PMPO phase subagents
+│   ├── pmpo-specifier.md
+│   ├── pmpo-planner.md
+│   ├── pmpo-executor.md
+│   ├── pmpo-reflector.md
+│   └── artifact-validator.md
+├── assets/templates/           # HTML/React templates for output generation
+├── examples/                   # Complete walkthrough examples
+│   ├── logo-refinement/
+│   └── content-refinement/
+├── hooks/hooks.json            # Lifecycle hooks (validation, logging)
+├── prompts/                    # PMPO phase controllers
+│   ├── meta-controller.md      # Orchestration entry point
+│   ├── specify.md
+│   ├── plan.md
+│   ├── execute.md
+│   ├── reflect.md
+│   └── persist.md
+├── references/                 # Progressive disclosure content
+│   ├── pmpo-theory.md
+│   ├── domain/{logo,ui,a2ui,image,content}.md
+│   └── schemas/{artifact-manifest,constraints}.schema.json
+├── scripts/                    # Validation and hook scripts
+├── skills/                     # Slash command skills
+│   ├── artifact-refiner/       # Main skill adapter
+│   ├── refine-logo/
+│   ├── refine-ui/
+│   ├── refine-content/
+│   ├── refine-image/
+│   ├── refine-a2ui/
+│   ├── refine-status/
+│   └── refine-validate/
+├── .claude-plugin/             # Plugin manifest
+│   └── plugin.json
+└── .mcp.json                   # e2b sandbox MCP server config
 ```
 
-## Source-of-Truth Structure (No Duplication)
+## Examples
 
-To keep plugin + marketplace support maintainable:
+See the [`examples/`](examples/) directory for complete walkthroughs:
 
-- Core PMPO behavior belongs in root `SKILL.md` and `prompts/`.
-- `skills/artifact-refiner/SKILL.md` stays a thin adapter for Claude plugin invocation.
-- `.claude-plugin/plugin.json` is only for plugin metadata and path registration.
-- `.claude-plugin/marketplace.json` is only for marketplace distribution metadata; keep plugin entries minimal (`name` + `source`) unless an override is required.
+- **[Logo Refinement](examples/logo-refinement/)** — NexaFlow brand system from spec to final manifest
+- **[Content Refinement](examples/content-refinement/)** — Blog post from rough draft to polished HTML
 
-If behavior changes, update canonical files first, then adjust adapters/manifests.
+## Try It
 
----
-
-# Artifact State Model
-
-Each refinement produces persistent state:
-
-* `artifact_manifest.json`
-* `constraints.json`
-* `refinement_log.md`
-* `decisions.md`
-* `dist/` (generated outputs)
-
-No artifact state is allowed to live only in conversation.
-
----
-
-# Deterministic Execution
-
-The skill uses a `code_interpreter` (e.g., e2b) for:
-
-* SVG generation
-* PNG rasterization
-* Schema validation
-* Build execution
-* Accessibility checks
-* File validation
-* Format conversions
-
-AI handles reasoning.
-The interpreter handles transformation.
-
-This separation prevents hallucinated outputs and ensures reproducibility.
-
----
-
-# Manifest Contract
-
-Every refinement must produce a valid `artifact_manifest.json` conforming to the schema in `spec/artifact-manifest.schema.json`.
-
-The manifest serves as:
-
-* Output contract
-* Verification anchor
-* Re-entry checkpoint
-* CI validation target
-
----
-
-# Constraint System
-
-Constraints are structured objects defined by `constraints.schema.json`.
-
-They support:
-
-* Severity levels (blocking, high, medium, low)
-* Deterministic validation hooks
-* Measurable thresholds
-* Termination conditions
-
-Constraints drive reflection and convergence.
-
----
-
-# Domain Modules
-
-Each domain module defines specialized behavior:
-
-## Logo
-
-* Font acquisition
-* SVG generation
-* PNG export
-* Showcase generation
-
-## UI (React / HTML)
-
-* Component refinement
-* Token enforcement
-* Accessibility validation
-* Build execution
-
-## A2UI
-
-* Schema validation
-* Structural normalization
-* Preview rendering
-
-## Image
-
-* Batch resizing
-* Format conversion
-* Contrast validation
-
-## Content
-
-* Structural editing
-* Markdown → HTML conversion
-* Report generation
-
-All domains share the same orchestration loop.
-
----
-
-# Why This Exists
-
-This skill exists to solve a systemic problem:
-
-Conversational refinement is fragile.
-
-By converting refinement into a stateful, tool-driven protocol, we:
-
-* Prevent context collapse
-* Enable reproducibility
-* Support CI workflows
-* Allow multi-agent orchestration
-* Enable artifact diffing and regression detection
-
----
-
-# Integration Strategy
-
-This skill is designed to integrate with:
-
-* Prometheus runtime
-* AgentSkills.io processors
-* Multi-agent orchestration graphs
-* CI/CD pipelines
-* Artifact-driven development workflows
-
----
-
-# Future Extensions
-
-* Visual diffing between refinement iterations
-* Multi-agent distributed refinement graphs
-* Automated regression detection
-* Versioned artifact lineage tracking
-* CI integration with blocking constraints
-
----
-
-# Developer Guidance
-
-For developers working with this skill system, see [`CLAUDE.md`](CLAUDE.md) which provides comprehensive guidance for Claude Code instances, including:
-
-* Complete PMPO theoretical foundations
-* Architecture overview and implementation patterns
-* Phase controller responsibilities and workflows
-* Essential development concepts and state management
-* Domain module integration strategies
-
----
-
-# Claude Plugin & Marketplace Support
-
-This repository is now packaged as a Claude plugin and can be distributed through a Claude marketplace.
-
-## Plugin Files
-
-- `.claude-plugin/plugin.json` - plugin metadata and skill registration
-- `skills/artifact-refiner/SKILL.md` - thin Claude skill adapter to canonical docs
-
-## Marketplace Files
-
-- `.claude-plugin/marketplace.json` - marketplace catalog containing the `artifact-refiner` plugin
-
-## Local Validation and Testing
-
-```bash
-./scripts/validate-marketplace.sh
-claude --plugin-dir .
+```
+> /refine-logo Create a modern logo for "AcmeAPI" using navy blue and gold
 ```
 
-## CI Validation
+The skill will:
+1. Generate a structured specification with brand constraints
+2. Plan an SVG → PNG → showcase pipeline
+3. Execute using image generation + code interpreter
+4. Reflect on constraint satisfaction
+5. Iterate until all constraints are met
+6. Output a complete brand system in `dist/`
 
-Marketplace/plugin validation is enforced in GitHub Actions via:
+## Author
 
-- `.github/workflows/validate-marketplace.yml`
+**Travis James** — [travisjames.ai](https://travisjames.ai)
 
-This workflow runs on push and pull request and executes:
+## License
 
-```bash
-./scripts/validate-marketplace.sh
-```
-
-## Local Marketplace Install Flow
-
-```bash
-/plugin marketplace add .
-/plugin install artifact-refiner@travisjames-skills
-```
-
-# Summary
-
-The PMPO Artifact Refiner transforms conversational iteration into deterministic infrastructure.
-
-It is a refinement engine.
-It is a meta-skill compiler.
-It is a foundation for reproducible AI-assisted artifact development.
-
-**Key insight**: PMPO is not about prompting better—it's about orchestrating thinking itself into reliable, persistent, tool-augmented workflows that survive context limitations and enable true artifact-driven development.
+MIT — See [LICENSE](LICENSE) for details.
