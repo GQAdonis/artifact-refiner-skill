@@ -1,0 +1,11 @@
+{
+  "name": "artifact-refiner",
+  "description": "PMPO-driven artifact refinement engine for logos, UI, A2UI, images, and content.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Prometheus Meta Prompting Orchestration"
+  },
+  "skills": [
+    "./skills/artifact-refiner"
+  ]
+}

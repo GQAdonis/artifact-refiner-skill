@@ -1,0 +1,48 @@
+name: artifact_refiner
+version: 1.0.0
+description: >
+  PMPO-driven artifact refinement engine.
+  Supports logos, UI concepts, A2UI specs, images, and content artifacts.
+  Combines AI reasoning with deterministic code execution.
+
+author: Prometheus Meta Prompting Orchestration
+
+entrypoint: prompts/meta-controller.md
+
+tools:
+  required:
+    - code_interpreter
+    - file_system
+  optional:
+    - image_generation
+    - browser_renderer
+
+inputs:
+  artifact_type:
+    type: string
+    enum: [logo, ui, a2ui, image, content]
+  constraints:
+    type: array
+  target_state:
+    type: object
+  current_state:
+    type: object
+    required: false
+
+outputs:
+  refined_artifact:
+    type: object
+  artifact_manifest:
+    type: object
+  refinement_log:
+    type: string
+  generated_files:
+    type: array
+
+state:
+  persistent_files:
+    - artifact_manifest.json
+    - constraints.json
+    - refinement_log.md
+    - decisions.md
+    - dist/

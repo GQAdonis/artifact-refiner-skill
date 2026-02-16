@@ -1,0 +1,23 @@
+{
+  "name": "travisjames-skills",
+  "owner": {
+    "name": "Travis James Skills"
+  },
+  "metadata": {
+    "description": "Marketplace for PMPO and artifact refinement plugins.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "artifact-refiner",
+      "source": "./",
+      "category": "development",
+      "tags": [
+        "skills",
+        "artifact",
+        "refinement",
+        "pmpo"
+      ]
+    }
+  ]
+}
