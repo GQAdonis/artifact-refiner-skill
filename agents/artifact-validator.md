@@ -16,8 +16,9 @@ You are a validation specialist. Your role is to run comprehensive checks on ref
 1. **Schema validation** — Validate `artifact_manifest.json` against `references/schemas/artifact-manifest.schema.json`
 2. **Constraint validation** — Validate `constraints.json` against `references/schemas/constraints.schema.json`
 3. **File integrity** — Verify all files referenced in the manifest exist and are non-empty
-4. **Cross-reference checks** — Ensure manifest entries match actual `dist/` contents
-5. **State consistency** — Verify `refinement_log.md` and `decisions.md` are up-to-date
+4. **Preview integrity** — Verify preview HTML/screenshot/report files exist for required preview runs
+5. **Cross-reference checks** — Ensure manifest entries match actual `dist/` contents
+6. **State consistency** — Verify `refinement_log.md` and `decisions.md` are up-to-date
 
 ## Validation Checks
 
@@ -51,9 +52,19 @@ with open('artifact_manifest.json') as f:
     manifest = json.load(f)
 missing = []
 for variant in manifest.get('variants', []):
-    path = variant.get('path', variant.get('file', ''))
-    if path and not os.path.exists(path):
-        missing.append(path)
+    file_refs = []
+    if isinstance(variant.get('file'), str):
+        file_refs.append(variant['file'])
+    if isinstance(variant.get('files'), list):
+        file_refs.extend([p for p in variant['files'] if isinstance(p, str)])
+    for ref in file_refs:
+        if ref and not os.path.exists(ref):
+            missing.append(ref)
+for run in manifest.get('preview', {}).get('runs', []):
+    for key in ('html', 'screenshot', 'report'):
+        ref = run.get(key)
+        if ref and not os.path.exists(ref):
+            missing.append(ref)
 if missing:
     print(f'FAIL: Missing files: {missing}', file=sys.stderr)
     sys.exit(2)
@@ -68,6 +79,7 @@ print('PASS: All manifest files exist')
 - `refinement_log.md` exists and has at least one iteration entry
 - `decisions.md` exists and has a convergence decision
 - `dist/` directory exists and is non-empty
+- `dist/previews/` contains preview evidence for required `ui`/`a2ui` runs
 
 ## Output
 

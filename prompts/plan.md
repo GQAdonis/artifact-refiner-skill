@@ -65,6 +65,8 @@ If requires_code_execution is true:
 	•	Explicitly declare tool usage
 	•	Define minimal code responsibilities
 	•	Avoid over-generation
+	•	Prefer `browser_renderer` for preview rendering when available
+	•	Fall back to deterministic local scripts (`scripts/compile-tsx-preview.mjs`, `scripts/render-preview.mjs`) when browser tools are unavailable
 
 tool_invocations:
   - stage_id: string
@@ -138,9 +140,31 @@ Include the template path in the plan for the Execute phase to use.
 
 Order stages so that dependencies are satisfied:
 1. Source generation (SVG, Markdown, component code) first
-2. Derivative generation (PNG rasterization, HTML rendering) second
-3. Showcase/report generation last
-4. Manifest update always final
+2. Derivative generation (PNG rasterization, HTML rendering, TSX compilation) second
+3. Browser preview rendering and screenshot/report capture third (for `ui` and `a2ui`)
+4. Showcase/report generation last
+5. Manifest update always final
+
+## UI/A2UI Preview Planning
+
+For `artifact_type: ui` and `artifact_type: a2ui`, include a deterministic preview stage.
+
+Required stage sequence:
+1. Generate/normalize artifact source
+2. Compile TSX to browser-loadable JS when `.tsx` inputs are present
+3. Render browser preview (`render_preview`)
+4. Capture screenshot + preview diagnostics report
+5. Update manifest with preview references
+
+Expected preview outputs:
+- `dist/previews/<artifact-id>/preview.html`
+- `dist/previews/<artifact-id>/screenshot.png`
+- `dist/previews/<artifact-id>/preview-report.json`
+
+HTMX runtime policy:
+- Prefer local runtime source (`assets/vendor/htmx.min.js`) first
+- Only use remote runtime sources when an explicit network-enabled preview constraint is present
+- Record runtime source (`local` or `network`) in preview report metadata
 
 ## Example
 

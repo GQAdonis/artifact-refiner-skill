@@ -26,7 +26,9 @@ Responsibilities
 	4.	Detect deprecated or invalid properties
 	5.	Ensure required fields are present
 	6.	Generate preview artifact if required
-	7.	Persist normalized spec to disk
+	7.	Render browser preview with HTMX runtime policy controls
+	8.	Capture screenshot and diagnostics report
+	9.	Persist normalized spec and preview metadata to disk
 
 ⸻
 
@@ -37,6 +39,8 @@ Invoke code_interpreter when:
 	•	Reformatting JSON/YAML
 	•	Generating diff reports
 	•	Producing rendered preview HTML
+	•	Resolving HTMX runtime source (local/network policy)
+	•	Rendering previews and capturing screenshots
 	•	Running structural validation scripts
 
 ⸻
@@ -60,13 +64,17 @@ During Execute and Reflect phases, validate:
 	•	Required fields exist
 	•	No deprecated keys used
 	•	Preview renders successfully (if applicable)
+	•	Preview screenshot exists (if applicable)
+	•	Preview report includes runtime source + diagnostics
 
 ⸻
 
 Expected Outputs
 	•	Normalized A2UI spec file
 	•	Validation report
-	•	Optional preview artifact (HTML or rendered output)
+	•	Optional preview artifact (HTML)
+	•	Optional preview screenshot (PNG)
+	•	Optional preview diagnostics report (JSON)
 	•	Updated artifact_manifest.json
 
 ⸻
@@ -87,3 +95,4 @@ Refinement ends when:
 	•	All constraints satisfied
 	•	No structural violations remain
 	•	Preview renders correctly (if required)
+	•	Preview evidence artifacts are persisted (if required)

@@ -44,6 +44,24 @@ export E2B_API_KEY="your-key-here"
 
 The skill works without e2b by falling back to the built-in `code_interpreter`.
 
+### Browser Preview Tooling (Optional, for UI/A2UI)
+
+Install local preview tooling for TSX compilation and browser screenshots:
+
+```bash
+npm install
+```
+
+This enables:
+- `node scripts/compile-tsx-preview.mjs` (TSX -> browser preview bundle)
+- `node scripts/render-preview.mjs` (preview render + screenshot + diagnostics)
+
+### Optional MCP Renderer Integration
+
+`.mcp.json` ships with e2b only. If your environment supports renderer MCP servers, extend `.mcp.json` by adding another `mcpServers` entry while keeping `e2b-sandbox` unchanged.
+
+See `.mcp.renderer.example.json` for a sample configuration.
+
 ## How It Works
 
 The skill uses **PMPO** (Prometheus Meta-Prompting Orchestration) — a structured, iterative refinement loop:
@@ -69,9 +87,11 @@ artifact-refiner/
 │   ├── pmpo-reflector.md
 │   └── artifact-validator.md
 ├── assets/templates/           # HTML/React templates for output generation
+├── assets/vendor/              # Optional local runtime assets (e.g., htmx.min.js)
 ├── examples/                   # Complete walkthrough examples
 │   ├── logo-refinement/
-│   └── content-refinement/
+│   ├── content-refinement/
+│   └── ui-preview-refinement/
 ├── hooks/hooks.json            # Lifecycle hooks (validation, logging)
 ├── prompts/                    # PMPO phase controllers
 │   ├── meta-controller.md      # Orchestration entry point
@@ -85,6 +105,9 @@ artifact-refiner/
 │   ├── domain/{logo,ui,a2ui,image,content}.md
 │   └── schemas/{artifact-manifest,constraints}.schema.json
 ├── scripts/                    # Validation and hook scripts
+│   ├── compile-tsx-preview.mjs
+│   ├── render-preview.mjs
+│   └── lib/preview-utils.mjs
 ├── skills/                     # Slash command skills
 │   ├── artifact-refiner/       # Main skill adapter
 │   ├── refine-logo/
@@ -105,6 +128,17 @@ See the [`examples/`](examples/) directory for complete walkthroughs:
 
 - **[Logo Refinement](examples/logo-refinement/)** — NexaFlow brand system from spec to final manifest
 - **[Content Refinement](examples/content-refinement/)** — Blog post from rough draft to polished HTML
+- **[UI Preview Refinement](examples/ui-preview-refinement/)** — Browser preview HTML + screenshot + diagnostics report
+
+## Browser Preview Output Contract
+
+For `ui` and `a2ui` artifacts, preview evidence is persisted under:
+
+- `dist/previews/<artifact-id>/preview.html`
+- `dist/previews/<artifact-id>/screenshot.png`
+- `dist/previews/<artifact-id>/preview-report.json`
+
+Preview metadata is stored in `artifact_manifest.json` under `preview.runs`, including runtime source (`local` or `network`) and render status.
 
 ## Try It
 

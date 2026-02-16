@@ -47,6 +47,7 @@ The skill follows the Prometheus Meta-Prompting Orchestration loop. For full the
 
 - `image_generation` — For logo/image domains
 - `browser_renderer` — For UI/A2UI preview rendering
+- Local fallback scripts — `node scripts/compile-tsx-preview.mjs` and `node scripts/render-preview.mjs`
 
 ## Inputs
 
@@ -65,6 +66,7 @@ refined_artifact: object
 artifact_manifest: object  # See references/schemas/artifact-manifest.schema.json
 refinement_log: string
 generated_files: array     # Written to dist/
+preview_artifacts: optional array  # dist/previews/<artifact-id>/*
 ```
 
 ## Persistent State Files
@@ -76,6 +78,7 @@ The skill creates and maintains these files — **state must never rely on conve
 - `refinement_log.md` — Iteration history and decisions
 - `decisions.md` — Convergence rationale
 - `dist/` — Generated artifact outputs
+- `dist/previews/` — Browser preview HTML, screenshots, and diagnostics (UI/A2UI)
 
 ## Deterministic Execution Rule
 
@@ -86,12 +89,19 @@ Before performing transformations, determine:
 - **YES** → Generate minimal executable code → Execute via code interpreter or e2b sandbox → Validate file outputs → Update manifest
 - **NO** → Perform AI-only refinement
 
+For `ui` and `a2ui`, deterministic execution includes:
+1. TSX preview compilation (when applicable)
+2. Browser preview rendering
+3. Screenshot + preview diagnostics capture
+4. Manifest preview metadata update
+
 ## Termination Conditions
 
 Refinement ends when:
 
 - No blocking constraint violations remain
 - All required artifact outputs exist in `dist/`
+- Required preview evidence exists in `dist/previews/` for `ui`/`a2ui` runs
 - Manifest validates against `references/schemas/artifact-manifest.schema.json`
 - Further improvements fall below threshold
 - Maximum iterations (5) reached

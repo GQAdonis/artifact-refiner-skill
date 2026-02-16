@@ -9,7 +9,6 @@ required_files=(
   ".claude-plugin/marketplace.json"
   "skills/artifact-refiner/SKILL.md"
   "SKILL.md"
-  "skill.yaml"
 )
 
 for file in "${required_files[@]}"; do
