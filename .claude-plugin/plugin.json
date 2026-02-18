@@ -1,6 +1,6 @@
 {
   "name": "artifact-refiner",
-  "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, and A2UI specifications",
+  "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, code, meta-prompts, and A2UI specifications",
   "version": "1.1.0",
   "author": {
     "name": "Travis James",
