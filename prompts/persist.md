@@ -2,7 +2,19 @@
 
 ## Objective
 
-Write all validated state from the current iteration to disk. Ensure state files are consistent, schema-compliant, and ready for the next iteration or final output.
+Write all validated state from the current iteration to disk using the resolved state provider. Ensure state files are consistent, schema-compliant, and ready for the next iteration or final output.
+
+## State Provider Abstraction
+
+Persist operations are **provider-agnostic**. The active provider was resolved during startup (see `meta-controller.md`). All operations go through:
+
+| Operation | Filesystem Provider | MCP Provider | Memory Provider |
+|-----------|-------------------|--------------|-----------------|
+| Save state | Write JSON to `.refiner/artifacts/<name>/state.json` | Call `mcp_tool(save_state, {...})` | Call `memory_tool(update, {...})` |
+| Load state | Read JSON from state file | Call `mcp_tool(load_state, name)` | Call `memory_tool(get, name)` |
+| Checkpoint | `scripts/state-checkpoint.sh <name> persist` | Call `mcp_tool(checkpoint, {...})` | N/A (memory is volatile) |
+
+If the active provider fails, **fall back to filesystem** and log the degradation.
 
 ## Rules
 
@@ -10,6 +22,7 @@ Write all validated state from the current iteration to disk. Ensure state files
 2. **Never skip persistence** — Even partial results must be persisted
 3. **Validate before writing** — Check schemas before committing state
 4. **Atomic updates** — Write complete files, never partial updates
+5. **Provider-agnostic** — Use the resolved provider, fall back to filesystem
 
 ## Persistence Procedure
 
@@ -51,6 +64,10 @@ Append an iteration entry:
 
 ### Files Modified
 - {list of files created or modified}
+
+### Content Type
+- Type: {content_type}
+- Evaluation: {output_inspection | prompt_quality | test_execution}
 ```
 
 ### Step 4: Update `decisions.md`
@@ -74,6 +91,24 @@ Verify all files referenced in `artifact_manifest.json` exist in `dist/`:
 - Log any missing files as errors
 - If files are missing, flag for re-execution
 
+### Step 6: Update Refinement State
+
+Save the iteration result to the named state via the provider:
+- Update `current_iteration`, `phases_completed`, `updated_at`
+- Append to `iteration_history[]` with constraint satisfaction counts
+- Record the convergence decision
+
+### Step 7: Content-Type-Specific Persistence
+
+For **`direct:*`** types:
+- All generated artifacts are written to `dist/`
+- Preview artifacts go to `dist/previews/`
+
+For **`meta:*`** types:
+- Refined prompt text is written to `dist/`
+- Test artifacts (if `test_generation: true`) go to `dist/test-outputs/`
+- Prompt metadata (platform, token count, variables) saved alongside
+
 ## Deterministic Execution
 
 Use code interpreter or e2b sandbox for:
@@ -90,3 +125,4 @@ After Persist completes, the following must be true:
 - `refinement_log.md` has an entry for the current iteration
 - `decisions.md` has the convergence decision for the current iteration
 - All files in `dist/` referenced by the manifest exist
+- Named refinement state is updated via the active provider

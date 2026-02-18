@@ -23,10 +23,12 @@ Objectives
 
 Inputs
 
+artifact_name: string  # Required — unique name for cross-session retrieval
 artifact_type: string
 constraints: optional array
 current_state: optional object
 target_state: optional object
+content_type: optional string  # Auto-detected if not provided (see Content Type Detection)
 
 
 ⸻
@@ -113,9 +115,11 @@ Output Format
 The Specify phase MUST output:
 
 specification:
+  artifact_name: string
   clarified_intent: {}
   constraints: []
   target_state: {}
+  content_type: string  # e.g. "direct:react", "meta:image-prompt"
   unknowns: []
   requires_code_execution: boolean
   likely_tools: []
@@ -125,13 +129,27 @@ No artifact generation should occur in this phase.
 ⸻
 
 Rules
-	•	Be explicit and structured
-	•	Do not hallucinate file outputs
-	•	Do not generate code
-	•	Do not perform execution
-	•	Only define the refinement blueprint
+- Be explicit and structured
+- Do not hallucinate file outputs
+- Do not generate code
+- Do not perform execution
+- Only define the refinement blueprint
 
 This blueprint drives the Plan phase.
+
+## Content Type Detection
+
+Classify the content type during Specify using these heuristics (see `references/content-types.md`):
+
+1. **Explicit** — User says "create a prompt for...", "write instructions to..." → `meta:*`
+2. **File extension** — `.tsx` → `direct:react`, `.html` → `direct:html`, `.py` → `direct:code`
+3. **Artifact type** — `logo` → `direct:image`, `ui` → `direct:react` or `direct:html`
+4. **Intent keywords** — "generate", "produce", "create" → `direct:*`; "prompt for", "instructions to" → `meta:*`
+5. **Default** — If ambiguous, ask the user or default to `direct:*`
+
+For `meta:*` content types, also set:
+- `target_platform` — Which downstream system will consume the prompt
+- `test_generation` — Whether to generate test output during Execute
 
 ## Degree of Freedom
 
