@@ -1,10 +1,35 @@
 ---
 name: artifact-refiner
+version: "1.1.0"
 description: >
   Use this skill when creating or iteratively refining named artifacts (logos, UI components,
   A2UI specifications, images, code, content, or meta-prompts) using structured PMPO orchestration with
   explicit constraints, deterministic execution, persistent artifact state, and cross-session retrieval.
-allowed-tools: code_interpreter file_system image_generation browser_renderer
+authors:
+  - "Travis James"
+tools:
+  - code_interpreter
+  - file_system
+  - image_generation
+  - browser_renderer
+triggers:
+  keywords:
+    - refine
+    - artifact
+    - logo
+    - ui component
+    - iterate
+    - pmpo
+    - improve artifact
+    - refine image
+    - create artifact
+    - refine logo
+    - refine content
+    - refine code
+    - a2ui
+  semantic: >
+    Refine, improve, or iteratively create a named artifact such as a logo, UI component,
+    image, code, or content using the PMPO orchestration loop.
 ---
 
 # Artifact Refiner
