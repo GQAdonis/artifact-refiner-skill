@@ -2,9 +2,10 @@
 name: artifact-refiner
 version: "1.1.0"
 description: >
-  Use this skill when creating or iteratively refining named artifacts (logos, UI components,
-  A2UI specifications, images, code, content, or meta-prompts) using structured PMPO orchestration with
-  explicit constraints, deterministic execution, persistent artifact state, and cross-session retrieval.
+  Use this skill when creating or iteratively refining named artifacts (logos,
+  UI components, A2UI specifications, images, code, content, or meta-prompts)
+  using structured PMPO orchestration with explicit constraints, deterministic
+  execution, persistent artifact state, and cross-session retrieval.
 authors:
   - "Travis James"
 tools:
@@ -12,6 +13,13 @@ tools:
   - file_system
   - image_generation
   - browser_renderer
+model_routing:
+  policy_source: ".kbd-orchestrator/project.json → model_policy"
+  phases:
+    refiner-iterate: small
+    refiner-evaluate: medium
+    refiner-finalize: small
+  routing_reference: "references/model-routing.md"
 triggers:
   keywords:
     - refine
@@ -28,8 +36,8 @@ triggers:
     - refine code
     - a2ui
   semantic: >
-    Refine, improve, or iteratively create a named artifact such as a logo, UI component,
-    image, code, or content using the PMPO orchestration loop.
+    Refine, improve, or iteratively create a named artifact such as a logo,
+    UI component, image, code, or content using the PMPO orchestration loop.
 ---
 
 # Artifact Refiner
@@ -77,23 +85,11 @@ Artifacts are classified by content type, which determines how they're produced 
 
 ### Direct Types — Output IS the Artifact
 
-| Type | Output | Evaluation |
-|------|--------|------------|
-| `direct:react` | `.tsx` / `.jsx` components | Render + visual inspection |
-| `direct:html` | HTML/HTMX markup | Render + visual inspection |
-| `direct:content` | Reports, specs, docs | Structure, tone, completeness |
-| `direct:image` | SVG/PNG/WebP files | Visual quality, dimensions |
-| `direct:code` | Source files (any lang) | Syntax, tests, lint |
+TypeOutputEvaluation`direct:react.tsx` / `.jsx` componentsRender + visual inspection`direct:html`HTML/HTMX markupRender + visual inspection`direct:content`Reports, specs, docsStructure, tone, completeness`direct:image`SVG/PNG/WebP filesVisual quality, dimensions`direct:code`Source files (any lang)Syntax, tests, lint
 
 ### Meta Types — Output is a Prompt That DRIVES Another Process
 
-| Type | Output | Evaluation |
-|------|--------|------------|
-| `meta:image-prompt` | Image generation prompt | Prompt clarity, platform fit |
-| `meta:video-prompt` | Video generation prompt | Temporal coherence |
-| `meta:agent-prompt` | System + user prompt pair | Instruction clarity, guardrails |
-| `meta:workflow` | Orchestration instructions | Completeness, error handling |
-| `meta:composite` | Mixed bundle | Per-component |
+TypeOutputEvaluation`meta:image-prompt`Image generation promptPrompt clarity, platform fit`meta:video-prompt`Video generation promptTemporal coherence`meta:agent-prompt`System + user prompt pairInstruction clarity, guardrails`meta:workflow`Orchestration instructionsCompleteness, error handling`meta:composite`Mixed bundlePer-component
 
 ## State Provider
 
@@ -112,13 +108,7 @@ See `references/schemas/state-provider.schema.json` for provider configuration.
 
 Lifecycle events can fire workflow triggers defined in the refinement state:
 
-| Event | When |
-|-------|------|
-| `on_phase_complete` | After any PMPO phase completes |
-| `on_iteration_complete` | After a full Specify→Persist loop |
-| `on_refinement_complete` | When refinement terminates |
-| `on_regression` | When Reflect detects quality regression |
-| `on_approval_required` | When human approval gate is reached |
+EventWhen`on_phase_complete`After any PMPO phase completes`on_iteration_complete`After a full Specify→Persist loop`on_refinement_complete`When refinement terminates`on_regression`When Reflect detects quality regression`on_approval_required`When human approval gate is reached
 
 See `references/schemas/workflow-trigger.schema.json` for trigger definitions.
 
@@ -206,6 +196,7 @@ Before performing transformations, determine:
 - **NO** → Perform AI-only refinement
 
 For `ui` and `a2ui`, deterministic execution includes:
+
 1. TSX preview compilation (when applicable)
 2. Browser preview rendering
 3. Screenshot + preview diagnostics capture
@@ -233,15 +224,7 @@ Refinement ends when:
 
 Domain-specific refinement knowledge lives in `references/domain/`:
 
-| Domain | Reference | Template |
-|--------|-----------|----------|
-| Logo | `references/domain/logo.md` | `assets/templates/logo-showcase.template.html` |
-| UI | `references/domain/ui.md` | `assets/templates/react-components-shadcn-ui-template.tsx` |
-| A2UI | `references/domain/a2ui.md` | `assets/templates/a2ui-preview-template.html` |
-| Image | `references/domain/image.md` | — |
-| Content | `references/domain/content.md` | `assets/templates/content-report.template.html` |
-| Code | `references/domain/code.md` | — |
-| Meta-Prompt | `references/domain/meta-prompt.md` | — |
+DomainReferenceTemplateLogo`references/domain/logo.mdassets/templates/logo-showcase.template.html`UI`references/domain/ui.mdassets/templates/react-components-shadcn-ui-template.tsx`A2UI`references/domain/a2ui.mdassets/templates/a2ui-preview-template.html`Image`references/domain/image.md`—Content`references/domain/content.mdassets/templates/content-report.template.html`Code`references/domain/code.md`—Meta-Prompt`references/domain/meta-prompt.md`—
 
 ## Quick Start
 
