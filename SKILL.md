@@ -48,7 +48,7 @@ A PMPO-driven, artifact-centric refinement engine capable of creating and iterat
 
 - **Logos & brand systems** — SVG/PNG variants, wordmarks, icons, showcase pages
 - **React / HTML UI concepts** — Component hierarchies, design tokens, accessibility
-- **A2UI specifications** — Structural integrity, schema compliance, normalization
+- **A2UI specifications** — Structural integrity, schema compliance, normalization. Schema: `references/schemas/a2ui-component.schema.json`. Content type: `direct:a2ui`. Example: `examples/a2ui-component-refinement/`.
 - **Image assets** — Composition, brand colors, resolution, format conversion
 - **Content artifacts** — Markdown/HTML structure, tone, heading normalization
 - **Code artifacts** — Source files in any language, lint, test, format

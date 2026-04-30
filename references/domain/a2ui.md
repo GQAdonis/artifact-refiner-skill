@@ -4,6 +4,10 @@ Domain
 
 A2UI (Agent-to-UI) Specification Artifacts
 
+Content type: `direct:a2ui`
+Schema: `references/schemas/a2ui-component.schema.json`
+Example: `examples/a2ui-component-refinement/`
+
 Purpose
 
 Refine A2UI specifications into valid, normalized, schema-compliant artifacts ready for rendering, distribution, or execution within compatible runtimes.

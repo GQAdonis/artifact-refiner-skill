@@ -1,0 +1,42 @@
+{
+  "artifact_type": "a2ui",
+  "content_type": "direct:a2ui",
+  "generated_at": "2026-04-30T20:34:14.825Z",
+  "variants": [
+    {
+      "name": "login-card",
+      "files": [
+        "examples/a2ui-component-refinement/source.a2ui.json",
+        "examples/a2ui-component-refinement/dist/previews/login-card/normalized.a2ui.json",
+        "examples/a2ui-component-refinement/dist/previews/login-card/normalize-report.json"
+      ]
+    }
+  ],
+  "preview": {
+    "required": true,
+    "runs": [
+      {
+        "artifact_id": "login-card",
+        "status": "success",
+        "normalized_spec": "examples/a2ui-component-refinement/dist/previews/login-card/normalized.a2ui.json",
+        "normalize_report": "examples/a2ui-component-refinement/dist/previews/login-card/normalize-report.json"
+      },
+      {
+        "artifact_id": "broken-circular",
+        "status": "failed",
+        "normalize_report": "examples/a2ui-component-refinement/dist/previews/broken-circular/normalize-report.json",
+        "expected_violation": "binding_cycle"
+      }
+    ]
+  },
+  "validation": {
+    "schema": "references/schemas/a2ui-component.schema.json",
+    "preview_status": "pass",
+    "negative_path_proven": true,
+    "notes": [
+      "Positive path: source.a2ui.json normalizes cleanly into deterministic key-ordered JSON",
+      "Negative path: broken-circular.a2ui.json is rejected with binding_cycle [a, b, c, a]",
+      "HTML preview generation is delegated to the existing render-preview.mjs pipeline; not exercised in this example"
+    ]
+  }
+}

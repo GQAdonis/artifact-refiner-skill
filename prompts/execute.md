@@ -158,6 +158,11 @@ Prefer e2b sandbox for:
 
 When the plan includes `render_preview`, execute in this order:
 
+0. **A2UI normalization** (only when `content_type` is `direct:a2ui`):
+   - `node scripts/normalize-a2ui.mjs --input <source.a2ui.json> --artifact-id <id>`
+   - Validates against `references/schemas/a2ui-component.schema.json`, detects binding cycles, rejects undefined bindings.
+   - On success, writes `dist/previews/<id>/normalized.a2ui.json` and `normalize-report.json`. Skip step 1 (no TSX). Proceed to step 2 with `assets/templates/a2ui-preview-template.html` as the source template; the existing template-injection step substitutes `{{A2UI_JSON}}` from the normalized spec.
+   - On failure, the script exits 1 and writes the violations to `normalize-report.json`. HARD FAIL the run; do not render.
 1. Compile TSX preview inputs when present:
    - `node scripts/compile-tsx-preview.mjs --entry <file.tsx> --artifact-id <id>`
 2. Prepare preview HTML:
@@ -169,6 +174,7 @@ When the plan includes `render_preview`, execute in this order:
    - `dist/previews/<id>/preview.html`
    - `dist/previews/<id>/screenshot.png`
    - `dist/previews/<id>/preview-report.json`
+   - For `direct:a2ui`: also `dist/previews/<id>/normalized.a2ui.json` and `normalize-report.json`
 5. Ensure manifest includes preview references and runtime source metadata
 
 Preview report expectations:

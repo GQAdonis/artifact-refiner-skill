@@ -68,6 +68,7 @@ After **each phase completes**:
 | Content Type Pattern | Evaluation Strategy | Reflect Focus |
 |---|---|---|
 | `direct:*` | `output_inspection` | Evaluate the generated artifact directly |
+| `direct:a2ui` | `output_inspection` | Validate against `references/schemas/a2ui-component.schema.json`; cycle-check the bindings graph; normalize before render |
 | `meta:*` (no test gen) | `prompt_quality` | Evaluate prompt clarity, specificity, platform fit |
 | `meta:*` (test gen on) | `test_execution` | Generate test output, evaluate against constraints |
 | `meta:composite` | Per-component | Each component uses its own strategy |

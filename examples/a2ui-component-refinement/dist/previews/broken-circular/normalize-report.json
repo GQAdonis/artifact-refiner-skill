@@ -1,0 +1,18 @@
+{
+  "status": "failed",
+  "artifact_id": "broken-circular",
+  "input": "examples/a2ui-component-refinement/broken-circular.a2ui.json",
+  "schema": "/Users/gqadonis/Projects/prometheus/prometheus-skill-pack/skills/imported/artifact-refiner/references/schemas/a2ui-component.schema.json",
+  "violations": [
+    {
+      "kind": "binding_cycle",
+      "cycle": [
+        "a",
+        "b",
+        "c",
+        "a"
+      ]
+    }
+  ],
+  "generated_at": "2026-04-30T20:34:18.977Z"
+}

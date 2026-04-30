@@ -10,6 +10,7 @@
       "enum": [
         "direct:react",
         "direct:html",
+        "direct:a2ui",
         "direct:content",
         "direct:image",
         "direct:code",

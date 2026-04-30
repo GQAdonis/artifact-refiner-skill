@@ -14,6 +14,7 @@ Content types follow the pattern `{mode}:{kind}`:
 |------|--------|----------------|------------|
 | `direct:react` | `.tsx` / `.jsx` components | `domain/ui.md` | Render → screenshot → visual inspection |
 | `direct:html` | HTML/HTMX markup | `domain/ui.md` | Render → screenshot → visual inspection |
+| `direct:a2ui` | `.a2ui.json` component specs | `domain/a2ui.md` | Schema validation → cycle check → normalize → render → screenshot |
 | `direct:content` | Reports, specs, docs | `domain/content.md` | Structure, tone, completeness |
 | `direct:image` | SVG/PNG/WebP files | `domain/image.md` or `domain/logo.md` | Visual quality, dimensions, format |
 | `direct:code` | Source files (any lang) | `domain/code.md` | Syntax, tests, lint, conventions |
