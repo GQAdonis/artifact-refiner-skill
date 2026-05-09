@@ -1,11 +1,12 @@
 ---
 name: artifact-refiner
-version: "1.1.0"
+version: "1.2.0"
 description: >
   Use this skill when creating or iteratively refining named artifacts (logos,
-  UI components, A2UI specifications, images, code, content, or meta-prompts)
-  using structured PMPO orchestration with explicit constraints, deterministic
-  execution, persistent artifact state, and cross-session retrieval.
+  UI components, A2UI specifications, AG-UI agent specifications, images, code,
+  content, or meta-prompts) using structured PMPO orchestration with explicit
+  constraints, deterministic execution, persistent artifact state, and
+  cross-session retrieval.
 authors:
   - "Travis James"
 tools:
@@ -35,9 +36,15 @@ triggers:
     - refine content
     - refine code
     - a2ui
+    - ag-ui
+    - agent spec
+    - copilotkit spec
+    - event emission
+    - tool wiring
   semantic: >
     Refine, improve, or iteratively create a named artifact such as a logo,
-    UI component, image, code, or content using the PMPO orchestration loop.
+    UI component, A2UI specification, AG-UI agent specification, image, code,
+    or content using the PMPO orchestration loop.
 ---
 
 # Artifact Refiner
@@ -49,6 +56,7 @@ A PMPO-driven, artifact-centric refinement engine capable of creating and iterat
 - **Logos & brand systems** — SVG/PNG variants, wordmarks, icons, showcase pages
 - **React / HTML UI concepts** — Component hierarchies, design tokens, accessibility
 - **A2UI specifications** — Structural integrity, schema compliance, normalization. Schema: `references/schemas/a2ui-component.schema.json`. Content type: `direct:a2ui`. Example: `examples/a2ui-component-refinement/`.
+- **AG-UI agent specifications** — Tool definitions, event emission rules, UI fragment bindings, cross-reference integrity. Schema: `references/schemas/ag-ui-spec.schema.json`. Content type: `direct:ag-ui`. Example: `examples/ag-ui-spec-refinement/`. Spike: `references/domain/ag-ui-spike.md`.
 - **Image assets** — Composition, brand colors, resolution, format conversion
 - **Content artifacts** — Markdown/HTML structure, tone, heading normalization
 - **Code artifacts** — Source files in any language, lint, test, format

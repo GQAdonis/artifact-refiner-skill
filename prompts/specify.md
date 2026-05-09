@@ -142,10 +142,10 @@ This blueprint drives the Plan phase.
 Classify the content type during Specify using these heuristics (see `references/content-types.md`):
 
 1. **Explicit** — User says "create a prompt for...", "write instructions to..." → `meta:*`
-2. **File extension** — `.tsx` → `direct:react`, `.html` → `direct:html`, `.py` → `direct:code`, `.a2ui.json` / `.a2ui.yaml` → `direct:a2ui`
-3. **Spec marker** — Source file contains `"version": "a2ui/v1"` (or any `a2ui/v*`) at the top level → `direct:a2ui`
-4. **Artifact type** — `logo` → `direct:image`, `ui` → `direct:react` or `direct:html`, `a2ui` → `direct:a2ui`
-5. **Intent keywords** — "generate", "produce", "create" → `direct:*`; "prompt for", "instructions to" → `meta:*`; "a2ui spec", "agent-to-ui" → `direct:a2ui`
+2. **File extension** — `.tsx` → `direct:react`, `.html` → `direct:html`, `.py` → `direct:code`, `.a2ui.json` / `.a2ui.yaml` → `direct:a2ui`, `.ag-ui.json` / `.ag-ui.yaml` → `direct:ag-ui`
+3. **Spec marker** — Source file contains `"version": "a2ui/v1"` (or any `a2ui/v*`) at the top level → `direct:a2ui`; contains `"version": "ag-ui/v1"` (or any `ag-ui/v*`) → `direct:ag-ui`
+4. **Artifact type** — `logo` → `direct:image`, `ui` → `direct:react` or `direct:html`, `a2ui` → `direct:a2ui`, `ag-ui` → `direct:ag-ui`
+5. **Intent keywords** — "generate", "produce", "create" → `direct:*`; "prompt for", "instructions to" → `meta:*`; "a2ui spec", "agent-to-ui" → `direct:a2ui`; "ag-ui spec", "agent spec", "copilotkit spec", "event emission", "tool wiring" → `direct:ag-ui`
 6. **Default** — If ambiguous, ask the user or default to `direct:*`
 
 For `meta:*` content types, also set:

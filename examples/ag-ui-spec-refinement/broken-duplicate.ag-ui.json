@@ -1,0 +1,33 @@
+{
+  "version": "ag-ui/v1",
+  "agent": {
+    "name": "broken-agent",
+    "description": "A broken spec demonstrating duplicate tool names and an invalid event kind reference."
+  },
+  "tools": [
+    {
+      "name": "fetch_data",
+      "description": "Fetch data from an external source."
+    },
+    {
+      "name": "fetch_data",
+      "description": "Duplicate tool name — this will fail validation."
+    }
+  ],
+  "event_emission": [
+    {
+      "tool": "fetch_data",
+      "on_event": "TOOL_CALL_START"
+    },
+    {
+      "tool": "nonexistent_tool",
+      "on_event": "TEXT_MESSAGE_CONTENT",
+      "condition": "References a tool not declared in tools[] — will fail cross-ref check."
+    },
+    {
+      "tool": "fetch_data",
+      "on_event": "TOOL_CALL_START",
+      "condition": "Duplicate (tool, on_event) pair — will fail duplicate emission check."
+    }
+  ]
+}

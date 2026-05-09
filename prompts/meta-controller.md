@@ -58,6 +58,7 @@ After **each phase completes**:
 | `logo` | `references/domain/logo.md` | `assets/templates/logo-showcase.template.html` |
 | `ui` | `references/domain/ui.md` | `assets/templates/react-components-shadcn-ui-template.tsx` |
 | `a2ui` | `references/domain/a2ui.md` | `assets/templates/a2ui-preview-template.html` |
+| `ag-ui` | `references/domain/ag-ui.md` | _(none — coverage report is the evidence artifact)_ |
 | `image` | `references/domain/image.md` | _(none)_ |
 | `content` | `references/domain/content.md` | `assets/templates/content-report.template.html` |
 | `code` | `references/domain/code.md` | _(none)_ |
@@ -69,6 +70,7 @@ After **each phase completes**:
 |---|---|---|
 | `direct:*` | `output_inspection` | Evaluate the generated artifact directly |
 | `direct:a2ui` | `output_inspection` | Validate against `references/schemas/a2ui-component.schema.json`; cycle-check the bindings graph; normalize before render |
+| `direct:ag-ui` | `output_inspection` | Validate against `references/schemas/ag-ui-spec.schema.json`; cross-ref tool names and event kinds via `scripts/normalize-agui.mjs`; generate coverage report |
 | `meta:*` (no test gen) | `prompt_quality` | Evaluate prompt clarity, specificity, platform fit |
 | `meta:*` (test gen on) | `test_execution` | Generate test output, evaluate against constraints |
 | `meta:composite` | Per-component | Each component uses its own strategy |
