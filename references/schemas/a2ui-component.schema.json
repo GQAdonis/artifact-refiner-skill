@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://artifact-refiner.dev/schemas/a2ui-component.schema.json",
+  "title": "A2UI Component Specification",
+  "description": "Schema for A2UI (Agent-to-UI) specifications. Codifies the structural rules described in references/domain/a2ui.md so that constraint validation has a deterministic source of truth. Cycle detection in the bindings graph is enforced by the normalization adapter, not by this schema (JSON Schema cannot express acyclicity).",
+  "type": "object",
+  "required": ["version", "root"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^a2ui/v\\d+(\\.\\d+)*$",
+      "description": "Spec version marker, e.g. 'a2ui/v1'. Required at the top of every A2UI spec."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional spec-level metadata. Free-form; kept opaque to validators.",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "author": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "bindings": {
+      "type": "object",
+      "description": "Top-level binding definitions referenced by components via { '$ref': '<binding-id>' }. Cycles between bindings are forbidden and detected at normalization time.",
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": {
+          "$ref": "#/definitions/binding"
+        }
+      },
+      "additionalProperties": false
+    },
+    "root": {
+      "$ref": "#/definitions/component",
+      "description": "Root of the component tree."
+    }
+  },
+  "definitions": {
+    "componentId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "kebab-case component identifier, locally unique within its parent."
+    },
+    "componentType": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "description": "PascalCase component type name (e.g. 'Container', 'Button', 'TextField')."
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/definitions/componentId" },
+        "type": { "$ref": "#/definitions/componentType" },
+        "props": {
+          "type": "object",
+          "description": "Component-type-specific properties. Validated by the per-type schema if one exists; otherwise treated as opaque.",
+          "additionalProperties": true
+        },
+        "bindings": {
+          "type": "object",
+          "description": "Inline binding map for this component. Keys are prop names; values are either inline literals or { '$ref': '<binding-id>' } pointers into spec.bindings.",
+          "additionalProperties": {
+            "oneOf": [
+              { "$ref": "#/definitions/bindingRef" },
+              { "type": "string" },
+              { "type": "number" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "children": {
+          "type": "array",
+          "description": "Ordered child components. Order is significant.",
+          "items": { "$ref": "#/definitions/component" }
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["literal", "ref", "expression"],
+          "description": "Binding flavor. 'literal' is a static value; 'ref' points to another binding; 'expression' is a string the runtime evaluates."
+        },
+        "value": {
+          "description": "Literal value when kind=literal. Any JSON-serializable type."
+        },
+        "ref": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Target binding id when kind=ref. Cycles are forbidden."
+        },
+        "expression": {
+          "type": "string",
+          "description": "Expression source when kind=expression. Runtime-defined grammar."
+        },
+        "description": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "literal" } } },
+          "then": { "required": ["value"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "ref" } } },
+          "then": { "required": ["ref"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "expression" } } },
+          "then": { "required": ["expression"] }
+        }
+      ]
+    },
+    "bindingRef": {
+      "type": "object",
+      "required": ["$ref"],
+      "additionalProperties": false,
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    }
+  }
+}
