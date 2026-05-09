@@ -11,6 +11,7 @@
         "direct:react",
         "direct:html",
         "direct:a2ui",
+        "direct:ag-ui",
         "direct:content",
         "direct:image",
         "direct:code",

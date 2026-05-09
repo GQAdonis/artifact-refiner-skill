@@ -1,0 +1,129 @@
+{
+  "version": "ag-ui/v1",
+  "metadata": {
+    "description": "AG-UI spec for a Rust-native research agent with streaming text and tool call UI bindings",
+    "author": "prometheus-skill-pack",
+    "tags": ["rust", "research", "streaming", "rag"],
+    "runtime": "rust-native"
+  },
+  "agent": {
+    "name": "prometheus-research-agent",
+    "description": "A Rust-native research agent that performs RAG-backed knowledge retrieval and streams responses to the frontend via AG-UI protocol."
+  },
+  "tools": [
+    {
+      "name": "search_knowledge_base",
+      "description": "Search the vector knowledge base for relevant context given a user query.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language search query."
+          },
+          "top_k": {
+            "type": "integer",
+            "description": "Maximum number of results to retrieve.",
+            "default": 5
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Optional knowledge base namespace to scope the search."
+          }
+        },
+        "required": ["query"]
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "score": { "type": "number" },
+                "text": { "type": "string" },
+                "metadata": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "synthesize_answer",
+      "description": "Synthesize a final answer from retrieved context and stream it back to the user.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "context_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "IDs of retrieved context chunks to include in synthesis."
+          },
+          "user_query": {
+            "type": "string",
+            "description": "The original user query being answered."
+          }
+        },
+        "required": ["context_ids", "user_query"]
+      }
+    },
+    {
+      "name": "update_shared_state",
+      "description": "Push a partial state update to the frontend to reflect agent progress.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "State key to update."
+          },
+          "value": {
+            "description": "New value for the state key. Any JSON-serializable type."
+          }
+        },
+        "required": ["key", "value"]
+      }
+    }
+  ],
+  "event_emission": [
+    {
+      "tool": "search_knowledge_base",
+      "on_event": "TOOL_CALL_START",
+      "fragment": "SearchProgressIndicator",
+      "condition": "Emitted when the search tool begins executing. Renders a loading spinner in the SearchProgressIndicator slot."
+    },
+    {
+      "tool": "search_knowledge_base",
+      "on_event": "TOOL_CALL_END",
+      "fragment": "SearchResultsPanel",
+      "condition": "Emitted when the search tool completes. Populates the SearchResultsPanel with retrieved context cards."
+    },
+    {
+      "tool": "synthesize_answer",
+      "on_event": "TEXT_MESSAGE_START",
+      "fragment": "AnswerStreamContainer",
+      "condition": "Emitted when answer synthesis begins. Activates the streaming text display in AnswerStreamContainer."
+    },
+    {
+      "tool": "synthesize_answer",
+      "on_event": "TEXT_MESSAGE_CHUNK",
+      "fragment": "AnswerStreamContainer",
+      "condition": "Emitted for each incremental text chunk during synthesis. Appended to the AnswerStreamContainer content."
+    },
+    {
+      "tool": "synthesize_answer",
+      "on_event": "TEXT_MESSAGE_END",
+      "fragment": "AnswerStreamContainer",
+      "condition": "Emitted when answer synthesis is complete. Locks the AnswerStreamContainer and reveals the copy/share controls."
+    },
+    {
+      "tool": "update_shared_state",
+      "on_event": "STATE_DELTA",
+      "fragment": "AgentStatusBar",
+      "condition": "Emitted when partial state is pushed to the frontend. Updates the AgentStatusBar to reflect current agent phase."
+    }
+  ]
+}

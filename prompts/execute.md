@@ -79,6 +79,16 @@ Browser preview fallback order:
 3. Soft-fail with explicit diagnostics when preview is optional
 4. Hard-fail when preview is a blocking constraint
 
+A2UI normalization pre-step (before preview, when `content_type = direct:a2ui`):
+1. Run `node scripts/normalize-a2ui.mjs --input <source.a2ui.json> --artifact-id <id> --out-dir <dist/previews/id>`
+2. If exit code is 1, report constraint violations from `normalize-report.json` to the Reflect phase. Do not proceed to HTML preview.
+3. If exit code is 0, proceed to HTML preview using `render-preview.mjs` with the normalized spec.
+
+AG-UI normalization step (when `content_type = direct:ag-ui`):
+1. Run `node scripts/normalize-agui.mjs --input <source.ag-ui.json> --artifact-id <id> --out-dir <dist/previews/id>`
+2. If exit code is 1, report all violations from `normalize-report.json` to the Reflect phase. AG-UI specs do not produce HTML previews.
+3. If exit code is 0, the coverage report at `dist/previews/<id>/coverage-report.json` is the validation evidence artifact. No HTML preview is generated.
+
 ⸻
 
 3. State Persistence
@@ -88,7 +98,7 @@ The following must be updated or created:
 	•	refinement_log.md
 	•	decisions.md (if changes were made)
 	•	dist/ directory
-	•	dist/previews/ (for `ui`/`a2ui` preview outputs)
+	•	dist/previews/ (for `ui`/`a2ui` preview outputs; coverage reports for `ag-ui`)
 
 All generated files must be written to disk.
 
