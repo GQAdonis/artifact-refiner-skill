@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ brand.meta.name }} — Brand Guide</title>
+  <style>
+    :root {
+      --bg: {{ brand.colors.dark.bg }};
+      --surface: {{ brand.colors.dark.surface }};
+      --ink: {{ brand.colors.dark.ink }};
+      --muted: {{ brand.colors.dark.muted or "#9BB0C8" }};
+      --ember: {{ brand.colors.dark.ember }};
+      --ember-alt: {{ brand.colors.dark.ember_alt or brand.colors.dark.ember }};
+      --info: {{ brand.colors.dark.info or "#60A5FA" }};
+      --border: {{ brand.colors.dark.border or "#1E2A3A" }};
+      --display: "{{ brand.typography.display }}", system-ui, sans-serif;
+      --ui: "{{ brand.typography.ui }}", system-ui, sans-serif;
+      --body: "{{ brand.typography.body }}", system-ui, sans-serif;
+      --mono: "{{ brand.typography.mono or 'monospace' }}", monospace;
+    }
+    *,*::before,*::after { box-sizing: border-box; }
+    html,body { margin:0; padding:0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
+      line-height: 1.55;
+      padding: 4rem 6vw;
+    }
+    h1, h2, h3 { font-family: var(--display); margin: 2rem 0 1rem; line-height: 1.15; }
+    h1 { font-size: clamp(2.5rem, 4vw, 4rem); color: var(--ember); }
+    h2 { font-size: clamp(1.5rem, 2vw, 2rem); border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+    .tagline { color: var(--muted); font-style: italic; }
+    .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem; }
+    .swatch {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .chip {
+      display: block;
+      height: 64px;
+      border-radius: 8px;
+      margin-bottom: .75rem;
+      border: 1px solid var(--border);
+    }
+    .hex { font-family: var(--mono); color: var(--muted); font-size: .9rem; }
+    .label { font-family: var(--ui); font-weight: 600; }
+    .specimen { background: var(--surface); border:1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+    .specimen .meta { color: var(--muted); font-family: var(--mono); font-size: .85rem; margin-bottom: .5rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ brand.meta.name }}</h1>
+    {% if brand.meta.tagline %}
+      <p class="tagline">{{ brand.meta.tagline }}</p>
+    {% endif %}
+  </header>
+
+  <section>
+    <h2>Color palette (dark)</h2>
+    <div class="palette">
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.bg }};"></span><div class="label">bg</div><div class="hex">{{ brand.colors.dark.bg }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.surface }};"></span><div class="label">surface</div><div class="hex">{{ brand.colors.dark.surface }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.ink }};"></span><div class="label">ink</div><div class="hex">{{ brand.colors.dark.ink }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.ember }};"></span><div class="label">ember</div><div class="hex">{{ brand.colors.dark.ember }}</div></div>
+      {% if brand.colors.dark.ember_alt %}
+        <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.ember_alt }};"></span><div class="label">ember-alt</div><div class="hex">{{ brand.colors.dark.ember_alt }}</div></div>
+      {% endif %}
+      {% if brand.colors.dark.info %}
+        <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.info }};"></span><div class="label">info</div><div class="hex">{{ brand.colors.dark.info }}</div></div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <div class="specimen">
+      <div class="meta">display — {{ brand.typography.display }}</div>
+      <div style="font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem);">The quick brown fox</div>
+    </div>
+    <div class="specimen">
+      <div class="meta">ui — {{ brand.typography.ui }}</div>
+      <div style="font-family: var(--ui); font-size: 1.25rem;">Buttons, navigation, and form labels.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta">body — {{ brand.typography.body }}</div>
+      <p style="font-family: var(--body);">Long-form copy reads with comfortable measure and rhythm. Body text should sit in this voice across articles and documentation.</p>
+    </div>
+    {% if brand.typography.mono %}
+      <div class="specimen">
+        <div class="meta">mono — {{ brand.typography.mono }}</div>
+        <pre style="font-family: var(--mono);">const ember = "{{ brand.colors.dark.ember }}";</pre>
+      </div>
+    {% endif %}
+  </section>
+</body>
+</html>

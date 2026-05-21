@@ -1,7 +1,7 @@
 {
   "name": "artifact-refiner",
   "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, code, meta-prompts, and A2UI specifications",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "author": {
     "name": "Travis James",
     "url": "https://travisjames.ai"
@@ -11,13 +11,20 @@
   "license": "MIT",
   "skills": [
     "./skills/artifact-refiner",
-    "./skills/refine-logo",
-    "./skills/refine-ui",
+    "./skills/convert-htmx-react",
+    "./skills/convert-md-to-htmx",
+    "./skills/design-svg-logo",
+    "./skills/rebrand-artifact",
+    "./skills/refine-a2ui",
     "./skills/refine-content",
     "./skills/refine-image",
-    "./skills/refine-a2ui",
+    "./skills/refine-logo",
+    "./skills/refine-moodboard",
     "./skills/refine-status",
-    "./skills/refine-validate"
+    "./skills/refine-ui",
+    "./skills/refine-validate",
+    "./skills/scaffold-react-vite",
+    "./skills/scaffold-react-vite-tauri"
   ],
   "agents": "./agents",
   "hooks": "./hooks/hooks.json",

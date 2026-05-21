@@ -1,0 +1,27 @@
+{
+  "phase": "phase-prefer-endpoint-consumption",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "execution_path": ".kbd-orchestrator/phases/phase-prefer-endpoint-consumption/execution.md",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-prefer-endpoint-consumption/reflection.md",
+  "assessment_path": ".kbd-orchestrator/phases/phase-prefer-endpoint-consumption/assessment.md",
+  "plan_path": ".kbd-orchestrator/phases/phase-prefer-endpoint-consumption/plan.md",
+  "openspec_change": "openspec/changes/phase-prefer-endpoint-consumption/",
+  "changes_total": 6,
+  "changes_completed": 6,
+  "acceptance_gates_passed": "7/7",
+  "estimated_sessions": 1,
+  "next_command": "/kbd-reflect phase-prefer-endpoint-consumption",
+  "live_verification": {
+    "resolver": "3/3 phases healthy against live proxy",
+    "client": "chat() returned 'pong' from gpt-5.4-mini",
+    "llm_judgment_in_converter": "gpt-5.4-mini produced concrete TSX for 3 HTMX ambiguous regions",
+    "fallback": "endpoint=host_harness when health_probe URL is dead"
+  },
+  "scope_summary": "Two consumption surfaces: (1) routing directive emitted by phase controllers (advisory to host harness); (2) direct proxy client (scripts/lib/openai-client.mjs) for scripts that want LLM assistance. Per-artifact model-routing.log for audit.",
+  "live_proxy_verified": "localhost:8181 returns {\"id\":\"chatcmpl-...\",\"choices\":[{\"message\":{\"content\":\"Hi there, friend.\"}}],...} on gpt-5.4-mini test",
+  "first_concrete_consumer": "convert-htmx-react.mjs ambiguous-region resolver"
+}

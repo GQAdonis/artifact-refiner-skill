@@ -1,0 +1,43 @@
+{
+  "phase": "phase-0-unblock",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-0-unblock/reflection.md",
+  "rescope_note": "Re-scoped 2026-05-20 after execute-time reality check: template-forge-rs work deferred (file tree did not exist on disk). See execution.md.",
+  "assessment_path": ".kbd-orchestrator/phases/phase-ideation-to-app-pipeline/assessment.md",
+  "plan_path": ".kbd-orchestrator/phases/phase-0-unblock/plan.md",
+  "execution_path": ".kbd-orchestrator/phases/phase-0-unblock/execution.md",
+  "openspec_change": "openspec/changes/phase-0-unblock/",
+  "change_backend": "openspec",
+  "changes_total": 7,
+  "changes_completed": 7,
+  "deliverables": [
+    "skills/convert-md-to-htmx/SKILL.md",
+    "skills/convert-htmx-react/SKILL.md",
+    "skills/rebrand-artifact/SKILL.md",
+    "skills/refine-moodboard/SKILL.md",
+    "skills/design-svg-logo/SKILL.md",
+    "docs/decisions/0001-sycophancy-correction-extraction.md",
+    ".claude-plugin/plugin.json (5 new skill paths added)"
+  ],
+  "validation": {
+    "frontmatter_check": "5/5 OK",
+    "plugin_json_valid": true,
+    "marketplace_validation": "passed (claude CLI not present, basic JSON validation passed)"
+  },
+  "next_command": "/kbd-reflect phase-0-unblock",
+  "open_questions": [
+    "ADR-0001: sycophancy-correction extraction option (A/B/C) — recommendation A",
+    "rust-mcp-filesystem upstream vs fork — recommendation upstream",
+    "openai-proxy wiring mode — recommendation external prerequisite"
+  ],
+  "phases_deferred": [
+    "phase-rust-workspace-bootstrap (template-forge-rs creation, was original phase-0)",
+    "phase-1-submodule-topology",
+    "phase-1b-inference-routing",
+    "phase-2-scaffold-react-vite"
+  ]
+}

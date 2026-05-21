@@ -1,3 +1,11 @@
+<!-- MODEL_ROUTING
+phase: refiner-plan
+policy_source: .kbd-orchestrator/project.json -> model_policy.phases.refiner-plan
+probe_command: node scripts/model-routing-probe.mjs
+log_path: .refiner/${artifact_name}/model-routing.log
+advisory: true
+-->
+
 Plan Phase
 
 Role

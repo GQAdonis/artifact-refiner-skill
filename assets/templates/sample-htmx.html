@@ -1,0 +1,15 @@
+<div class="hero" x-data="{ count: 0 }" style="background: var(--color-bg); color: var(--color-ink); padding: 2rem;">
+  <h1 class="title" style="color: var(--color-ember); font-family: var(--font-display);">
+    Hello from HTMX
+  </h1>
+  <p class="lead" style="color: var(--color-muted);">
+    Click count: <span x-text="count"></span>
+  </p>
+  <button class="btn" @click="count++" style="background: var(--color-ember); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem;">
+    Increment
+  </button>
+  <button class="btn-async" hx-post="/api/sync" hx-target="#status" hx-swap="innerHTML" style="background: var(--color-surface); color: var(--color-ink); padding: 0.5rem 1rem; border-radius: 0.5rem; margin-left: 1rem;">
+    Sync
+  </button>
+  <div id="status" class="status-target">Idle</div>
+</div>

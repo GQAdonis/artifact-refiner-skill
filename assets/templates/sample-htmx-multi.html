@@ -1,0 +1,11 @@
+<div class="dashboard" x-data="{ count: 0, label: 'idle', active: false }" style="background: var(--color-bg); color: var(--color-ink); padding: 2rem;">
+  <h1 class="title" style="color: var(--color-ember); font-family: var(--font-display);">
+    Multi-field smoke
+  </h1>
+  <p class="lead" style="color: var(--color-muted);">
+    Status: <span x-text="label"></span> (count: <span x-text="count"></span>)
+  </p>
+  <button class="btn" @click="count++" style="background: var(--color-ember); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem;">
+    Bump
+  </button>
+</div>

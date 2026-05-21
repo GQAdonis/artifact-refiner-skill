@@ -1,0 +1,22 @@
+{
+  "phase": "phase-1-submodule-topology",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "execution_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/execution.md",
+  "changes_total": 6,
+  "changes_completed": 6,
+  "acceptance_gates_all_pass": true,
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/reflection.md",
+  "decisions_applied": {
+    "Q-001": "A — sycophancy-correction extracted to standalone repo (submodule path documented, add deferred to phase-sc-extraction)",
+    "Q-002": "upstream rust-mcp-stack/rust-mcp-filesystem"
+  },
+  "assessment_path": ".kbd-orchestrator/phases/phase-ideation-to-app-pipeline/assessment.md",
+  "plan_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/plan.md",
+  "openspec_change": "openspec/changes/phase-1-submodule-topology/",
+  "next_command": "/kbd-execute phase-rust-workspace-bootstrap  # run first; phase-1 follows",
+  "parallel_safe_with": "phase-rust-workspace-bootstrap (recommendation: run bootstrap first for clean .mcp.json merge)"
+}

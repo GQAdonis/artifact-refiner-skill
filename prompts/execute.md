@@ -1,3 +1,11 @@
+<!-- MODEL_ROUTING
+phase: refiner-iterate
+policy_source: .kbd-orchestrator/project.json -> model_policy.phases.refiner-iterate
+probe_command: node scripts/model-routing-probe.mjs
+log_path: .refiner/${artifact_name}/model-routing.log
+advisory: true
+-->
+
 Execute Phase
 
 Role

@@ -80,6 +80,85 @@ This enables:
 - `node scripts/compile-tsx-preview.mjs` (TSX → browser preview bundle)
 - `node scripts/render-preview.mjs` (preview render + screenshot + diagnostics)
 
+### Submodules and vendored binaries
+
+This repo consumes two external Rust projects as git submodules:
+
+| Submodule | Path | Source | Purpose |
+|---|---|---|---|
+| `rust-mcp-filesystem` | `tools/rust-mcp-filesystem/` | upstream `rust-mcp-stack/rust-mcp-filesystem` (pinned `v0.4.2`) | Filesystem MCP server (24 tools) for harnesses without native file access |
+| `sycophancy-correction` | `shared/sycophancy-correction/` | `Know-Me-Tools/sycophancy-correction-skill` (pinned `01150389`) | Sycophancy detection/correction skill consumed by the PMPO loop; shared with `prometheus-skill-pack` |
+
+Clone with submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/GQAdonis/artifact-refiner-skill.git
+cd artifact-refiner-skill
+bash scripts/setup-submodules.sh
+```
+
+`scripts/setup-submodules.sh`:
+1. Runs `git submodule update --init --recursive`.
+2. Invokes `scripts/build-vendored-binaries.sh` to install `rust-mcp-filesystem` (probes PATH → Homebrew tap → cargo-binstall → cargo install from submodule).
+3. Prints status for `rust-mcp-filesystem`, `template-forge`, and `template-forge-mcp` binaries.
+
+For the `template-forge` workspace (deterministic branded-artifact renderer), see
+`tools/template-forge-rs/` and `scripts/install-template-forge.sh`.
+
+### External prerequisites (optional)
+
+| Prerequisite | Required? | Purpose | Setup |
+|---|---|---|---|
+| `openai-proxy` | optional | Subscription-priced inference for cost-aware routing of mechanical PMPO phases | `docs/integrations/openai-proxy.md` |
+
+When `openai-proxy` is running and reachable, the refiner can route mechanical phases (`refiner-iterate`, `refiner-finalize`) through a ChatGPT Plus/Pro subscription via the proxy's OpenAI-compatible HTTP surface. When it is not running, the refiner falls back to host-harness inference transparently — no hard failure, just a warning in the routing log. Cost routing is a nice-to-have; functional inference is the requirement.
+
+To enable: install + run the proxy per its README, then keep the `prefer_endpoint: openai_proxy` entries in `.kbd-orchestrator/project.json → model_policy`. To disable: stop the proxy (the refiner will fall back automatically) or remove the `prefer_endpoint` overrides.
+
+## Pipeline Capabilities
+
+Eleven phases have shipped under the KBD lifecycle. The capabilities below are what those phases delivered. Each cites the file path so you can verify the claim.
+
+### Conversion skills
+
+These transform an artifact in one shape into another. All produce phase-2-scaffolder-ready output where applicable.
+
+| Skill | Engine | What it does | Script |
+|---|---|---|---|
+| `convert-htmx-react` | deterministic (parse5 + Alpine threshold) + optional LLM judgment for ambiguous regions | HTMX/Alpine HTML → React TSX with hooks or zustand stores routed per state shape | `scripts/convert-htmx-react.mjs` |
+| `convert-md-to-htmx` | deterministic (markdown-it + GFM) | Markdown → self-contained branded HTML with frontmatter override | `scripts/convert-md-to-htmx.mjs` |
+| `refine-moodboard` | **LLM-primary** (`chat()` returns structured JSON, Minijinja renders) | Brief → branded HTMX moodboard with palette, typography, motifs, tone | `scripts/refine-moodboard.mjs` |
+| `design-svg-logo` | mode-switching (LLM with strict SVG validation, or placeholder) | Brand brief → icon + wordmark + lockup SVG + PNG export set | `scripts/design-svg-logo.mjs` |
+| `rebrand-artifact` | deterministic AST swap (@babel) + WCAG contrast report | Source TSX + from-brand + to-brand → rebranded TSX + regenerated CSS | `scripts/rebrand-artifact.mjs` |
+
+### Scaffolders
+
+These turn a refined artifact + brand TOML into a runnable project on disk.
+
+| Scaffolder | Targets | Script |
+|---|---|---|
+| `scaffold-react-vite` | React 19 + Vite + Tailwind v4 + shadcn-on-Base-UI + zustand+immer + responsive primitives + PWA | `scripts/scaffold-react-vite.sh` |
+| `scaffold-react-vite-tauri` | Tauri 2 hybrid (desktop + iOS + Android) wrapping any scaffolded React project | `scripts/scaffold-react-vite-tauri.sh` |
+| `scaffold-react-vite-axum` (via `--with-axum-wrapper`) | Single-binary Rust + axum 0.8.9 server embedding the Vite dist via `rust-embed` | `scripts/scaffold-react-vite-axum.sh` |
+
+The two wrappers (`--with-axum-wrapper` and `--with-tauri-wrapper`) compose. The scaffolded React project conforms to a strict architecture:
+
+- **State:** zustand + immer; stores never import React; components consume only hooks (see `references/scaffolds/state-architecture.md`)
+- **Layout:** `src/{app,features,shared}/` clean architecture; kebab-case filenames (see `references/scaffolds/clean-architecture.md`)
+- **Form factor:** `useBreakpoint` + `<ResponsiveShell>` + safe-area-insets; same source for web, PWA-installable, Tauri desktop, Tauri mobile (see `references/scaffolds/responsive-architecture.md`)
+
+### Inference routing
+
+The refiner can route LLM calls to a configurable endpoint (host harness or `openai-proxy`) per phase, with health-probed fallback. See:
+
+- `references/model-routing.md` — selection algorithm + endpoint contract
+- `references/schemas/model-policy.schema.json` — `project.json → model_policy` JSON Schema
+- `scripts/lib/model-routing.mjs` — resolver + 30-second health-probe cache
+- `scripts/lib/openai-client.mjs` — `chat(phaseKey, messages)` consumed by `refine-moodboard`, `design-svg-logo`, and `convert-htmx-react --llm-judgment`
+- `scripts/model-routing-probe.mjs` — CLI showing per-phase resolution table
+
+Every `chat()` call writes to `.refiner/<artifact>/model-routing.log` for audit.
+
 ## How It Works
 
 The skill uses **PMPO** (Prometheus Meta-Prompting Orchestration) — a structured, iterative refinement loop:

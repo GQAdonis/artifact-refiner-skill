@@ -1,0 +1,30 @@
+{
+  "phase": "phase-3b-aux-conversions",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/phase-3b-aux-conversions/plan.md",
+  "openspec_change": "openspec/changes/phase-3b-aux-conversions/",
+  "changes_total": 8,
+  "estimated_sessions": 1,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "execution_path": ".kbd-orchestrator/phases/phase-3b-aux-conversions/execution.md",
+  "changes_completed": 8,
+  "acceptance_gates_passed": "8/8",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-3b-aux-conversions/reflection.md",
+  "assessment_path": ".kbd-orchestrator/phases/phase-3b-aux-conversions/assessment.md",
+  "next_command": "/kbd-assess polish-pass  OR  /kbd-assess phase-7-scaffold-ag-ui-host  OR  /kbd-assess phase-6-scaffold-flutter",
+  "live_verification": {
+    "convert_md_to_htmx": "/tmp/md-out.html (6077 bytes, GFM + brand CSS, 11 ember refs)",
+    "refine_moodboard_placeholder": "/tmp/mb-placeholder.html (anchored to knowme, #E04E28)",
+    "refine_moodboard_llm": "/tmp/mb-llm.html (LLM synthesized 'Ember Vector Lab' with #FF7A3D)",
+    "design_svg_logo_placeholder": "/tmp/logo-placeholder (3 SVG + 12 PNG)",
+    "design_svg_logo_llm": "/tmp/logo-llm (3 LLM-generated SVGs, all isValidSvg=true)",
+    "svg_validator": "8/8 self-tests pass"
+  },
+  "scope_summary": "Three execution layers: convert-md-to-htmx (deterministic markdown-it), refine-moodboard (LLM-primary via chat() with placeholder fallback), design-svg-logo (mode-switching LLM/placeholder). Two new Minijinja templates (moodboard.html, logo-icon.svg). One SVG validator helper. Reuses phase-2 template-forge + brand TOMLs + phase-prefer-endpoint-consumption chat() helper.",
+  "scripts_to_create": ["convert-md-to-htmx.mjs", "refine-moodboard.mjs", "design-svg-logo.mjs"],
+  "new_devdeps": ["markdown-it", "markdown-it-anchor", "gray-matter (optional, for frontmatter)"],
+  "first_llm_primary_script": "refine-moodboard.mjs (LLM is the engine, not a sidecar)"
+}

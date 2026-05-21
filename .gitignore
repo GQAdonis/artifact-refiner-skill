@@ -25,3 +25,13 @@ constraints.json
 refinement_log.md
 decisions.md
 dist/
+
+# Per-artifact refiner runtime logs (model routing audit, smoke output, etc.)
+.refiner/
+
+# Rust build artifacts
+tools/template-forge-rs/target/
+target/
+
+# Generic vendored binaries (built from submodules)
+bin/

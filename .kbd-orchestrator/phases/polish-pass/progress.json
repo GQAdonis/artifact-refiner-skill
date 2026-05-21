@@ -1,0 +1,42 @@
+{
+  "phase": "polish-pass",
+  "type": "quality_lift",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/polish-pass/plan.md",
+  "openspec_change": "openspec/changes/polish-pass/",
+  "changes_total": 11,
+  "estimated_sessions": 1,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "changes_completed": 11,
+  "acceptance_gates_passed": "10/11",
+  "acceptance_notes": "Gate 8.4 (LLM-supplied motifs/tone in rendered output) partial — refine-moodboard.mjs emits motifs/tone into the synthetic brand TOML, but template-forge-rs `BrandData` struct does not yet have serde fields for these. The moodboard.html template iterates correctly when data is present (verified via fallback path); BrandData extension is a separate change (out of polish-pass scope per plan: 'no Rust changes').",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/polish-pass/reflection.md",
+  "assessment_path": ".kbd-orchestrator/phases/polish-pass/assessment.md",
+  "next_command": "/kbd-assess phase-3c-brand-data-extend  OR  /kbd-assess phase-7-scaffold-ag-ui-host  OR  /kbd-assess phase-6-scaffold-flutter",
+  "live_verification": {
+    "moodboard_placeholder_knowme": "/tmp/mb-regression.html (9378 bytes, WCAG report appended)",
+    "moodboard_llm_proxy": "/tmp/mb-llm-regression.html (9577 bytes, openai-proxy synthesized 'Emberline CLI' #FF7A45)",
+    "svg_validate_self_test": "passed",
+    "wcag_contrast_self_test": "passed (KnowMe ink-on-bg ratio 16.4 AAA)",
+    "shell_syntax_check": "scaffold-react-vite.sh, scaffold-react-vite-tauri.sh, scaffold-react-vite-axum.sh all parse-clean",
+    "plugin_version": "1.3.0",
+    "marketplace_version": "1.3.0"
+  },
+  "scope_summary": "Bounded polish: README + AGENTS.md update, moodboard motifs/tone iteration, WCAG report wiring, refine-moodboard import cleanup, default Tauri menu, theme-provider patcher fix, plugin version bump + CHANGELOG entry. Regression smoke as closing gate. 11 acceptance criteria. One focused session expected.",
+  "explicitly_out_of_scope": [
+    "AG-UI / Flutter / A2UI / MCP-UI scaffolders",
+    "Streaming completions",
+    "Tool/function calling",
+    "Cost telemetry aggregation",
+    "Multi-file source TSX",
+    "AST-based patcher rewrite",
+    "Animated SVG",
+    "iOS/Android signing automation",
+    "Multi-window Tauri configs",
+    "Vite 8 upgrade (waits on shadcn)",
+    "Cosmetic items (quoted style keys, PNG size heuristics)"
+  ]
+}

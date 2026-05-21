@@ -1,0 +1,36 @@
+{
+  "phase": "(awaiting next assessment)",
+  "stage": "phase_complete",
+  "next_command": "/kbd-assess phase-3c-brand-data-extend  OR  /kbd-assess phase-7-scaffold-ag-ui-host  OR  /kbd-assess phase-6-scaffold-flutter",
+  "previous_phase": "polish-pass (complete; 10/11 gates pass; reflection authored)",
+  "previous_phase_status": {
+    "phase": "polish-pass",
+    "changes_completed": 11,
+    "acceptance_gates_passed": "10/11",
+    "partial_gate": "8.4 (LLM motifs/tone end-to-end) — BrandData struct lacks serde fields; documented as follow-up phase",
+    "reflection_path": ".kbd-orchestrator/phases/polish-pass/reflection.md"
+  },
+  "change_backend": "openspec",
+  "completed_in_sequence": [
+    "phase-0-unblock (re-scoped)",
+    "phase-rust-workspace-bootstrap",
+    "phase-1-submodule-topology",
+    "phase-sc-extraction",
+    "phase-1b-inference-routing",
+    "phase-2-scaffold-react-vite",
+    "phase-3-conversion-layer",
+    "phase-prefer-endpoint-consumption",
+    "phase-4-scaffold-tauri-desktop (hybrid)",
+    "phase-3b-aux-conversions",
+    "polish-pass"
+  ],
+  "recommended_next": "phase-3c-brand-data-extend",
+  "recommended_next_rationale": "Closes polish-pass partial gate 8.4 (11/11). Small, well-scoped Rust struct extension (~30 min). Surfaced by polish-pass smoke; not yet planned.",
+  "phases_deferred": [
+    "phase-3c-brand-data-extend (NEW — surfaced by polish-pass)",
+    "phase-7-scaffold-ag-ui-host",
+    "phase-6-scaffold-flutter",
+    "phase-8-scaffold-a2ui-host",
+    "phase-9-scaffold-mcp-ui"
+  ]
+}

@@ -1,0 +1,4 @@
+# MSRV declared via [workspace.package].rust-version = "1.80" in Cargo.toml.
+# This file intentionally omits a `channel` pin so contributors and CI can use
+# their current stable toolchain. To verify MSRV, run with:
+#   rustup run 1.80 cargo check --workspace

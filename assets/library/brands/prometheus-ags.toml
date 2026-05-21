@@ -1,0 +1,38 @@
+[meta]
+name = "Prometheus AGS"
+tagline = "Agentic system foundation"
+description = "Prometheus AGS warm-charcoal brand system."
+
+[colors.light]
+bg        = "#FAF8F4"
+surface   = "#FFFFFF"
+ink       = "#2A1F18"
+muted     = "#6B5D52"
+ember     = "#E96A12"
+ember_alt = "#FF8C3D"
+info      = "#00C2DC"
+border    = "#D8CFC4"
+
+[colors.dark]
+bg        = "#1A130E"
+surface   = "#241B14"
+ink       = "#F4ECDF"
+muted     = "#9F8E7E"
+ember     = "#E96A12"
+ember_alt = "#FF8C3D"
+info      = "#00C2DC"
+border    = "#3B2D22"
+
+[typography]
+display = "Cinzel"
+ui      = "Syne"
+body    = "DM Sans"
+mono    = "JetBrains Mono"
+
+[logo]
+icon     = "assets/logo/prometheus-ags-icon.svg"
+wordmark = "assets/logo/prometheus-ags-wordmark.svg"
+
+[contact]
+legal_entity = "Prometheus AGS"
+url          = "https://prometheusags.ai"

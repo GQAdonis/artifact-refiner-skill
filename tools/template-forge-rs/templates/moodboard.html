@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ brand.meta.name }} — Moodboard</title>
+  <style>
+    :root {
+      --color-bg: {{ brand.colors.dark.bg }};
+      --color-surface: {{ brand.colors.dark.surface }};
+      --color-ink: {{ brand.colors.dark.ink }};
+      --color-muted: {{ brand.colors.dark.muted or "#9BB0C8" }};
+      --color-ember: {{ brand.colors.dark.ember }};
+      --color-border: {{ brand.colors.dark.border or "#1E2A3A" }};
+      --font-display: "{{ brand.typography.display }}", system-ui, sans-serif;
+      --font-ui: "{{ brand.typography.ui }}", system-ui, sans-serif;
+      --font-body: "{{ brand.typography.body }}", system-ui, sans-serif;
+      --font-mono: "{{ brand.typography.mono or 'ui-monospace' }}", ui-monospace, monospace;
+    }
+    *,*::before,*::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 4rem 6vw;
+      background: var(--color-bg);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      line-height: 1.55;
+    }
+    h1, h2, h3 { font-family: var(--font-display); margin: 2rem 0 1rem; line-height: 1.15; }
+    h1 { font-size: clamp(2.5rem, 4vw, 4rem); color: var(--color-ember); }
+    h2 { font-size: clamp(1.5rem, 2vw, 2rem); border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; }
+    .tagline { color: var(--color-muted); font-style: italic; }
+    .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem; }
+    .swatch { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 1rem; }
+    .chip { display: block; height: 64px; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid var(--color-border); }
+    .hex { font-family: var(--font-mono); color: var(--color-muted); font-size: 0.9rem; }
+    .label { font-family: var(--font-ui); font-weight: 600; }
+    .specimen { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+    .specimen .meta { color: var(--color-muted); font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .motif-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .motif { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; min-height: 160px; }
+    .motif h3 { margin-top: 0; font-size: 1.1rem; color: var(--color-ember); }
+    .motif p { color: var(--color-muted); font-size: 0.9rem; margin: 0; }
+    .tone-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .tone-chip { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 999px; padding: 0.4rem 1rem; font-family: var(--font-ui); font-size: 0.9rem; }
+    .ratio { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-muted); margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ brand.meta.name }}</h1>
+    {% if brand.meta.tagline %}
+      <p class="tagline">{{ brand.meta.tagline }}</p>
+    {% endif %}
+    {% if brand.meta.description %}
+      <p class="lead" style="color: var(--color-muted);">{{ brand.meta.description }}</p>
+    {% endif %}
+  </header>
+
+  <section>
+    <h2>Palette</h2>
+    <div class="palette">
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.bg }};"></span><div class="label">bg</div><div class="hex">{{ brand.colors.dark.bg }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.surface }};"></span><div class="label">surface</div><div class="hex">{{ brand.colors.dark.surface }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.ink }};"></span><div class="label">ink</div><div class="hex">{{ brand.colors.dark.ink }}</div></div>
+      <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.ember }};"></span><div class="label">ember</div><div class="hex">{{ brand.colors.dark.ember }}</div></div>
+      {% if brand.colors.dark.muted %}
+        <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.muted }};"></span><div class="label">muted</div><div class="hex">{{ brand.colors.dark.muted }}</div></div>
+      {% endif %}
+      {% if brand.colors.dark.info %}
+        <div class="swatch"><span class="chip" style="background: {{ brand.colors.dark.info }};"></span><div class="label">info</div><div class="hex">{{ brand.colors.dark.info }}</div></div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <div class="specimen">
+      <div class="meta">display — {{ brand.typography.display }}</div>
+      <div style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);">The quick brown fox</div>
+    </div>
+    <div class="specimen">
+      <div class="meta">ui — {{ brand.typography.ui }}</div>
+      <div style="font-family: var(--font-ui); font-size: 1.25rem;">Navigation, buttons, labels.</div>
+    </div>
+    <div class="specimen">
+      <div class="meta">body — {{ brand.typography.body }}</div>
+      <p style="font-family: var(--font-body);">Long-form copy reads with comfortable measure and rhythm.</p>
+    </div>
+    {% if brand.typography.mono %}
+      <div class="specimen">
+        <div class="meta">mono — {{ brand.typography.mono }}</div>
+        <pre style="font-family: var(--font-mono);">const ember = "{{ brand.colors.dark.ember }}";</pre>
+      </div>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Motifs</h2>
+    <p style="color: var(--color-muted);">Visual idioms and texture references for the brand direction.</p>
+    <div class="motif-grid">
+      {% if brand.motifs %}
+        {% for motif in brand.motifs %}
+          <div class="motif"><h3>{{ motif.title }}</h3><p>{{ motif.description }}</p></div>
+        {% endfor %}
+      {% else %}
+        <div class="motif"><h3>Layered surfaces</h3><p>Soft elevation through stacked panels with subtle borders.</p></div>
+        <div class="motif"><h3>Editorial rhythm</h3><p>Generous whitespace; sentences breathe at desktop, condense on mobile.</p></div>
+        <div class="motif"><h3>Mono accent</h3><p>Numeric and identifier callouts in monospace for technical authority.</p></div>
+        <div class="motif"><h3>Ember warmth</h3><p>Primary accent reserved for calls-to-action and emphasis; never for body text.</p></div>
+        <div class="motif"><h3>Muted ink</h3><p>Secondary copy in muted tone keeps hierarchy clear without competing for focus.</p></div>
+        <div class="motif"><h3>Soft rounding</h3><p>Cards and buttons share a 12px radius; chips use full radius for distinction.</p></div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Tone</h2>
+    <p style="color: var(--color-muted);">Voice descriptors for copywriting alignment.</p>
+    <div class="tone-row">
+      {% if brand.tone %}
+        {% for word in brand.tone %}
+          <span class="tone-chip">{{ word }}</span>
+        {% endfor %}
+      {% else %}
+        <span class="tone-chip">Direct</span>
+        <span class="tone-chip">Confident</span>
+        <span class="tone-chip">Pragmatic</span>
+        <span class="tone-chip">Plain-spoken</span>
+        <span class="tone-chip">Technically literate</span>
+      {% endif %}
+    </div>
+  </section>
+</body>
+</html>

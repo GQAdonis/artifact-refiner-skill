@@ -6,6 +6,19 @@
       "env": {
         "E2B_API_KEY": "${E2B_API_KEY}"
       }
+    },
+    "template-forge": {
+      "command": "template-forge-mcp",
+      "args": [
+        "--library", "${workspaceFolder}/assets/library",
+        "--templates-base", "${workspaceFolder}/tools/template-forge-rs/templates"
+      ],
+      "transport": "stdio"
+    },
+    "rust-mcp-filesystem": {
+      "command": "rust-mcp-filesystem",
+      "args": ["${workspaceFolder}"],
+      "transport": "stdio"
     }
   }
 }

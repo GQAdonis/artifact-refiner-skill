@@ -24,6 +24,20 @@ Based on the `content_type` field in state (e.g., `direct:react`, `meta:image-pr
 - Load the appropriate domain adapter (see Content Type Routing below)
 - Set the evaluation strategy for the Reflect phase
 
+### 4. Probe Inference Routing (advisory)
+
+Run `node scripts/model-routing-probe.mjs` to print the per-phase routing table.
+The output is **advisory** for the host harness — cooperating harnesses can read
+each phase's `<!-- MODEL_ROUTING -->` block (at the top of the phase controller
+file) and switch models per phase; non-cooperating harnesses ignore the blocks
+and continue with default inference. The PMPO loop functions correctly either
+way.
+
+Scripts that want LLM assistance (e.g., `convert-htmx-react.mjs --llm-judgment`)
+call `scripts/lib/openai-client.mjs#chat(phaseKey, messages)` which resolves
+the endpoint via `model_policy`, calls the proxy, and logs to
+`.refiner/<artifact>/model-routing.log`. See `references/model-routing.md`.
+
 ## Orchestration Loop
 
 Execute these phases in order, repeating until convergence or termination:

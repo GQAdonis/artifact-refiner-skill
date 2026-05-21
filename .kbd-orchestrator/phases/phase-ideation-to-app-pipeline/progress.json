@@ -1,0 +1,10 @@
+{
+  "phase": "phase-ideation-to-app-pipeline",
+  "assessment_complete": true,
+  "plan_complete": false,
+  "execute_complete": false,
+  "reflect_complete": false,
+  "assessment_path": ".kbd-orchestrator/phases/phase-ideation-to-app-pipeline/assessment.md",
+  "next_command": "/kbd-plan phase-0-unblock",
+  "notes": "Assessment recommends sequenced phasing. Do NOT plan all 7 scaffold targets at once. Constrain plan to phase-0 (unblock template-forge + finish 5 SKILL.md) + phase-1 (submodule topology) + phase-2 (scaffold-react-vite)."
+}

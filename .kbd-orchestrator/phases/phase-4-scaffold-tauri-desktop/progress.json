@@ -1,0 +1,46 @@
+{
+  "phase": "phase-4-scaffold-tauri-desktop",
+  "effective_name": "phase-4-scaffold-hybrid",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/phase-4-scaffold-tauri-desktop/plan.md",
+  "openspec_change": "openspec/changes/phase-4-scaffold-tauri-desktop/",
+  "blocks": {
+    "A_architecture": "6 tasks (A.1-A.6) — retroactive correction to phase-2+3",
+    "B_hybrid_pwa": "4 tasks (B.1-B.4) — responsive primitives + PWA wiring",
+    "C_tauri_shell": "4 tasks (C.1-C.4) — Tauri 2 hybrid scaffolder",
+    "D_acceptance": "8 gates"
+  },
+  "estimated_sessions": 2,
+  "execution_order_critical": "Block A FIRST (re-smoke phase-2+3), then B, then C, then D",
+  "execute_complete": true,
+  "execute_status": "COMPLETE_ALL_BLOCKS",
+  "execution_path": ".kbd-orchestrator/phases/phase-4-scaffold-tauri-desktop/execution.md",
+  "block_status": {
+    "A_architecture": "COMPLETE — prior session + A.5/A.6 in resume",
+    "B_hybrid_pwa": "COMPLETE — responsive doc + safe-area CSS + vite-plugin-pwa wiring + branded PWA icons",
+    "C_tauri_shell": "COMPLETE — Tauri 2.11.2 src-tauri/ scaffolded, cargo check passes in 1m06s",
+    "D_acceptance_sweep": "COMPLETE — 8/8 gates PASS"
+  },
+  "changes_completed": 15,
+  "changes_total": 15,
+  "refinement_iterations_during_block_a": 5,
+  "live_verification_block_a": "Scaffolded /tmp/smoke-arch with zustand+immer architecture. Store at stores/use-counter-store.ts (no React import); hook at hooks/use-counter.ts (selects from store); component imports only the hook. ResponsiveShell + app-store + ESLint config emitted. pnpm build succeeds.",
+  "reflect_complete": true,
+  "reflect_status": "COMPLETE_FINAL_REFLECTION",
+  "reflection_path": ".kbd-orchestrator/phases/phase-4-scaffold-tauri-desktop/reflection.md",
+  "assessment_path": ".kbd-orchestrator/phases/phase-4-scaffold-tauri-desktop/assessment.md",
+  "next_command": "/kbd-reflect phase-4-scaffold-tauri-desktop (final reflection replacing checkpoint)",
+  "acceptance_gates_passed": "8/8",
+  "user_directives_applied": [
+    "Tauri 2 wrapper for any Vite/React app",
+    "Desktop + mobile form factors simultaneously (responsive + PWA + Tauri mobile)",
+    "Standardize on zustand + immer",
+    "Strict component → hook → store architecture",
+    "Stores own all I/O and realtime subscriptions",
+    "TSX over JSX",
+    "Retroactive correction of phase-2 and phase-3 outputs"
+  ],
+  "scope_summary": "Three sub-phases shipping together: A (architecture standardization, retroactive to phase-2+3), B (hybrid + PWA), C (Tauri 2 shell). Estimated 2 focused sessions.",
+  "phase_5_collapsed": "Original phase-5-scaffold-tauri-mobile is absorbed — Tauri 2 doesn't separate desktop from mobile in the scaffold."
+}

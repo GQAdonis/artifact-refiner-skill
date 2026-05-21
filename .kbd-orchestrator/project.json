@@ -1,0 +1,25 @@
+{
+  "name": "artifact-refiner",
+  "version": "1.2.0",
+  "description": "PMPO-driven artifact refinement skill pack",
+  "change_backend": "openspec",
+  "openspec_path": "openspec/changes",
+  "spec_path": "openspec/specs",
+  "model_policy": {
+    "default_endpoint": "host_harness",
+    "phases": {
+      "refiner-iterate": { "tier": "small", "prefer_endpoint": "openai_proxy", "prefer_model": "gpt-5.4-mini" },
+      "refiner-evaluate": { "tier": "medium", "prefer_endpoint": "openai_proxy", "prefer_model": "gpt-5.3-codex" },
+      "refiner-finalize": { "tier": "small", "prefer_endpoint": "openai_proxy", "prefer_model": "gpt-5.4-mini" }
+    },
+    "endpoints": {
+      "host_harness": { "via": "host" },
+      "openai_proxy": {
+        "base_url": "http://localhost:8181/v1",
+        "auth_mode": "chatgpt_oauth",
+        "fallback_auth": "openai_api_key",
+        "health_probe": "http://localhost:8181/health"
+      }
+    }
+  }
+}

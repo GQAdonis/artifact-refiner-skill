@@ -1,3 +1,11 @@
+<!-- MODEL_ROUTING
+phase: refiner-evaluate
+policy_source: .kbd-orchestrator/project.json -> model_policy.phases.refiner-evaluate
+probe_command: node scripts/model-routing-probe.mjs
+log_path: .refiner/${artifact_name}/model-routing.log
+advisory: true
+-->
+
 Reflect Phase
 
 Role

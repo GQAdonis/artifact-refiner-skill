@@ -1,0 +1,25 @@
+[package]
+name        = "template-cli"
+description = "CLI binary `template-forge`"
+version.workspace     = true
+edition.workspace     = true
+rust-version.workspace = true
+authors.workspace     = true
+license.workspace     = true
+repository.workspace  = true
+
+[[bin]]
+name = "template-forge"
+path = "src/main.rs"
+
+[dependencies]
+template-core = { workspace = true }
+clap          = { workspace = true }
+anyhow        = { workspace = true }
+serde         = { workspace = true }
+serde_json    = { workspace = true }
+tracing       = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = { workspace = true }

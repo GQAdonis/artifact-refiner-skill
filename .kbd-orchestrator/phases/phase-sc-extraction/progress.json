@@ -1,0 +1,19 @@
+{
+  "phase": "phase-sc-extraction",
+  "assessment_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/phase-sc-extraction/plan.md",
+  "openspec_change": "openspec/changes/phase-sc-extraction/",
+  "changes_total": 5,
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "execution_path": ".kbd-orchestrator/phases/phase-sc-extraction/execution.md",
+  "changes_completed": 5,
+  "acceptance_gates_all_pass": true,
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-sc-extraction/reflection.md",
+  "assessment_path": ".kbd-orchestrator/phases/phase-sc-extraction/assessment.md",
+  "premise_correction": "Standalone repo already exists at github.com/Know-Me-Tools/sycophancy-correction-skill; prometheus-skill-pack already consumes it as submodule. Phase reduces to adding submodule to artifact-refiner.",
+  "estimated_effort_minutes": 30,
+  "next_command": "/kbd-plan phase-sc-extraction"
+}

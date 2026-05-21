@@ -1,0 +1,6 @@
+[submodule "tools/rust-mcp-filesystem"]
+	path = tools/rust-mcp-filesystem
+	url = https://github.com/rust-mcp-stack/rust-mcp-filesystem.git
+[submodule "shared/sycophancy-correction"]
+	path = shared/sycophancy-correction
+	url = https://github.com/Know-Me-Tools/sycophancy-correction-skill.git

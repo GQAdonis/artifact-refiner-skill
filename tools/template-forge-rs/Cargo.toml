@@ -1,0 +1,58 @@
+[workspace]
+members = [
+    "crates/template-core",
+    "crates/template-cli",
+    "crates/template-mcp",
+]
+resolver = "2"
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2021"
+rust-version = "1.80"
+authors      = ["Travis James <travis@prometheusags.ai>"]
+license      = "MIT"
+repository   = "https://github.com/GQAdonis/artifact-refiner-skill"
+description  = "Deterministic branded-artifact renderer for the artifact-refiner skill pack"
+
+[workspace.dependencies]
+# Async runtime
+tokio        = { version = "1", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+
+# Serialization
+serde        = { version = "1", features = ["derive"] }
+serde_json   = "1"
+toml         = "0.8"
+
+# Templating
+minijinja    = "2"
+
+# Errors
+anyhow       = "1"
+thiserror    = "2"
+
+# CLI
+clap         = { version = "4", features = ["derive", "env"] }
+
+# Filesystem
+walkdir      = "2"
+dirs         = "5"
+
+# Tracing
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Utilities
+async-trait  = "0.1"
+
+# Allocator (binary entry points only, non-MSVC)
+tikv-jemallocator = { version = "0.6" }
+
+# Internal crates
+template-core = { path = "crates/template-core" }
+
+[profile.release]
+strip         = true
+lto           = true
+codegen-units = 1
