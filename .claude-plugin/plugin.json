@@ -26,7 +26,13 @@
     "./skills/scaffold-react-vite",
     "./skills/scaffold-react-vite-tauri"
   ],
-  "agents": "./agents",
+  "agents": [
+    "./agents/artifact-validator.md",
+    "./agents/pmpo-executor.md",
+    "./agents/pmpo-planner.md",
+    "./agents/pmpo-reflector.md",
+    "./agents/pmpo-specifier.md"
+  ],
   "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json"
 }

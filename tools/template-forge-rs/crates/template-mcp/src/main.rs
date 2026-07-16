@@ -136,7 +136,25 @@ fn serve_stdio(defaults: ServerDefaults) -> Result<()> {
             continue;
         }
 
+        // JSON-RPC notifications (no `id`) must not receive a response.
+        // The MCP handshake sends `notifications/initialized` after `initialize`.
+        if req.id.is_none() {
+            continue;
+        }
+
         let resp = match req.method.as_str() {
+            "initialize" => JsonRpcResponse {
+                jsonrpc: "2.0",
+                id: req.id.unwrap_or(Value::Null),
+                result: Some(initialize_payload(&req.params)),
+                error: None,
+            },
+            "ping" => JsonRpcResponse {
+                jsonrpc: "2.0",
+                id: req.id.unwrap_or(Value::Null),
+                result: Some(json!({})),
+                error: None,
+            },
             "tools/list" => JsonRpcResponse {
                 jsonrpc: "2.0",
                 id: req.id.unwrap_or(Value::Null),
@@ -191,6 +209,25 @@ fn send_error<W: Write>(out: &mut W, id: Option<Value>, code: i64, message: &str
     Ok(())
 }
 
+/// Build the `initialize` result. Echoes the client's requested
+/// `protocolVersion` when present, advertises the `tools` capability, and
+/// reports server identity. This is the handshake compliant MCP hosts require
+/// before issuing `tools/list` or `tools/call`.
+fn initialize_payload(params: &Value) -> Value {
+    let protocol_version = params
+        .get("protocolVersion")
+        .and_then(|v| v.as_str())
+        .unwrap_or("2024-11-05");
+    json!({
+        "protocolVersion": protocol_version,
+        "capabilities": { "tools": {} },
+        "serverInfo": {
+            "name": "template-forge-mcp",
+            "version": env!("CARGO_PKG_VERSION")
+        }
+    })
+}
+
 fn tools_list_payload() -> Value {
     json!({
         "tools": [
@@ -233,7 +270,10 @@ fn call_tool(params: &Value, defaults: &ServerDefaults) -> Result<Value> {
         .get("name")
         .and_then(|v| v.as_str())
         .ok_or_else(|| anyhow!("tools/call missing 'name'"))?;
-    let args = params.get("arguments").cloned().unwrap_or_else(|| json!({}));
+    let args = params
+        .get("arguments")
+        .cloned()
+        .unwrap_or_else(|| json!({}));
     dispatch(name, args, defaults)
 }
 

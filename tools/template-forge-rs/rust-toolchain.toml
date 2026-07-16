@@ -2,3 +2,9 @@
 # This file intentionally omits a `channel` pin so contributors and CI can use
 # their current stable toolchain. To verify MSRV, run with:
 #   rustup run 1.80 cargo check --workspace
+#
+# rustup requires a [toolchain] table with at least one property (a comment-only
+# or empty table fails to parse). `channel = "stable"` selects whatever stable
+# toolchain the contributor/CI has installed rather than pinning a version.
+[toolchain]
+channel = "stable"
