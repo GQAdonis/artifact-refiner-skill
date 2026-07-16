@@ -1,6 +1,9 @@
 # Artifact Refiner — Multi-Environment Installers
 
-One-command installation for 12 AI coding environments, using symbolic links to the cloned repository.
+One-command installation for 15 AI coding environments. Skill-based environments
+use symbolic links to the cloned repository; MCP-host environments (Claude
+Desktop, Kimi Code) register the bundled `template-forge` MCP server in their
+config instead.
 
 ## Quick Start
 
@@ -18,6 +21,9 @@ scripts/installers/<environment>/install.sh --global
 | Environment | Installer | Install Type | Global Path | Project Path |
 |---|---|---|---|---|
 | [Claude Code](claude-code/) | `claude-code/install.sh` | Symlink (skill dir) | `~/.claude/skills/` | `.claude/skills/` |
+| [Claude Desktop](claude-desktop/) | `claude-desktop/install.sh` | MCP server (JSON) | `~/Library/Application Support/Claude/claude_desktop_config.json` | — |
+| [Kimi Code](kimi-code/) | `kimi-code/install.sh` | MCP server (TOML) | `~/.kimi-code/config.toml` | — |
+| [MiniMax Code](minimax/) | `minimax/install.sh` | Symlink + MCP server | `~/.minimax/skills/` + `~/.minimax/mcp/mcp.json` | — |
 | [Codex CLI](codex/) | `codex/install.sh` | Symlink (skill dir) | `~/.codex/skills/` | `.codex/skills/` |
 | [OpenCode](opencode/) | `opencode/install.sh` | Symlink (skill dir) | `~/.config/opencode/skills/` | `.opencode/skills/` |
 | [Antigravity](antigravity/) | `antigravity/install.sh` | Symlink (skill dir) | `~/.gemini/antigravity/skills/` | `.agent/skills/` |
@@ -50,6 +56,24 @@ Each installer creates a **symbolic link** from the environment's expected skill
 - ✅ **Idempotent** — safe to run multiple times
 - ✅ **Clean uninstall** — `--uninstall` removes only what was created
 
+### MCP-host environments
+
+Some environments are MCP hosts rather than skill runners. For these, the
+installer registers the bundled `template-forge` MCP server (and, where
+applicable, `rust-mcp-filesystem`) in the host's config file instead of creating
+a skill symlink:
+
+- **Claude Desktop** — merges `mcpServers` into `claude_desktop_config.json` (JSON).
+- **Kimi Code** — appends a marker-delimited `[mcp_servers.template-forge]` block to `config.toml` (TOML).
+- **MiniMax Code** — does *both*: symlinks the skill into `~/.minimax/skills/` **and** registers the MCP servers in `~/.minimax/mcp/mcp.json`.
+
+Every config edit is backed up (`.bak.<timestamp>`) first, every added MCP
+server is tagged so `--uninstall` removes exactly what was added, and re-running
+is idempotent. These installers require the `template-forge-mcp` binary on
+`PATH` — build it with `scripts/build-vendored-binaries.sh` and
+`cargo install --path tools/template-forge-rs/crates/template-mcp`. **Restart the
+host app** after installing so it reloads its MCP config.
+
 ### Special Cases
 
 - **Cursor** and **Windsurf** use rule files (`.mdc`/`.md`) rather than skill directories. The installer generates an appropriate rule file *and* creates a symlink for full skill access.
@@ -63,9 +87,12 @@ Each installer creates a **symbolic link** from the environment's expected skill
 ```
 scripts/installers/
 ├── README.md          ← You are here
-├── common.sh          ← Shared helpers (colors, symlink ops, flag parsing)
+├── common.sh          ← Shared helpers (colors, symlink ops, MCP config merge, flag parsing)
 ├── antigravity/       ← Google Antigravity
-├── claude-code/       ← Claude Code / Claude Desktop
+├── claude-code/       ← Claude Code (skill symlink)
+├── claude-desktop/    ← Claude Desktop (MCP server registration)
+├── kimi-code/         ← Kimi Code / Moonshot (MCP server registration)
+├── minimax/           ← MiniMax Code (skill symlink + MCP server)
 ├── cline/             ← Cline / Cline CLI
 ├── codex/             ← OpenAI Codex CLI
 ├── cursor/            ← Cursor Agent
