@@ -4,6 +4,49 @@ All notable changes to the **artifact-refiner** skill pack are documented in
 this file. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project loosely follows [Semantic Versioning](https://semver.org).
 
+## [1.4.0] — 2026-07-28
+
+Adds the HTML → paginated PDF lane, closing the artifact pipeline's last
+output gap: branded artifacts could be authored and rebranded but not printed.
+
+### Added
+
+- **skills/convert-htmx-pdf** — HTML/HTMX → paginated, print-correct PDF via
+  headless Chromium. Chromium is the renderer by design; WeasyPrint / pdfkit /
+  wkhtmltopdf diverge from the browser on grid, flexbox, `print-color-adjust`
+  and web fonts, which is precisely what a branded artifact depends on.
+- **scripts/convert-htmx-pdf.mjs** — five-stage orchestration:
+  1. *Font embedding* — fetches Google Fonts CSS with a browser UA, filters
+     `@font-face` blocks to Latin / Latin-Ext by `unicode-range`, base64-inlines
+     each woff2. Inter + Roboto Slab + JetBrains Mono drops from 74 blocks
+     (~4 MB) to 22 (~1.4 MB) with identical Latin rendering.
+  2. *Print CSS* — conservative baseline: hides fixed chrome, collapses the page
+     shell, `break-inside: avoid` on components, `break-after: avoid` on
+     headings, `orphans/widows: 3`, `thead { display: table-header-group }`,
+     `print-color-adjust: exact`. **Inserts no page breaks** — break placement
+     stays with the artifact.
+  3. *Preflight* — strips `margin` from `@page` when a header is enabled (the
+     CSS silently overrides the renderer's margins and the header draws through
+     the first line of every page); warns when `break-before: page` applies to
+     more than a third of sections; flags remaining external assets.
+  4. *Render* — `emulate_media('print')`, `printBackground`, and Chromium
+     `headerTemplate` / `footerTemplate` for a running header and
+     `pageNumber / totalPages`. Templates use system fonts only — they render in
+     a separate document that does not inherit `@font-face`.
+  5. *Verification* — content-preservation ratio against the source's visible
+     word count, per-page density to catch orphan pages, `pdffonts` embedding
+     check, text-extraction check, plus a page-1 preview raster.
+- **references/print-pagination.md** — the `@page`-size-only rule, the baseline
+  stylesheet, break-placement patterns, the full-page cover recipe, the
+  header/footer template contract, font-embedding procedure, the verification
+  loop, and a ten-row failure catalogue.
+
+### Notes
+
+Three failure modes are now checked rather than rediscovered: `@page { margin }`
+overriding renderer margins, forced breaks on every section producing near-empty
+pages, and silent font substitution shifting pagination away from the artifact.
+
 ## [1.3.0] — 2026-05-20
 
 Eleven-phase delta from v1.1.0. Expands artifact-refiner from a PMPO loop into
