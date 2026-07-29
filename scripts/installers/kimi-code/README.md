@@ -1,8 +1,9 @@
-# Kimi Code — Artifact Refiner MCP Installer
+# Kimi Code — Artifact Refiner Installer
 
-Kimi Code (Moonshot) is an **MCP host** configured via
-`~/.kimi-code/config.toml` with `[mcp_servers.<name>]` tables. This installer
-appends a marker-delimited `[mcp_servers.template-forge]` block.
+Kimi Code (Moonshot) is both a **skill runner** and an **MCP host**:
+
+- Skills live in `~/.kimi-code/skills/<name>/` (SKILL.md format)
+- MCP servers are declared as `[mcp_servers.<name>]` tables in `~/.kimi-code/config.toml`
 
 ## Install
 
@@ -10,16 +11,32 @@ appends a marker-delimited `[mcp_servers.template-forge]` block.
 scripts/installers/kimi-code/install.sh
 ```
 
-The block is wrapped in `# >>> artifact-refiner (template-forge) >>>` /
-`# <<< ... <<<` markers so it can be cleanly removed later. The existing config
-is backed up (`.bak.<timestamp>`) first, and re-running is idempotent.
+This symlinks the repository into `~/.kimi-code/skills/artifact-refiner`, which
+makes every sub-skill under `skills/` discoverable — including
+`convert-htmx-pdf`. Re-running is idempotent.
 
-> `rust-mcp-filesystem` is commonly already registered in Kimi's config; this
-> installer does not touch it.
+## MCP registration is opt-in
+
+```bash
+scripts/installers/kimi-code/install.sh --with-mcp
+```
+
+`template-forge` is frequently already reachable through an existing SSE
+registration — commonly `[mcp_servers.forge-rs]` pointing at a locally running
+server. Registering it a second time over stdio gives the host two routes to the
+same tools, which is why MCP registration is not the default. Check first:
+
+```bash
+grep -n 'mcp_servers' ~/.kimi-code/config.toml
+```
+
+When enabled, the block is wrapped in `# >>> artifact-refiner (template-forge) >>>` /
+`# <<< ... <<<` markers so it can be cleanly removed later, and the existing
+config is backed up (`.bak.<timestamp>`) first.
 
 ## Prerequisites
 
-The `template-forge-mcp` binary must be on `PATH`:
+Only for `--with-mcp` — the `template-forge-mcp` binary must be on `PATH`:
 
 ```bash
 scripts/build-vendored-binaries.sh
@@ -32,8 +49,8 @@ cargo install --path tools/template-forge-rs/crates/template-mcp --locked
 scripts/installers/kimi-code/install.sh --uninstall
 ```
 
-Removes only the marker-delimited block.
+Removes the skill symlink and the marker-delimited MCP block.
 
 ## After installing
 
-**Restart Kimi Code** so it reloads `config.toml`.
+**Restart Kimi Code** so it reloads its skill directory and `config.toml`.

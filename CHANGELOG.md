@@ -47,6 +47,16 @@ Three failure modes are now checked rather than rediscovered: `@page { margin }`
 overriding renderer margins, forced breaks on every section producing near-empty
 pages, and silent font substitution shifting pagination away from the artifact.
 
+### Changed
+
+- **scripts/installers/kimi-code** — Kimi Code is a skill runner as well as an
+  MCP host. The installer now symlinks the repository into
+  `~/.kimi-code/skills/artifact-refiner` by default, so every sub-skill under
+  `skills/` is discoverable there. MCP registration moved behind `--with-mcp`:
+  `template-forge` is frequently already reachable through an existing SSE
+  entry (commonly `[mcp_servers.forge-rs]`), and registering it a second time
+  over stdio gives the host two routes to the same tools.
+
 ## [1.3.0] — 2026-05-20
 
 Eleven-phase delta from v1.1.0. Expands artifact-refiner from a PMPO loop into
