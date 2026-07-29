@@ -4,7 +4,7 @@ description: >
   Specialized agent for the PMPO Execute phase. Invoke when applying planned
   refinement operations to artifacts using code interpreter, image generation,
   browser preview tooling, and file system tools.
-allowed_tools: Read Write Edit Bash Task mcp__e2b-sandbox__run_python_code mcp__e2b-sandbox__run_javascript_code
+tools: Read, Write, Edit, Bash, Grep, Glob, mcp__e2b-sandbox__run_python_code, mcp__e2b-sandbox__run_javascript_code
 ---
 
 # PMPO Executor Agent

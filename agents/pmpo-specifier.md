@@ -4,7 +4,7 @@ description: >
   Specialized agent for the PMPO Specify phase. Invoke when transforming
   ambiguous refinement intent into a structured specification with explicit
   constraints, unknowns, and target states.
-allowed_tools: Read Grep Search
+tools: Read, Grep, Glob
 ---
 
 # PMPO Specifier Agent

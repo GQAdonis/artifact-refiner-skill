@@ -68,6 +68,11 @@ export E2B_API_KEY="your-key-here"
 
 The skill works without e2b by falling back to the built-in `code_interpreter`.
 
+External MCP servers are opt-in so marketplace installs do not require
+credentials, network access, or host-installed binaries at startup. Use
+`.mcp.optional.json.example` as the Claude Code plugin configuration template
+to enable e2b, `template-forge-mcp`, or `rust-mcp-filesystem`.
+
 ### Browser Preview Tooling (Optional, for UI/A2UI)
 
 Install local preview tooling for TSX compilation and browser screenshots:
@@ -327,7 +332,7 @@ artifact-refiner/
 ├── .claude-plugin/             # Plugin manifest
 │   ├── plugin.json
 │   └── marketplace.json
-└── .mcp.json                   # e2b sandbox MCP server config
+└── .mcp.optional.json.example  # opt-in e2b and local Rust MCP servers
 ```
 
 ## Persistent State Files

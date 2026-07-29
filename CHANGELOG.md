@@ -4,6 +4,21 @@ All notable changes to the **artifact-refiner** skill pack are documented in
 this file. The format is based on [Keep a Changelog](https://keepachangelog.com),
 and the project loosely follows [Semantic Versioning](https://semver.org).
 
+## [1.4.1] — 2026-07-29
+
+### Fixed
+
+- Converted plugin hooks to Claude Code's event-keyed hook schema so the plugin
+  no longer fails with `expected record, received array` during startup.
+- Replaced deprecated subagent `allowed_tools` frontmatter with the supported
+  `tools` field and current built-in tool names.
+- Removed redundant default component declarations that caused Claude Code to
+  load `hooks/hooks.json` twice and reject the plugin.
+- Replaced non-portable `${workspaceFolder}` MCP paths with Claude Code plugin
+  variables and moved all external MCP servers to an opt-in example.
+- Updated the root skill frontmatter to the current Agent Skills specification.
+- Synchronized plugin and marketplace versions and enabled strict validation.
+
 ## [1.4.0] — 2026-07-28
 
 Adds the HTML → paginated PDF lane, closing the artifact pipeline's last

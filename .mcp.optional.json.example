@@ -4,21 +4,21 @@
       "command": "npx",
       "args": ["-y", "@e2b/mcp-server@latest"],
       "env": {
-        "E2B_API_KEY": "${E2B_API_KEY}"
+        "E2B_API_KEY": "${E2B_API_KEY:-}"
       }
     },
     "template-forge": {
       "command": "template-forge-mcp",
       "args": [
-        "--library", "${workspaceFolder}/assets/library",
-        "--templates-base", "${workspaceFolder}/tools/template-forge-rs/templates"
-      ],
-      "transport": "stdio"
+        "--library",
+        "${CLAUDE_PLUGIN_ROOT}/assets/library",
+        "--templates-base",
+        "${CLAUDE_PLUGIN_ROOT}/tools/template-forge-rs/templates"
+      ]
     },
     "rust-mcp-filesystem": {
       "command": "rust-mcp-filesystem",
-      "args": ["${workspaceFolder}"],
-      "transport": "stdio"
+      "args": ["${CLAUDE_PROJECT_DIR}"]
     }
   }
 }

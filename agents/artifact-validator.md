@@ -4,7 +4,7 @@ description: >
   Validation specialist. Invoke to validate artifact manifests against JSON
   schemas, check file integrity, verify constraint satisfaction, and ensure
   output completeness.
-allowed_tools: Read Grep Bash
+tools: Read, Grep, Glob, Bash
 ---
 
 # Artifact Validator Agent

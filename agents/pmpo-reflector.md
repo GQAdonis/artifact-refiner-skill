@@ -3,7 +3,7 @@ name: pmpo-reflector
 description: >
   Specialized agent for the PMPO Reflect phase. Invoke when evaluating execution
   outputs against constraints and determining convergence. Read-only analysis.
-allowed_tools: Read Grep Search
+tools: Read, Grep, Glob
 ---
 
 # PMPO Reflector Agent

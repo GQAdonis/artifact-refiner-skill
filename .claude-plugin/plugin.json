@@ -1,39 +1,14 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "artifact-refiner",
+  "displayName": "Artifact Refiner",
   "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, code, meta-prompts, and A2UI specifications",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": {
     "name": "Travis James",
     "url": "https://travisjames.ai"
   },
   "homepage": "https://travisjames.ai/blog/artifact-refiner",
   "repository": "https://github.com/GQAdonis/artifact-refiner-skill",
-  "license": "MIT",
-  "skills": [
-    "./skills/artifact-refiner",
-    "./skills/convert-htmx-pdf",
-    "./skills/convert-htmx-react",
-    "./skills/convert-md-to-htmx",
-    "./skills/design-svg-logo",
-    "./skills/rebrand-artifact",
-    "./skills/refine-a2ui",
-    "./skills/refine-content",
-    "./skills/refine-image",
-    "./skills/refine-logo",
-    "./skills/refine-moodboard",
-    "./skills/refine-status",
-    "./skills/refine-ui",
-    "./skills/refine-validate",
-    "./skills/scaffold-react-vite",
-    "./skills/scaffold-react-vite-tauri"
-  ],
-  "agents": [
-    "./agents/artifact-validator.md",
-    "./agents/pmpo-executor.md",
-    "./agents/pmpo-planner.md",
-    "./agents/pmpo-reflector.md",
-    "./agents/pmpo-specifier.md"
-  ],
-  "hooks": "./hooks/hooks.json",
-  "mcpServers": "./.mcp.json"
+  "license": "MIT"
 }

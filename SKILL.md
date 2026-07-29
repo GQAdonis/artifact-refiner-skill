@@ -1,50 +1,19 @@
 ---
 name: artifact-refiner
-version: "1.2.0"
 description: >
   Use this skill when creating or iteratively refining named artifacts (logos,
   UI components, A2UI specifications, AG-UI agent specifications, images, code,
   content, or meta-prompts) using structured PMPO orchestration with explicit
   constraints, deterministic execution, persistent artifact state, and
   cross-session retrieval.
-authors:
-  - "Travis James"
-tools:
-  - code_interpreter
-  - file_system
-  - image_generation
-  - browser_renderer
-model_routing:
-  policy_source: ".kbd-orchestrator/project.json → model_policy"
-  phases:
-    refiner-iterate: small
-    refiner-evaluate: medium
-    refiner-finalize: small
-  routing_reference: "references/model-routing.md"
-triggers:
-  keywords:
-    - refine
-    - artifact
-    - logo
-    - ui component
-    - iterate
-    - pmpo
-    - improve artifact
-    - refine image
-    - create artifact
-    - refine logo
-    - refine content
-    - refine code
-    - a2ui
-    - ag-ui
-    - agent spec
-    - copilotkit spec
-    - event emission
-    - tool wiring
-  semantic: >
-    Refine, improve, or iteratively create a named artifact such as a logo,
-    UI component, A2UI specification, AG-UI agent specification, image, code,
-    or content using the PMPO orchestration loop.
+license: MIT
+compatibility: >
+  Works with Agent Skills-compatible hosts. Claude Code plugin features require
+  Claude Code 2.1.143 or later; browser, sandbox, and MCP tools are optional.
+metadata:
+  author: "Travis James"
+  version: "1.4.1"
+  model-routing-reference: "references/model-routing.md"
 ---
 
 # Artifact Refiner

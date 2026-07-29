@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "travisjames-skills",
   "description": "Travis James skills marketplace — PMPO-driven artifact refinement and related tooling.",
   "owner": {
@@ -7,7 +8,7 @@
   "plugins": [
     {
       "name": "artifact-refiner",
-      "version": "1.3.0",
+      "version": "1.4.1",
       "description": "PMPO-driven iterative artifact refinement engine for logos, UI, content, images, code, meta-prompts, and A2UI specifications",
       "source": "./",
       "category": "ai",

@@ -4,7 +4,7 @@ description: >
   Specialized agent for the PMPO Plan phase. Invoke when converting a
   specification into an executable refinement strategy with staged operations,
   tool mappings, and validation checkpoints.
-allowed_tools: Read Grep Search
+tools: Read, Grep, Glob
 ---
 
 # PMPO Planner Agent

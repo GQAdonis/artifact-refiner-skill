@@ -21,8 +21,8 @@ The skill follows PMPO (Prometheus Meta-Prompting Orchestration):
 | `prompts/persist.md` | Phase 5 — state persistence procedures |
 | `hooks/hooks.json` | Lifecycle hooks — validation, logging, cleanup, checkpoints |
 | `references/content-types.md` | Content type taxonomy — direct vs meta-prompt |
-| `.claude-plugin/plugin.json` | Plugin manifest — skill/agent/hook/MCP registration |
-| `.mcp.json` | e2b sandbox MCP server configuration |
+| `.claude-plugin/plugin.json` | Plugin metadata; standard component paths are auto-discovered |
+| `.mcp.optional.json.example` | Opt-in e2b and local Rust MCP server configuration |
 
 ## Development Guidelines
 
@@ -56,7 +56,7 @@ When modifying, preserve all sections and update cross-references.
 
 ### Adding a New Subagent
 
-1. Create `agents/<name>.md` with YAML frontmatter (`name`, `description`, `allowed_tools`)
+1. Create `agents/<name>.md` with YAML frontmatter (`name`, `description`, `tools`)
 2. Define a focused system prompt in the body
 3. Reference existing phase controllers and schemas
 4. Plugin auto-discovers agents from the `agents/` directory

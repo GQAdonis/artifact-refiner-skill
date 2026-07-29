@@ -20,11 +20,20 @@ done
 
 jq empty .claude-plugin/plugin.json
 jq empty .claude-plugin/marketplace.json
+jq empty hooks/hooks.json
+jq empty .mcp.optional.json.example
+
+plugin_version="$(jq -r '.version' .claude-plugin/plugin.json)"
+marketplace_version="$(jq -r '.plugins[] | select(.name == "artifact-refiner") | .version' .claude-plugin/marketplace.json)"
+if [[ "$plugin_version" != "$marketplace_version" ]]; then
+  echo "Version mismatch: plugin.json=$plugin_version marketplace.json=$marketplace_version" >&2
+  exit 1
+fi
 
 if command -v claude >/dev/null 2>&1; then
-  claude plugin validate .
+  claude plugin validate . --strict
 else
-  echo "Warning: 'claude' CLI not found; skipped 'claude plugin validate .'" >&2
+  echo "Warning: 'claude' CLI not found; skipped 'claude plugin validate . --strict'" >&2
 fi
 
 echo "Marketplace and plugin validation passed."
