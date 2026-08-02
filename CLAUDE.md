@@ -1,6 +1,13 @@
 # Claude Code Development Guide
 
-This file provides guidance for AI assistants working **on** this repository (developing, modifying, debugging). For the skill's functionality, see `SKILL.md`. For project overview, see `README.md`.
+> **Required baseline:** Read and follow `AGENT_RULES.md` before working in this
+> repository. It is the canonical shared Prometheus rules profile and applies as
+> though included here. Re-read its Session Bootstrap and Constitution after context
+> compaction.
+
+This file adds repository-specific guidance for AI assistants working **on** this
+repository (developing, modifying, debugging). For the skill's functionality, see
+`SKILL.md`. For project overview, see `README.md`.
 
 ## Architecture
 
