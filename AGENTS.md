@@ -1,6 +1,12 @@
 # Contributing to Artifact Refiner
 
-Guidelines for contributors working on this repository.
+> **Required baseline:** Read and follow `AGENT_RULES.md` before working in this
+> repository. It is the canonical shared Prometheus rules profile and applies as
+> though included here. Re-read its Session Bootstrap and Constitution after context
+> compaction.
+
+These are the repository-specific contributor rules. `CLAUDE.md` contains the
+development procedures and architecture map.
 
 ## Commit Conventions
 
@@ -28,7 +34,7 @@ chore: update marketplace.json version
 4. Verify all SKILL.md files have YAML frontmatter
 5. Ensure no cross-reference links are broken
 6. Ensure `git submodule status` shows a clean state (no unintended `+`/`-` prefixes)
-6. Submit PR with clear description of changes
+7. Submit PR with clear description of changes
 
 ## Code Review Checklist
 
