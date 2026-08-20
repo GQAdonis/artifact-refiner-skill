@@ -38,19 +38,26 @@ event = {
 print(json.dumps(event))
 ")
 
-# Extract and match triggers
+# Extract and match triggers. Pass shell values through the environment because
+# the quoted heredoc intentionally disables shell interpolation in Python code.
+STATE_FILE="$STATE_FILE" \
+EVENT_TYPE="$EVENT_TYPE" \
+PHASE="$PHASE" \
+LOG_FILE="$LOG_FILE" \
+EVENT_PAYLOAD="$EVENT_PAYLOAD" \
+NOW="$NOW" \
 python3 << 'DISPATCH_SCRIPT'
 import json
 import subprocess
 import os
 import sys
 
-state_file = os.environ.get("STATE_FILE", "") or "$STATE_FILE"
-event_type = "$EVENT_TYPE"
-phase = "$PHASE"
-log_file = "$LOG_FILE"
-event_payload = json.loads('$EVENT_PAYLOAD')
-now = "$NOW"
+state_file = os.environ["STATE_FILE"]
+event_type = os.environ["EVENT_TYPE"]
+phase = os.environ["PHASE"]
+log_file = os.environ["LOG_FILE"]
+event_payload = json.loads(os.environ["EVENT_PAYLOAD"])
+now = os.environ["NOW"]
 
 try:
     with open(state_file, 'r') as f:
