@@ -1,23 +1,46 @@
 {
-  "phase": "phase-1b-inference-routing",
-  "assessment_complete": true,
-  "plan_complete": true,
-  "plan_path": ".kbd-orchestrator/phases/phase-1b-inference-routing/plan.md",
-  "openspec_change": "openspec/changes/phase-1b-inference-routing/",
-  "changes_total": 6,
-  "execute_complete": true,
-  "execute_status": "COMPLETE",
-  "execution_path": ".kbd-orchestrator/phases/phase-1b-inference-routing/execution.md",
-  "changes_completed": 6,
-  "acceptance_gates_all_pass": true,
-  "live_verification": "Real openai-proxy reachable at localhost:8181, returning {\"status\":\"ok\"}. Probe returns READY exit 0.",
-  "port_correction": "User correction 2026-05-20: standard port is 8181, not upstream-default 8080. Live config + script updated.",
-  "reflect_complete": true,
-  "reflection_path": ".kbd-orchestrator/phases/phase-1b-inference-routing/reflection.md",
-  "decisions_pre_applied": {
-    "Q-003": "B (external prerequisite, not submodule)"
+  "schemaVersion": "2",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 41,
+  "derivedRevision": 41,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 41
   },
-  "assessment_path": ".kbd-orchestrator/phases/phase-1b-inference-routing/assessment.md",
-  "next_command": "/kbd-plan phase-1b-inference-routing",
-  "scope_note": "Configuration-and-discovery layer only. No PMPO loop refactor. No openai-proxy vendoring. Doc/schema/data triplet + health-probe + integration doc."
+  "conflictCount": 0,
+  "phase": "phase-1b-inference-routing",
+  "phaseId": "phase-1b-inference-routing",
+  "parentPhase": null,
+  "last_updated": "2026-08-31T10:18:07.887086Z",
+  "last_updated_by": "kbd-runtime",
+  "changes_total": 6,
+  "changes_completed": 6,
+  "implementation_total": 6,
+  "implementation_completed": 6,
+  "completion": {
+    "primaryCounter": "implementation",
+    "implementation": {
+      "completed": 6,
+      "total": 6,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "certification": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "publication": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    }
+  },
+  "changes": [],
+  "children": {},
+  "migrationStatus": "legacy-read-only"
 }

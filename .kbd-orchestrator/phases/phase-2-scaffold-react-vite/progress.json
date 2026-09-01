@@ -1,38 +1,46 @@
 {
-  "phase": "phase-2-scaffold-react-vite",
-  "assessment_complete": true,
-  "plan_complete": true,
-  "plan_path": ".kbd-orchestrator/phases/phase-2-scaffold-react-vite/plan.md",
-  "openspec_change": "openspec/changes/phase-2-scaffold-react-vite/",
-  "changes_total": 9,
-  "user_directives_applied": [
-    "React 19 + Vite 8",
-    "shadcn/ui on Base UI (--base base)",
-    "Kebab-case file naming everywhere",
-    "Feature-based clean architecture",
-    "Optional Rust+Axum wrapper via --with-axum-wrapper"
-  ],
-  "research_confirmed_by_tavily": [
-    "shadcn CLI v4 (March 2026): `shadcn init --template vite --base base` is canonical",
-    "Base UI is January 2026 first-class option; new-york style works with both Radix and Base UI",
-    "Tailwind v4 + Vite 8 + React 19 are current stable",
-    "rust-embed + axum SPA pattern is well-established (rust-embed 8, tower-http 0.6)"
-  ],
-  "execute_complete": true,
-  "execute_status": "COMPLETE",
-  "execution_path": ".kbd-orchestrator/phases/phase-2-scaffold-react-vite/execution.md",
-  "changes_completed": 9,
-  "acceptance_gates_passed": "11/11",
-  "live_verification": {
-    "scaffold": "/tmp/smoke-vite — pnpm build produced dist/ (232.87 kB JS, 10.93 kB CSS)",
-    "axum_wrapper": "/tmp/smoke-vite/server — cargo check passed with axum 0.8.9 in 30.40s",
-    "stack_summary": "React 19.2.4, Base UI (@base-ui/react), Tailwind v4 (@tailwindcss/vite), Vite 7.3.1 (shadcn upstream pin, not Vite 8 yet), kebab-case + feature-based clean architecture"
+  "schemaVersion": "2",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 41,
+  "derivedRevision": 41,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 41
   },
-  "user_follow_up_applied": "axum 0.8.9 pinned with {param} path syntax docs in main.rs and README.md",
-  "reflect_complete": true,
-  "reflection_path": ".kbd-orchestrator/phases/phase-2-scaffold-react-vite/reflection.md",
-  "assessment_path": ".kbd-orchestrator/phases/phase-2-scaffold-react-vite/assessment.md",
-  "next_command": "/kbd-plan phase-2-scaffold-react-vite",
-  "headline_phase": true,
-  "scope_summary": "First real scaffolder. Refined TSX + brand TOML → buildable Vite + React + TS project. Delegate to pnpm create vite then patch; do not own template tree."
+  "conflictCount": 0,
+  "phase": "phase-2-scaffold-react-vite",
+  "phaseId": "phase-2-scaffold-react-vite",
+  "parentPhase": null,
+  "last_updated": "2026-08-31T10:18:07.887086Z",
+  "last_updated_by": "kbd-runtime",
+  "changes_total": 9,
+  "changes_completed": 9,
+  "implementation_total": 9,
+  "implementation_completed": 9,
+  "completion": {
+    "primaryCounter": "implementation",
+    "implementation": {
+      "completed": 9,
+      "total": 9,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "certification": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "publication": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    }
+  },
+  "changes": [],
+  "children": {},
+  "migrationStatus": "legacy-read-only"
 }

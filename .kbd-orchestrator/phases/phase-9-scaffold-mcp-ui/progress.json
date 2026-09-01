@@ -1,0 +1,278 @@
+{
+  "phase": "phase-9-scaffold-mcp-ui",
+  "type": "feature",
+  "assessment_complete": true,
+  "assessment_path": ".kbd-orchestrator/phases/phase-9-scaffold-mcp-ui/assessment.md",
+  "analyze_complete": true,
+  "spec_complete": true,
+  "plan_complete": true,
+  "execute_complete": true,
+  "reflect_complete": false,
+  "change_backend": "openspec",
+  "completion": {
+    "implementation": {
+      "completed": 5,
+      "total": 5,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "completed": 0,
+      "total": 0,
+      "status": "NOT_STARTED"
+    },
+    "certification": {
+      "completed": 0,
+      "total": 0,
+      "status": "NOT_STARTED"
+    },
+    "publication": {
+      "completed": 0,
+      "total": 0,
+      "status": "NOT_STARTED"
+    }
+  },
+  "changes_completed": 5,
+  "changes_total": 5,
+  "gaps_found": 8,
+  "gaps_blocking": 4,
+  "precondition": {
+    "source": "phase-8 reflection",
+    "text": "VERIFY MCP-UI IS NOT ANOTHER A2UI",
+    "result": "DISCHARGED",
+    "detail": "Nothing this repository owns claims MCP-UI. Repo-wide search excluding only the two genuine submodules returns one planning-doc hit (openspec/changes/phase-2-scaffold-react-vite/tasks.md) and nothing else. Greenfield, not a divergence to repair."
+  },
+  "blocking_decision": {
+    "id": "G-7",
+    "question": "Has the MCP-UI standard solidified enough to proceed?",
+    "status": "RESOLVED \u2014 operator answered go (D-001)",
+    "why_it_blocks": "Both definitions of record made this phase conditional on the standard solidifying ('when MCP-UI standard solidifies', 'protocol is new'). Proceeding without asking would silently discard a condition the project wrote down twice.",
+    "evidence_for": "@mcp-ui/client is post-1.0 at 7.1.1 \u2014 the strongest API-stability signal of the three host phases; neither AG-UI nor A2UI had that.",
+    "evidence_against": "@mcp-ui/server last published 2026-02-13 (~6 months); upstream repo last pushed 2026-07-08 (~7 weeks); 5,114 stars vs 15,595 (AG-UI) and 16,230 (A2UI). The server half is exactly what this phase must build against.",
+    "complicating_signal": "@modelcontextprotocol/ext-apps (the MCP org's own extension) published 2026-07-23 \u2014 the most recent package in the space. Centre of gravity may be shifting away from @mcp-ui/*.",
+    "resolved_at": "2026-08-30",
+    "operator_rationale": "the post-1.0 client is stable enough",
+    "scope_note": "Scoped to the client. G-6 (server-side package choice) was left to analyze, which declined @mcp-ui/server."
+  },
+  "adversarial_review_assess": {
+    "stage": "assess",
+    "rounds": 3,
+    "findings": 7,
+    "critical": 2,
+    "warning": 5,
+    "accepted": "7/7",
+    "judge_model": "kbd-judge",
+    "producer_model": "claude-opus-5",
+    "cross_model_check": "verified-distinct",
+    "isolation_mode": "rest-gateway",
+    "cap_exceeded": true,
+    "cap_note": "2-round cap deliberately exceeded; round 3 caught a contradiction the rounds 1-2 revisions themselves introduced."
+  },
+  "adversarial_review_totals": {
+    "stages_vetted": 4,
+    "rounds": 22,
+    "findings": 47,
+    "critical": 30,
+    "warning": 17,
+    "accepted": "47/47",
+    "note": "assess 3/7 \u00b7 analyze 3/6 \u00b7 spec 13/30 \u00b7 plan 3/4. Plan converged fastest \u2014 the change structures were already vetted."
+  },
+  "repo_level_fix_made": {
+    "file": ".kbd-orchestrator/constraints.md",
+    "defect": "Listed tools/template-forge-rs as a submodule since /kbd-init. It is first-party in-tree code \u2014 git submodule status names only shared/sycophancy-correction and tools/rust-mcp-filesystem.",
+    "found_by": "adversarial review round 2 CRITICAL, raised against a correct assessment finding",
+    "impact_if_unfixed": "Would have misdirected any future phase touching template-forge-rs, and nearly caused this assessment to write the error into itself."
+  },
+  "runtime_note": {
+    "id": "G-7-runtime",
+    "issue": "prometheus kbd stage enter returned committedLocally:true but the audit log contains no phase-9 events",
+    "status": "reproduced again \u2014 same as every phase-7 and phase-8 stage",
+    "consequence": "Filesystem remains authoritative for KBD records; this file is the record.",
+    "escalation": "At plan stage the consequence became concrete: `phase activate` cannot advance the waypoint projection because the runtime has no phase-9 record at all. This is no longer only a missing audit trail \u2014 the runtime's own projection is unreachable for this phase."
+  },
+  "next_command": "Flutter A2UI host (a2ui_flutter) \u2014 the remaining platform gap",
+  "analysis_path": ".kbd-orchestrator/phases/phase-9-scaffold-mcp-ui/analysis.md",
+  "analyze": {
+    "estimate_sessions": 3,
+    "estimate_direction": "UP from the analysis first draft of 2; top of assess range",
+    "key_finding": "@mcp-ui/client@7.1.1 does NOT export UIResourceRenderer. Only AppRenderer and AppFrame ship, both require a hosted sandbox proxy, and @modelcontextprotocol/ext-apps is a hard dependency. The phase must ship the double-iframe MCP Apps architecture.",
+    "security_finding": "Library default sandbox is 'allow-scripts allow-same-origin allow-forms' \u2014 safe only if the sandbox proxy is genuinely cross-origin.",
+    "adversarial_review": {
+      "rounds": 3,
+      "findings": 6,
+      "critical": 3,
+      "warning": 3,
+      "accepted": "6/6",
+      "cross_model_check": "verified-distinct"
+    }
+  },
+  "spec_path": "openspec/changes/",
+  "changes": [
+    {
+      "id": "p9-01-mcp-ui-content-type",
+      "depends_on": [],
+      "status": "ARCHIVED",
+      "tasks_done": 29,
+      "archive_path": "openspec/changes/archive/2026-08-31-p9-01-mcp-ui-content-type",
+      "spec_capability": "mcp-ui-resource-conformance"
+    },
+    {
+      "id": "p9-02-mcp-ui-normalizer",
+      "depends_on": [
+        "p9-01"
+      ],
+      "status": "ARCHIVED",
+      "tasks_done": 19,
+      "archive_path": "openspec/changes/archive/2026-09-01-p9-02-mcp-ui-normalizer",
+      "spec_capability": "mcp-ui-normalization"
+    },
+    {
+      "id": "p9-03-mcp-ui-examples",
+      "depends_on": [
+        "p9-01",
+        "p9-02"
+      ],
+      "status": "ARCHIVED",
+      "tasks_done": 15,
+      "archive_path": "openspec/changes/archive/2026-09-01-p9-03-mcp-ui-examples",
+      "spec_capability": "mcp-ui-example-corpus"
+    },
+    {
+      "id": "p9-04-mcp-ui-render-host",
+      "depends_on": [
+        "p9-01",
+        "p9-02",
+        "p9-03"
+      ],
+      "status": "ARCHIVED",
+      "tasks_done": 36,
+      "spec_capability": "mcp-ui-render-host"
+    },
+    {
+      "id": "p9-05-scaffold-mcp-ui-host",
+      "depends_on": [
+        "p9-03",
+        "p9-04"
+      ],
+      "status": "ARCHIVED",
+      "tasks_done": 36,
+      "spec_capability": "mcp-ui-host-scaffolder"
+    }
+  ],
+  "spec": {
+    "zeespec_verdict": "n/a \u2014 gate inactive (no .zeespec)",
+    "adversarial_review": {
+      "rounds": 13,
+      "findings": 30,
+      "critical": 24,
+      "warning": 6,
+      "accepted": "30/30",
+      "final_verdict": "PASS",
+      "cross_model_check": "verified-distinct",
+      "packet_assembly": "manual"
+    },
+    "scope_changes": [
+      "externalUrl DROPPED \u2014 no text/uri-list mimeType in either shipped package",
+      "mimeType corrected to text/html;profile=mcp-app (MCP Apps spelling both packages emit)",
+      "remoteDom rejected structurally, not by mimeType"
+    ],
+    "review_record": ".kbd-orchestrator/phases/phase-9-scaffold-mcp-ui/spec-review.md"
+  },
+  "plan_path": ".kbd-orchestrator/phases/phase-9-scaffold-mcp-ui/plan.md",
+  "tasks_total": 135,
+  "gates_total": 54,
+  "plan": {
+    "ordering": [
+      "p9-01-mcp-ui-content-type",
+      "p9-02-mcp-ui-normalizer",
+      "p9-03-mcp-ui-examples",
+      "p9-04-mcp-ui-render-host",
+      "p9-05-scaffold-mcp-ui-host"
+    ],
+    "ordering_note": "strictly linear \u2014 the only topological order the graph admits; all five scopes disjoint",
+    "sessions": [
+      {
+        "id": "A",
+        "changes": [
+          "p9-01",
+          "p9-02",
+          "p9-03"
+        ],
+        "tasks": 63,
+        "gates": 22
+      },
+      {
+        "id": "B",
+        "changes": [
+          "p9-04"
+        ],
+        "tasks": 36,
+        "gates": 15
+      },
+      {
+        "id": "C",
+        "changes": [
+          "p9-05"
+        ],
+        "tasks": 36,
+        "gates": 17
+      }
+    ],
+    "constraint_holes_closed": [
+      "no-brand-leakage (blocking) \u2014 gated by nothing in any change",
+      "hook-scripts-executable (warning) \u2014 covers every scripts/*.sh despite its name"
+    ],
+    "warning_acknowledged": "plugin-manifest-current will flag; correct action is no change (no skills key). Recorded as p9-05 task 6.5.",
+    "adversarial_review": {
+      "rounds": 3,
+      "findings": 4,
+      "critical": 1,
+      "warning": 3,
+      "accepted": "4/4",
+      "final_verdict": "PASS",
+      "cross_model_check": "verified-distinct",
+      "cap_exceeded": false
+    }
+  },
+  "specs_synced": [
+    "mcp-ui-resource-conformance",
+    "mcp-ui-normalization",
+    "mcp-ui-example-corpus",
+    "mcp-ui-render-host",
+    "mcp-ui-host-scaffolder"
+  ],
+  "p9_01_findings": [
+    "SCHEMA DEFECT, caught by gate not review: the shipped validator (scripts/normalize-a2ui.mjs) implements `enum` but NOT `const`. A const-based discriminator would have been silently inert \u2014 the same defect class phase-8 found with oneOf-as-anyOf. Switched to single-value enum.",
+    "VALIDATOR LIMITATION, designed around: `oneOf` returns early, so any keyword beside it in the same schema object (properties, pattern, additionalProperties) is never evaluated. The natural schema shape would have left the ui:// pattern and additionalProperties inert. Each oneOf branch is now self-contained and repeats its constraints. Verified by fixture, not assumed.",
+    "SPEC-STAGE GAP: the spec stage created empty specs/ directories but wrote no delta files, so `openspec validate` failed with 'no deltas found'. Authored specs/mcp-ui-resource-conformance/spec.md; passes --strict. The other four p9 changes will hit the same gap."
+  ],
+  "session_a_complete": true,
+  "session_a_note": "p9-01/02/03 archived; 63/63 tasks. Session A's decisive gate \u2014 proving oneOf is genuine exclusivity rather than first-match-wins \u2014 passed twice: once against the schema directly (p9-01 1.5b) and once through the shipping normalizer (p9-02 2.3). Both used transient scratchpad copies; the repo schema was never mutated.",
+  "architecture_correction": {
+    "date": "2026-09-01",
+    "driver": "operator: agents expose MCP + HTTP + A2A + AG-UI simultaneously; UI must be identical across all of them",
+    "change": "direct:mcp-ui is an ENVELOPE for A2UI, not an alternative to it. resource.a2ui is REQUIRED and validated against the same A2UI schema the AG-UI web host uses.",
+    "why_it_works": "The A2UI renderer is FED messages (MessageProcessor.processMessages takes an array) rather than fetching them, so a surface renders under connect-src:none inside the MCP-UI sandbox.",
+    "enforced_by": "normalize-mcp-ui.mjs violations missing_a2ui_payload and invalid_a2ui_payload; a resource carrying the OLD A2UI dialect is rejected."
+  },
+  "p9_04_findings": [
+    "GUEST MUST BE A BUNDLE: the sandbox is opaque-origin with connect-src:none, so it cannot fetch a script. @a2ui/web_core is explicitly \"building blocks for building renderers\" and does NOT render DOM \u2014 React is required. The guest is therefore esbuild-bundled to a single 359KB self-contained page.",
+    "PROTOCOL SKEW, SECOND BOUNDARY: our schema validates A2UI v1.0; @a2ui/react@0.10.2 implements v0.9. Two translations needed \u2014 (1) retarget catalogId to basicCatalog.id or the renderer raises \"Catalog not found\"; (2) split v1.0 createSurface into v0.9 createSurface + updateComponents + updateDataModel or the surface never populates and sits at \"[Loading root...]\". toV09Messages() mirrors the web host toSdkMessages() deliberately so both surfaces translate identically.",
+    "DEPENDENCY PIN ERROR (mine): pinned @a2ui/web_core@0.10.2 while @a2ui/react@0.10.2 requires ^0.10.5, so pnpm installed TWO copies and tsc failed on incompatible private types. Phase-8 already had the right pin (0.10.6). The browser passed before tsc did because esbuild bundled one copy \u2014 a build gate that only ran the browser would have shipped this.",
+    "BASE SCAFFOLDER GAPS for p9-05: (a) no vitest \u2014 must be added for trust-boundary tests; (b) esbuild needed as a declared dep for the guest bundler; (c) eslint.config.js scopes only *.ts/*.tsx so Node .mjs build scripts fail no-undef on `process` \u2014 needs a src/dev/**/*.mjs override."
+  ],
+  "p9_04_gates": {
+    "build": 0,
+    "lint": 0,
+    "tests": "10/10",
+    "browser": "3 frames (host->proxy->guest); A2UI rendered 2 interactive buttons \"Enable\"/\"Not now\"; guest sandbox allow-scripts allow-forms (opaque); 0 page errors"
+  },
+  "p9_05_gates": {
+    "scaffold": 0,
+    "feature_dirs": "1 (smoke-9-ui \u2014 to_kebab correct on a digit run)",
+    "build": 0,
+    "lint": 0,
+    "tests": "10/10",
+    "idempotent": "second run is a no-op; no duplicate registration or mount",
+    "browser": "3 frames; A2UI rendered buttons \"Enable\"/\"Not now\"; guest sandbox opaque; 0 page errors"
+  }
+}

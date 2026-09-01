@@ -1,0 +1,132 @@
+{
+  "stage": "plan",
+  "phase": "phase-9-scaffold-mcp-ui",
+  "artifact": "plan.md",
+  "status": "complete",
+  "recorded_at": "2026-08-31T00:00:00Z",
+  "backend": "openspec",
+  "evolver_bridge": "none \u2014 no .evolver/ directory; not an evolution cycle",
+  "summary": "Five changes in a strictly linear order (the only topological order the graph admits), 135 tasks and 54 gates, batched into three sessions. Ordering was not a plan decision \u2014 spec's review already forced the graph. Plan's contribution was session batching, gate accounting, and closing TWO constraint holes that no change gated at all: no-brand-leakage (gated by nothing across 133 tasks) and hook-scripts-executable (covers every scripts/*.sh despite its name; p9-05 creates one).",
+  "first_change": "p9-01-mcp-ui-content-type",
+  "ordering": [
+    "p9-01-mcp-ui-content-type",
+    "p9-02-mcp-ui-normalizer",
+    "p9-03-mcp-ui-examples",
+    "p9-04-mcp-ui-render-host",
+    "p9-05-scaffold-mcp-ui-host"
+  ],
+  "ordering_rationale": "Strictly linear; each change consumes the previous one's output as a read-only input, and all five scopes are disjoint (no two changes edit the same file). p9-05 declares BOTH p9-03 and p9-04 \u2014 declaring only p9-04 would leave the graph satisfiable without the corpus, the exact hole review caught in phase-8's p8-05.",
+  "totals": {
+    "changes": 5,
+    "tasks": 135,
+    "gates": 54
+  },
+  "session_batching": [
+    {
+      "session": "A",
+      "changes": [
+        "p9-01",
+        "p9-02",
+        "p9-03"
+      ],
+      "tasks": 63,
+      "gates": 22,
+      "character": "text and schema only \u2014 no browser, no pnpm, no network",
+      "ends_when": "corpus validates, five negative fixtures reject with their expected violation names, and the duplicate-branch probe has proven oneOf is genuine exclusivity"
+    },
+    {
+      "session": "B",
+      "changes": [
+        "p9-04"
+      ],
+      "tasks": 36,
+      "gates": 15,
+      "character": "alone by design \u2014 holds every novel risk",
+      "ends_when": "the hand-built workspace renders the fixture in a real DOM, the handshake completes under the ENFORCED postMessage handler (gate 6.5b), and the rendered sandbox attribute lacks allow-same-origin"
+    },
+    {
+      "session": "C",
+      "changes": [
+        "p9-05"
+      ],
+      "tasks": 36,
+      "gates": 17,
+      "character": "mechanical \u2014 fourth instance of a proven wrapper",
+      "ends_when": "a fresh scaffold on a digit-run target name builds, lints, tests, and renders in a browser with exactly one feature directory"
+    }
+  ],
+  "constraint_holes_closed": [
+    {
+      "constraint": "no-brand-leakage",
+      "severity": "blocking",
+      "problem": "Gated by NOTHING across five changes and 133 tasks, while no-hardcoded-secrets was gated five times over \u2014 spec's review had hammered that one specifically.",
+      "fix": "p9-01 4.9b, p9-04 7.1b, p9-05 6.1b",
+      "subtlety": "The constraint scans assets/ but only --include='*.md'. ALL SIX of p9-04's files are .ts/.tsx/.html, so the standing gate covers none of them; 7.1b runs the grep without the filter. p9-05's scripts/ path is not in the scan list at all."
+    },
+    {
+      "constraint": "hook-scripts-executable",
+      "severity": "warning",
+      "problem": "Despite the name, its check is `for f in scripts/*.sh; do [ -x \"$f\" ]` \u2014 every shell script in scripts/, not only hooks. p9-05 creates one.",
+      "fix": "p9-05 task 6.4 (chmod 755; both sibling scaffolders are 755)",
+      "found_by": "checking the other four warning constraints rather than assuming them unaffected, after review finding 1"
+    }
+  ],
+  "warning_constraint_acknowledged": {
+    "constraint": "plugin-manifest-current",
+    "will_flag": true,
+    "acknowledgement": "EXPECTED AND CORRECT. .claude-plugin/plugin.json has no skills key \u2014 its keys are metadata only, and component paths are auto-discovered (CLAUDE.md:31). Adding a skills array would introduce a key the schema does not define. The constraint's own note says 'manual review required'; plan.md is that review. Recorded as p9-05 task 6.5 so the archive-time flag is not read as an oversight, which is how p8-05 left it.",
+    "root_cause": "CLAUDE.md:54 instructs the opposite of CLAUDE.md:31. Flagged since phase-7, still unfixed, out of scope here."
+  },
+  "risk_ranking": [
+    {
+      "rank": 1,
+      "risk": "The adopted renderer may not render what we emit",
+      "severity": "HIGH",
+      "precedent": "Phase-8's shipped renderer could not render ANY conformant spec \u2014 three lowercase component cases against a PascalCase schema, zero overlap \u2014 and only running it in a browser caught that.",
+      "mitigation": "browser-DOM gate is non-negotiable; p9-04 task 1.1 reads the vendored .d.ts before writing code"
+    },
+    {
+      "rank": 2,
+      "risk": "Dropping allow-same-origin may break the AppBridge handshake",
+      "severity": "MEDIUM-HIGH",
+      "note": "Safer than upstream's default but NOT the configuration upstream tests. If it breaks, the fallback is a genuine second origin \u2014 NOT restoring the permissive default. p9-04 task 5.2 says so explicitly."
+    },
+    {
+      "rank": 3,
+      "risk": "The empirical JSON-RPC method set may differ from the specified three",
+      "severity": "MEDIUM",
+      "mitigation": "p9-04 task 3.2 verifies against the running app rather than trusting the types"
+    },
+    {
+      "rank": 4,
+      "risk": "pnpm install churn",
+      "severity": "LOW",
+      "note": "ERR_PNPM_UNEXPECTED_STORE (v10 vs v11) hit earlier this session; expect it, not a phase defect"
+    }
+  ],
+  "carry_into_execute": [
+    "Read the vendored .d.ts in evidence/ before writing host code \u2014 phase-8 lost two attempts inferring MessageProcessor before reading them",
+    "p9-04's section numbers are NOT run order. The chain is 2.8a \u2192 4.2 \u2192 6.5 \u2192 2.8b \u2192 {5.4, 6.5b}. Acyclic; do not resequence",
+    "Do NOT add the skill to .claude-plugin/plugin.json (no skills key; CLAUDE.md:54 is stale)",
+    "Use a digit-run target name (mcp9ui) for p9-05's smoke test \u2014 phase-7's smoke name kebabbed to itself, which is why its feature-name bug survived a whole phase",
+    "G-7 runtime write-drop still live; the filesystem is authoritative",
+    "Nothing committed this session"
+  ],
+  "adversarial_review": {
+    "rounds": 3,
+    "findings": 4,
+    "critical": 1,
+    "warning": 3,
+    "accepted": "4/4",
+    "final_verdict": "PASS",
+    "judge_model": "kbd-judge",
+    "producer_model": "claude-opus-5",
+    "cross_model_check": "verified-distinct",
+    "isolation_mode": "rest-gateway",
+    "cap_exceeded": false,
+    "note": "Converged in 3 rounds against spec's 13 \u2014 the change structures were already vetted, leaving less surface to be wrong about. The one CRITICAL was rejected on the fact (the gates were already written; grep confirms) but accepted on the wording."
+  },
+  "tooling_gap": "The plan-stage packet contains plan.md and upstream stage artifacts but NOT the OpenSpec change files the plan describes, so a judge reasoning from the packet alone cannot distinguish a written gate from a promised one. Same root cause as the analyze-stage CRITICAL about vendored evidence.",
+  "next_command": "/kbd-apply p9-01-mcp-ui-content-type",
+  "waypoint_json_note": "current-waypoint.json could NOT be refreshed. It is runtime-generated and stale (phase-0-unblock, revision 12). `prometheus kbd phase activate --id phase-9-scaffold-mcp-ui` fails: 'phase phase-9-scaffold-mcp-ui was not found' \u2014 the runtime never recorded this phase because every stage enter returned committedLocally:true while writing nothing (G-7); kbd audit shows 0 phase-9 events. Hand-editing the projection would fabricate runtime state, so it was left alone. current-waypoint.md and phases/phase-9-scaffold-mcp-ui/ are the record."
+}

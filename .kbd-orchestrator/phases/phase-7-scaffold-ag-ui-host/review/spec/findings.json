@@ -1,0 +1,64 @@
+{
+  "mode": "artifact",
+  "target": "spec",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "rounds": 2,
+  "final_verdict": "ACCEPTED_AT_REVISION_CAP",
+  "producer_model": "claude-opus-5",
+  "judge_model": "claude-sonnet-4-5",
+  "isolation_mode": "harness-native",
+  "isolation_note": "build-review-packet.sh only supports the native-kbd backend — it collects .kbd-orchestrator/changes/<id>/{spec.md,tasks.json,verification.md} and exits 2 with 'no artifacts found' for an openspec-backend project. Packet was assembled manually (mandate + constraints + both prior handoffs + all 5 changes) and judged by a fresh-context subagent. Weaker than a true cross-model gateway call; stated rather than hidden.",
+  "tooling_defect": "adversarial-review build-review-packet.sh:487 hard-codes the native-kbd spec layout. kbd-spec explicitly supports an openspec backend, so the spec-stage vet cannot run via the normal path on any openspec project.",
+  "round_1": {
+    "verdict": "PASS",
+    "critical": 0,
+    "warning": 2,
+    "findings": [
+      {
+        "severity": "WARNING",
+        "file": "p7-01/tasks.md",
+        "claim": "Task 3.1 writes decision-log.md, which is absent from the declared scope; gate 4.1's git diff --stat would flag the legitimate write as unintended.",
+        "disposition": "FIXED — decision-log.md added to scope in both proposal and tasks."
+      },
+      {
+        "severity": "WARNING",
+        "file": "p7-01/proposal.md",
+        "claim": "G-7 was carried as a prerequisite through both prior handoffs but no change covers it or records an explicit deferral.",
+        "disposition": "FIXED — task 4.1 now records the deferral as a decision-log entry, gate 5.2 asserts it by grep. Deferral is now a choice on the record, not an omission."
+      }
+    ]
+  },
+  "round_2": {
+    "verdict": "BLOCK",
+    "critical": 1,
+    "warning": 3,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "file": "p7-05/tasks.md",
+        "claim": "p7-05 tasks 1.4/1.5 read assets/scaffold/agui/ paths by name, but p7-03 and p7-04 never declare those paths as a downstream contract. Renaming any of them silently breaks p7-05 with no gate catching it.",
+        "disposition": "FIXED — explicit 'Path contract (consumed downstream)' note added to both p7-03 and p7-04."
+      },
+      {
+        "severity": "WARNING",
+        "file": "p7-03/tasks.md",
+        "claim": "package.json ordering constraint stated only in p7-04, not p7-03 — asymmetric and undiscoverable from p7-03's side.",
+        "disposition": "FIXED — matching shared-file note added to p7-03."
+      },
+      {
+        "severity": "WARNING",
+        "file": "p7-02/tasks.md",
+        "claim": "Task 1.1 requires re-verifying the pre-1.0 enum but defines no action on mismatch, so an agent has no defined branch if the package moved.",
+        "disposition": "FIXED — task 1.2 added: HALT and escalate; a mismatch is a re-analysis trigger, not a mechanical retry."
+      },
+      {
+        "severity": "WARNING",
+        "file": "p7-01/tasks.md",
+        "claim": "Three tasks say 'confirm with the operator' with no defined interface and no verifiable artifact, unlike gate 5.2's grep check for the G-7 entry.",
+        "disposition": "FIXED — task 1.2 records a timestamped '## Operator confirmation' entry; gate 5.3 asserts it by grep. An unanswered prompt is explicitly not consent."
+      }
+    ]
+  },
+  "unresolved": [],
+  "note": "All six findings across both rounds were verified correct and applied. The revision cap was reached, so no third round ran; nothing was left outstanding at the cap."
+}

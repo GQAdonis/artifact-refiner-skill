@@ -35,3 +35,12 @@ target/
 
 # Generic vendored binaries (built from submodules)
 bin/
+
+# Machine-local agent state — cached session snapshots and transient locks.
+# These are per-machine artifacts, not project content: .prometheus/knowledge
+# alone is ~5.7 MB of session caches. `.prometheus/events.jsonl` IS tracked and
+# stays tracked; only the caches are excluded.
+.prometheus/knowledge/
+.prometheus/.prompt-snapshots/
+.kbd-orchestrator/**/*.lock
+.kbd-orchestrator/model-preflight.json

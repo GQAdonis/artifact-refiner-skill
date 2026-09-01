@@ -26,6 +26,7 @@ A PMPO-driven, artifact-centric refinement engine capable of creating and iterat
 - **React / HTML UI concepts** — Component hierarchies, design tokens, accessibility
 - **A2UI specifications** — Structural integrity, schema compliance, normalization. Schema: `references/schemas/a2ui-component.schema.json`. Content type: `direct:a2ui`. Example: `examples/a2ui-component-refinement/`.
 - **AG-UI agent specifications** — Tool definitions, event emission rules, UI fragment bindings, cross-reference integrity. Schema: `references/schemas/ag-ui-spec.schema.json`. Content type: `direct:ag-ui`. Example: `examples/ag-ui-spec-refinement/`. Spike: `references/domain/ag-ui-spike.md`.
+- **MCP-UI resources** — `ui://` resources embedded in MCP tool results, rendered in a sandboxed iframe. Schema: `references/schemas/mcp-ui-resource.schema.json`. Content type: `direct:mcp-ui`. Example: `examples/mcp-ui-refinement/`.
 - **Image assets** — Composition, brand colors, resolution, format conversion
 - **Content artifacts** — Markdown/HTML structure, tone, heading normalization
 - **Code artifacts** — Source files in any language, lint, test, format

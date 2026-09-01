@@ -1,0 +1,60 @@
+{
+  "stage": "reflect",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "artifact": "reflection.md",
+  "status": "complete",
+  "recorded_at": "2026-08-29T18:30:00Z",
+  "outcome": {
+    "changes": "5/5 archived",
+    "tasks": "106 done, 0 open",
+    "acceptance": "5/6 substantively met, 1 superseded by the operator's G-8 decision",
+    "sessions_used": 2,
+    "sessions_estimated": "2-3",
+    "specs_added": ["a2ui-protocol-conformance", "a2ui-render-host", "a2ui-host-scaffolder"]
+  },
+  "summary": "Phase-8 aligned direct:a2ui to the real A2UI v1.0 protocol and delivered a working rendering host. The acceptance criteria were written before the G-8 decision and four assumed the local dialect that alignment superseded; each was judged on what it actually tested rather than as literally worded. Criterion 6 — rendering verified in a browser DOM rather than by string-matching — is MET, closing the equivalent of phase-7's only PARTIAL.",
+  "deltas_found": [
+    "REFRAMING: A2UI is a real external protocol (a2ui-project/a2ui, 16,230 stars, Apache-2.0, ports to .NET/Swift/Android/React Native) and our schema was not it. Specs our refiner validated were not A2UI documents. Same defect class as phase-7's TOOL_CALL_ARGS_DELTA, one level up: a wrong document model rather than a wrong enum value, and larger because direct:a2ui shipped in PR #1.",
+    "The built-in JSON Schema validator implemented `oneOf` as `anyOf` (stopped at first match), so two-operation envelope messages validated cleanly. `not` and `anyOf` were unimplemented entirely, leaving every dialect guard and the expression guard silently inert. p8-01's envelope exclusivity existed on paper only until p8-02 fixed the validator.",
+    "The A2UI renderer could never render a conformant spec: three lowercase component cases against a schema mandating PascalCase — zero overlap. No HTML was ever produced; nothing substitutes the template's {{A2UI_JSON}} placeholders. Bindings were never resolved (grep count 0).",
+    "Two prompts/execute.md instructions directed executors to run an HTML injection step that does not exist in the repository. Corrected in p8-03.",
+    "The real catalog ships 18 components and contains no `Heading` — a name that appears in a type union. Both my mock and p8-03's shipped example used it; the renderer correctly reported `Unknown component: Heading` rather than degrading."
+  ],
+  "corrective_actions": [
+    "Schema, normalizer, examples, and six referencing files migrated to the real protocol; the old dialect is now rejected by name ahead of generic schema errors.",
+    "Validator gained real oneOf, plus anyOf and not, so the guards actually run.",
+    "@a2ui/react + @a2ui/web_core adopted at exact pins rather than hand-writing a renderer — the prior hand-written switch is exactly what failed.",
+    "A negative fixture in the old dialect retained so the format cannot creep back unnoticed.",
+    "Feature-name derivation fixed to use to_kebab(), preventing a duplicate feature directory."
+  ],
+  "quality_gate": {
+    "gate": "adversarial-review (artifact-refiner QA not applicable — no refined artifacts)",
+    "rounds": 8,
+    "findings": 33,
+    "critical": 13,
+    "warning": 20,
+    "verified_correct": "33/33",
+    "declined_with_reasoning": 1,
+    "note": "Every stage hit the 2-round revision cap.",
+    "isolation": "analyze and plan true cross-model (verified-distinct); assess and spec degraded — spec because build-review-packet.sh supports only the native-kbd layout, so the packet was assembled manually."
+  },
+  "sycophancy_gate": "unavailable — sycophancy.sh not installed; degraded gracefully per contract, no score recorded",
+  "recurring_patterns": [
+    "DROPPED CARRY-FORWARD ITEMS — third phase running. analyze R2 dropped three of seven assessment gaps; spec R1 and R2 both caught cross-change assertions the declared depends_on graph did not enforce (p8-05 could have run without p8-03, smoke-testing old-dialect fixtures). A gap with no research still needs a recorded verdict.",
+    "COVERAGE CLAIMED OVER THE WRONG PATH — both plan CRITICALs. no-hardcoded-secrets scans scripts/prompts/references; the gate grepped assets/. Round 2 repeated because round 1 fixed the task file but not the plan's compliance table."
+  ],
+  "technical_debt": [
+    "HIGH — scaffold-react-vite-agui.sh carries the SAME feature-name bug fixed here: derives the feature name from the raw basename instead of to_kebab(), so every AG-UI scaffold creates a second feature directory the app never imports. Diagnosed while fixing the A2UI one; out of phase-8 scope.",
+    "HIGH — G-7: prometheus kbd returns committedLocally:true for writes absent from the audit log. Reproduced across every phase-8 stage. Filesystem authoritative.",
+    "MEDIUM — no progress.json for phase-8; the apply driver was disabled under the G-7 rule.",
+    "MEDIUM — protocol version skew: schema validates v1.0, @a2ui/react implements v0.9. Translated at one boundary; deleteSurface/callFunction/actionResponse reduced but reported as unrendered.",
+    "MEDIUM — @a2ui/* pre-1.0, pinned exact. npm publish lags the repo ~6 weeks; @a2ui/markdown-it declared `*`.",
+    "LOW — five unpinned unpkg@latest loads in a2ui-preview-template.html; tracked deferral, template may be superseded.",
+    "LOW — CLAUDE.md:54 still contradicts CLAUDE.md:31; flagged since phase-7."
+  ],
+  "recommended_next": "Fix the scaffold-react-vite-agui.sh feature-name bug before starting a new phase",
+  "recommendation_rationale": "It is a known, diagnosed, one-line defect in shipped code producing a broken second feature directory in every AG-UI scaffold. The fix is already written for A2UI; porting it takes minutes. Leaving a known defect while starting new work is how the AG-UI enum drift survived a whole phase.",
+  "next_phase_recommended": "phase-9-scaffold-mcp-ui",
+  "next_phase_precondition": "VERIFY MCP-UI IS NOT ANOTHER A2UI. Twice now a local artifact has diverged from an external standard of the same name (AG-UI enum, A2UI document model). Before assessing phase-9, check whether MCP-UI has an upstream specification and whether anything in this repo already claims to implement it.",
+  "alternates": ["phase-6-scaffold-flutter"]
+}

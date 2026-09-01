@@ -1,0 +1,28 @@
+{
+  "stage": "assess",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "artifact": "assessment.md",
+  "status": "complete",
+  "recorded_at": "2026-08-28T04:10:00Z",
+  "summary": "A2UI rendering is broken in three independent ways, none previously known. (1) The Lit renderer at a2ui-preview-template.html:118 handles 'text'/'button'/'container' while the schema mandates PascalCase (^[A-Z][A-Za-z0-9]*$) and the shipped example uses Container/Heading/TextField/Button — overlap is ZERO, so every node of every conformant spec falls through to a <pre> JSON dump. (2) No HTML is produced at all: running the normalizer emits only normalized.a2ui.json and normalize-report.json; the template's {{A2UI_JSON}} placeholders have no injector, and scripts/render-preview.mjs (the obvious candidate) contains no A2UI reference. (3) The bindings block (literal/ref/expression) is never read — grep -c bindings on the renderer returns 0. Seven gaps: G-1/G-2/G-3 BLOCKING, G-4/G-5/G-6 HIGH, G-7 MEDIUM.",
+  "correction_to_prior_stage": {
+    "target": "phase-7 reflection",
+    "claim": "phase-8 is the cheapest phase that exercises the phase-7 substrate a second time",
+    "finding": "That premise is much weaker than stated. AG-UI is an event stream; A2UI is a declarative component tree with no transport at all. The SSE server surface, streaming client, store reduction semantics, and @ag-ui/* — most of phase-7's task count — do not transfer. What does transfer is the thin-wrapper scaffolder pattern, the now-working architectural ESLint enforcement, and the smoke-gate discipline. Phase-8 is still reasonable, but not for the reason recorded, and plan must not inherit the estimate that reasoning implies."
+  },
+  "open_questions": [
+    "Q1 (blocking scope): What is a 'rendering host'? (a) finish the existing preview pipeline so the normalizer emits working HTML, or (b) a scaffold-react-vite-a2ui.sh emitting an app that renders A2UI specs at runtime? Reading (a) is ~1 session / 4-6 changes; (b) is phase-7-sized at 2-3 sessions / 8-12 changes. The one-line definition of record does not say.",
+    "Q2: Lit + HTMX (the existing preview stack) or React (the scaffolder substrate)? Reading (b) forces the choice; reading (a) keeps Lit. This is analyze's build-vs-adopt question.",
+    "Q3 (security-relevant): expression bindings such as \"config.api.url + '/login'\" are arbitrary JavaScript. Evaluate, sandbox, or reject in v1? Recommend rejecting with a clear error rather than shipping an unreviewed evaluator — note this is a real scope cut, since the shipped example uses one."
+  ],
+  "warnings_from_adversarial_review": [
+    "TOOLING GAP (not an artifact defect): build-review-packet.sh emits a directory-level file_tree containing zero .html paths, so any finding grounded in a specific file is flagged 'not supported by the packet' regardless of how it is written. This produced the same CRITICAL in both rounds. Ground truth: git ls-files confirms assets/templates/a2ui-preview-template.html is tracked (4621 bytes). Third packaging gap after the missing research-pipeline.md/library-candidates.schema.json and the openspec-blind spec-stage collector.",
+    "prior_handoffs is null because this is phase-8's first stage, so the judge cannot see the phase-7 reflection this assessment corrects. Cited by path for human readers.",
+    "Corrected during review: an earlier draft cited renderNode at line 130; it is line 118.",
+    "Corrected during review: an earlier draft listed G-2 (template injector) as in scope under both readings, contradicting Q1 — a runtime React host renders from the spec and has no static template to inject. G-2 is reading-(a)-specific."
+  ],
+  "verification_criteria_note": "The final criterion requires rendering verified in a browser DOM, not by string-matching HTML. Phase-7 closed with exactly one PARTIAL because 'renders incrementally in the browser' was verified at the state level and never in a DOM. Playwright is already in devDependencies (^1.51.0). Caveat: the preview loads five unpinned unpkg @latest dependencies (F-6), so a DOM test against it would be flaky until those are pinned.",
+  "next_stage": "analyze",
+  "next_stage_rationale": "Q2 is a genuine build-vs-adopt decision (Lit vs React) with consequences for every later change, and Q1's scope split changes what analyze even researches. Analyze should not be skipped.",
+  "estimate_note": "Conditional on Q1: reading (a) 1 session / 4-6 changes; reading (b) 2-3 sessions / 8-12 changes. Do not carry phase-7's one-session under-run forward — its risk (the SSE surface) proved well-bounded, whereas here three contracts (schema, renderer, template) currently disagree, and reconciling contracts tends to surface further mismatches once the first is fixed."
+}

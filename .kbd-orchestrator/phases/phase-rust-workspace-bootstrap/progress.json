@@ -1,46 +1,46 @@
 {
+  "schemaVersion": "2",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 41,
+  "derivedRevision": 41,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 41
+  },
+  "conflictCount": 0,
   "phase": "phase-rust-workspace-bootstrap",
-  "assessment_complete": true,
-  "plan_complete": true,
-  "execute_complete": true,
-  "execute_status": "COMPLETE",
-  "reflect_complete": true,
-  "reflection_path": ".kbd-orchestrator/phases/phase-rust-workspace-bootstrap/reflection.md",
-  "assessment_path": ".kbd-orchestrator/phases/phase-rust-workspace-bootstrap/assessment.md",
-  "plan_path": ".kbd-orchestrator/phases/phase-rust-workspace-bootstrap/plan.md",
-  "execution_path": ".kbd-orchestrator/phases/phase-rust-workspace-bootstrap/execution.md",
-  "openspec_change": "openspec/changes/phase-rust-workspace-bootstrap/",
-  "change_backend": "openspec",
+  "phaseId": "phase-rust-workspace-bootstrap",
+  "parentPhase": null,
+  "last_updated": "2026-08-31T10:18:07.887086Z",
+  "last_updated_by": "kbd-runtime",
   "changes_total": 9,
   "changes_completed": 9,
-  "acceptance_gates": {
-    "1_cargo_check_workspace": "PASS",
-    "2_cargo_build_release": "PASS",
-    "3_template_forge_version": "PASS — template-forge 0.1.0",
-    "4_list_engines_minijinja": "PASS",
-    "5_list_brands_knowme": "PASS",
-    "6_render_ember_hex": "PASS — 4013 bytes, 3× #E04E28",
-    "7_mcp_probe_and_stdio": "PASS — both --probe and stdio JSON-RPC verified",
-    "8_install_script": "PASS — authored + executable",
-    "9_mcp_json_registered": "PASS — JSON valid, template-forge entry present"
+  "implementation_total": 9,
+  "implementation_completed": 9,
+  "completion": {
+    "primaryCounter": "implementation",
+    "implementation": {
+      "completed": 9,
+      "total": 9,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "certification": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "publication": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    }
   },
-  "unit_tests_passed": "5/5",
-  "deliverables": [
-    "tools/template-forge-rs/Cargo.toml",
-    "tools/template-forge-rs/rust-toolchain.toml",
-    "tools/template-forge-rs/crates/template-core/",
-    "tools/template-forge-rs/crates/template-cli/",
-    "tools/template-forge-rs/crates/template-mcp/",
-    "tools/template-forge-rs/templates/brand-guide.html",
-    "assets/library/brands/knowme.toml",
-    "scripts/install-template-forge.sh",
-    ".mcp.json (template-forge registered)"
-  ],
-  "decisions_during_execute": [
-    "Chose hand-rolled stdio JSON-RPC over rmcp 1.7 (smaller, deterministic, plan task 7.1 risk-mitigation)",
-    "Removed channel pin from rust-toolchain.toml — MSRV declared via Cargo.toml rust-version instead",
-    "Fixed Rust 2021 #-prefix gotcha in TOML test fixture (raw-string → format!)",
-    "Confirmed minijinja 2.x API: Value::from_serialize (was from_serializable in v1)"
-  ],
-  "next_command": "/kbd-reflect phase-rust-workspace-bootstrap"
+  "changes": [],
+  "children": {},
+  "migrationStatus": "legacy-read-only"
 }

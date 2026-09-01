@@ -1,0 +1,42 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "plan.md",
+      "line": 0,
+      "claim": "The plan falsely treats the blocking `no-hardcoded-secrets` constraint as covered even though the scaffold change adds script surface that the constraint scans and has no corresponding gate.",
+      "evidence": "Constraint command scans `scripts/ prompts/ references/`: `grep -rn 'sk-\\|api_key\\|API_KEY\\|secret.*=.*[\"\\x27][A-Za-z0-9]' scripts/ prompts/ references/`. The plan says p8-05 is `Scaffolder plus the browser-DOM gate` / `Scaffolder plus skill`, but the constraint table gates `no-hardcoded-secrets` only in `p8-04 5.7`, and the 'Gates added during planning' rationale says `p8-04 was the only change adding new source files with no repo-constraint gate at all.`",
+      "suggested_fix": "Add a `no-hardcoded-secrets` gate to p8-05, or a final phase-wide gate, because p8-05 adds the scaffolder script surface under `scripts/`."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "line": 0,
+      "claim": "The plan omits required warning-constraint acknowledgement for several warning constraints, including one directly relevant to a new scaffolder script.",
+      "evidence": "The constraints list warning constraints `hook-scripts-executable`, `no-stub-comments`, `examples-updated`, `no-duplicated-docs`, and `plugin-manifest-current`. The plan only says: `Warning constraints: no-stub-comments (p8-04 5.9, p8-05 3.7), plugin-manifest-current \u2014 not applicable, see below.` It does not acknowledge `hook-scripts-executable`, `examples-updated`, or `no-duplicated-docs`, while p8-05 is a scaffolder change and p8-03 rewrites examples.",
+      "suggested_fix": "Add explicit gates or applicability notes for `hook-scripts-executable`, `examples-updated`, and `no-duplicated-docs`; at minimum, gate executable bit for any new `scripts/*.sh` scaffolder."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "line": 0,
+      "claim": "The plan's task count contradicts the spec handoff, making batching and execution sizing unreliable.",
+      "evidence": "The plan header says `Changes: 5 \u00b7 Tasks: 104`. The spec handoff lists task counts `19`, `21`, `19`, `21`, and `17`, which sum to `97`, not `104`.",
+      "suggested_fix": "Reconcile the task total with the OpenSpec change task counts, or update the spec handoff/change task files if 104 is the intended current total."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "line": 0,
+      "claim": "The plan fails to carry forward the security-relevant Q3 closure as an explicit execution gate.",
+      "evidence": "Assessment Q3 says expression bindings are `security-relevant` and recommends rejecting them in v1. The spec handoff says this was fixed: `Now p8-02 tasks 3.3/3.4 with gate 5.8: expression-like DynamicString leaves are rejected with a named error.` The plan's p8-02 discussion highlights only cycle detection and schema/vocabulary derivation, and its p8-02 gates mention `5.2`, `5.7`, and `5.9`, not the Q3 rejection gate.",
+      "suggested_fix": "Add an explicit p8-02 acceptance criterion that expression-like DynamicString leaves are rejected with a named error, citing the relevant task/gate number."
+    }
+  ]
+}

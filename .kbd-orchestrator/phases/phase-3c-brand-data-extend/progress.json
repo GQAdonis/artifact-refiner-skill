@@ -1,0 +1,56 @@
+{
+  "phase": "phase-3c-brand-data-extend",
+  "type": "gap_closure",
+  "assessment_complete": true,
+  "assessment_path": ".kbd-orchestrator/phases/phase-3c-brand-data-extend/assessment.md",
+  "plan_complete": true,
+  "plan_note": "Scope was fully determined by the assessment (G-1..G-3 blocking, G-5 in scope, G-6 deferred). No separate plan.md authored — the gap report was directly executable.",
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "completion": {
+    "implementation": { "completed": 1, "total": 1, "status": "complete" },
+    "evidence": { "completed": 1, "total": 1, "status": "complete" },
+    "certification": { "completed": 1, "total": 1, "status": "complete" },
+    "publication": { "completed": 0, "total": 1, "status": "pending" }
+  },
+  "changes_completed": 1,
+  "changes_total": 1,
+  "closes_gate": "polish-pass 8.4 (LLM motifs/tone end-to-end)",
+  "changed_files": [
+    "tools/template-forge-rs/crates/template-core/src/brand.rs",
+    "tools/template-forge-rs/crates/template-core/src/lib.rs",
+    "tools/template-forge-rs/crates/template-core/src/engine/minijinja_engine.rs",
+    "scripts/refine-moodboard.mjs"
+  ],
+  "defects_found_during_execute": [
+    {
+      "id": "D-1",
+      "summary": "Producer emitted top-level `tone` after table headers, so TOML absorbed it into motifs[0] or typography. The struct fix alone would not have closed the gate.",
+      "found_by": "round-trip test G-5 failing on an identically-mistaken fixture",
+      "supersedes": "assessment F-3 ('producer side is already correct')",
+      "fix": "refine-moodboard.mjs now emits tone before the first table header"
+    }
+  ],
+  "live_verification": {
+    "unit_tests": "9/9 pass, cargo test -p template-core (4 new in brand.rs, which previously had 0)",
+    "clippy": "cargo clippy -p template-core -- -D warnings: clean",
+    "fmt": "brand.rs clean; 4 pre-existing diffs in untouched files left alone",
+    "ac1_motifs_render": "/tmp/probe-out2.html — 'Test Motif' present (was 0 before fix)",
+    "ac2_tone_render": "Probe-Alpha, Probe-Beta — exactly the brand's 2 chips, not the hardcoded 5",
+    "ac3_no_regression": "/tmp/plain-out.html — brand without motifs/tone still renders 6 fallback motifs, 5 fallback chips",
+    "marketplace_validation": "passed"
+  },
+  "adversarial_review": {
+    "verdict": "PASS",
+    "counts": { "critical": 0, "warning": 2, "suggestion": 1 },
+    "findings_path": ".kbd-orchestrator/phases/phase-3c-brand-data-extend/review/assess/findings.json",
+    "isolation_mode": "harness-native",
+    "isolation_caveat": "REST gateway returned HTTP 401 token_expired; fell back to tier-2 subagent (same model family as producer). Renew via /liter-llm-bridge configure.",
+    "all_findings_verified_correct": true,
+    "all_findings_applied": true
+  },
+  "deferred": [
+    "G-6: #[serde(deny_unknown_fields)] on BrandData — would hard-fail every existing brand TOML carrying an extra key. Needs its own change."
+  ],
+  "next_command": "/kbd-assess phase-7-scaffold-ag-ui-host  OR  /kbd-assess phase-6-scaffold-flutter"
+}

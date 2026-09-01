@@ -1,0 +1,107 @@
+{
+  "phase": "phase-9-scaffold-mcp-ui",
+  "stage": "analyze",
+  "evaluated_at": "2026-08-30",
+  "method": "npm registry for version/license; SHIPPED TYPE DECLARATIONS read from an actual install of @mcp-ui/client@7.1.1 for API surface. Documentation prose was NOT treated as authoritative — doing so in the first draft produced a recommendation for a component this version does not export.",
+  "evaluation_criteria": [
+    "API surface verified against shipped .d.ts, not docs",
+    "license compatibility",
+    "maintenance signal (last publish, post/pre-1.0)",
+    "transitive dependency cost",
+    "deployment constraints imposed on the scaffolder",
+    "precedent in this repo (phases 7 and 8 pin external protocol packages exact)"
+  ],
+  "transitive_evaluation_note": "Transitive packages (@modelcontextprotocol/sdk, zod) are evaluated on license, version and stability because they enter the scaffolded app's dependency graph and a scaffolder ships them to every consumer. They are NOT evaluated on suitability, since the choice is not ours — adopting @mcp-ui/client adopts them.",
+  "candidates": [
+    {
+      "package": "@mcp-ui/client",
+      "version": "7.1.1",
+      "license": "Apache-2.0",
+      "last_publish": "2026-05-09",
+      "stability": "post-1.0",
+      "verdict": "ADOPT",
+      "pin": "exact",
+      "rationale": "The renderer the phase exists to integrate, and the package the operator's G-7 go decision named. Post-1.0 is the strongest API-stability signal of the three host phases.",
+      "verified_exports": [
+        "AppRenderer",
+        "AppFrame",
+        "AppBridge (re-export from ext-apps)",
+        "PostMessageTransport (re-export from ext-apps)",
+        "isUIResource",
+        "getUIResourceMetadata",
+        "getResourceMetadata"
+      ],
+      "critical_finding": "UIResourceRenderer is NOT exported. dist/src/components/ contains only AppRenderer.d.ts and AppFrame.d.ts. Upstream docs still show UIResourceRenderer for 'legacy hosts'; it was removed before 7.x. This overturned the first draft of D-003 and is the reason post-1.0 does not justify relaxing the exact pin.",
+      "imposed_constraints": [
+        "SandboxConfig.url is REQUIRED on AppFrameProps — a hosted sandbox proxy HTML is mandatory, there is no in-process rendering path",
+        "double-iframe architecture",
+        "default sandbox permissions are 'allow-scripts allow-same-origin allow-forms' — the permissive pairing; safe only if the proxy is genuinely cross-origin"
+      ]
+    },
+    {
+      "package": "@modelcontextprotocol/ext-apps",
+      "version": "1.7.5",
+      "license": "MIT",
+      "last_publish": "2026-07-23",
+      "stability": "post-1.0",
+      "verdict": "ADOPT",
+      "pin": "exact",
+      "rationale": "Not optional. Declared as a hard dependency of @mcp-ui/client ('^1.2.0') and re-exported by it (AppBridge, PostMessageTransport). The first draft's 'defer ext-apps' was never an available option — it arrives transitively regardless, so pinning it explicitly is the honest choice.",
+      "note": "Also the most recently published package in this space, which was assess F-3's signal that the MCP org's own extension may be where the centre of gravity is moving."
+    },
+    {
+      "package": "@modelcontextprotocol/sdk",
+      "version": "1.30.0",
+      "license": "MIT",
+      "last_publish": "2026-07-16",
+      "stability": "post-1.0",
+      "verdict": "TRANSITIVE",
+      "pin": "only if imported directly",
+      "rationale": "Declared dependency of @mcp-ui/client ('^1.27.1'). Supplies EmbeddedResource, CallToolResult, ReadResourceResult and the other request/result types AppRendererProps is written against, so the host will almost certainly import it for types. Pin explicitly if so.",
+      "note": "isUIResource is typed against EmbeddedResource from this SDK — the evidence in D-002 that the ui:// resource rides inside the tool-result content array."
+    },
+    {
+      "package": "@mcp-ui/server",
+      "version": "6.1.0",
+      "license": "Apache-2.0",
+      "last_publish": "2026-02-13",
+      "stability": "post-1.0",
+      "verdict": "DECLINE",
+      "rationale": "Declined on a technical ground, not staleness: createUIResource constructs a small JSON object. The mock emits that shape from inside Vite middleware; adding a dependency to build a literal buys nothing. The G-1 schema becomes the contract instead — and unlike a dependency, a schema can be validated against upstream's shape in a test.",
+      "staleness_note": "~6 months since publish was assess F-4's strongest evidence AGAINST proceeding. Declining it removes that risk from the phase's dependency surface rather than absorbing it."
+    },
+    {
+      "package": "zod",
+      "declared_range": "^3.23.8",
+      "resolved_version": "3.25.76",
+      "registry_latest": "4.5.4",
+      "license": "MIT",
+      "stability": "post-1.0",
+      "verdict": "TRANSITIVE",
+      "rationale": "Declared dependency of @mcp-ui/client. No direct use planned.",
+      "note": "The client's ^3 range holds zod a MAJOR version behind the registry latest (4.5.4). A scaffolded app wanting zod 4 for its own validation will hit a duplicate install or a peer conflict. Worth a line in the scaffolder README; not a blocker."
+    }
+  ],
+  "rejected_repo_options": [
+    {
+      "option": "extend tools/template-forge-rs/crates/template-mcp",
+      "verdict": "REJECTED",
+      "rationale": "Speaks stdio JSON-RPC (Cargo.toml:3); a browser cannot. Bridging needs a second process plus an HTTP bridge. Separately, a template forge is a poor home for a demo UI resource. Method coverage was never the obstacle — it already implements initialize/tools/list/tools/call."
+    },
+    {
+      "option": "new first-party Rust MCP crate",
+      "verdict": "REJECTED",
+      "rationale": "Largest cost of the options, no scaffolder precedent, and unnecessary given D-002."
+    },
+    {
+      "option": "follow scaffold-react-vite-axum.sh as the backend precedent",
+      "verdict": "REJECTED",
+      "rationale": "Surfaced by assess round-3 review and worth checking, but it is a BUILD-TIME server embedding dist/ via rust-embed for production — not a dev-time API. The applicable precedent is phase-7's vite-plugin-agui-mock.ts."
+    }
+  ],
+  "chosen_transport": {
+    "option": "Vite dev-server middleware mock",
+    "rationale": "Direct transposition of scaffold-react-vite-agui.sh's vite-plugin-agui-mock.ts, which already registers itself into vite.config.ts idempotently. Answers POST /api/mcp with JSON-RPC initialize / tools/list / tools/call, returning an embedded ui:// resource. Keeps the smoke gate a single-process pnpm dev, as in both prior host phases.",
+    "unresolved": "The sandbox proxy may still require a genuine second origin for allow-same-origin to be safe (D-003, D-006). If so, 'no second process' survives but 'single origin' does not. Spec must settle it."
+  }
+}

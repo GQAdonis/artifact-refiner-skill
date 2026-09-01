@@ -1,22 +1,46 @@
 {
+  "schemaVersion": "2",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 41,
+  "derivedRevision": 41,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 41
+  },
+  "conflictCount": 0,
   "phase": "phase-1-submodule-topology",
-  "assessment_complete": true,
-  "plan_complete": true,
-  "execute_complete": true,
-  "execute_status": "COMPLETE",
-  "execution_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/execution.md",
+  "phaseId": "phase-1-submodule-topology",
+  "parentPhase": null,
+  "last_updated": "2026-08-31T10:18:07.887086Z",
+  "last_updated_by": "kbd-runtime",
   "changes_total": 6,
   "changes_completed": 6,
-  "acceptance_gates_all_pass": true,
-  "reflect_complete": true,
-  "reflection_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/reflection.md",
-  "decisions_applied": {
-    "Q-001": "A — sycophancy-correction extracted to standalone repo (submodule path documented, add deferred to phase-sc-extraction)",
-    "Q-002": "upstream rust-mcp-stack/rust-mcp-filesystem"
+  "implementation_total": 6,
+  "implementation_completed": 6,
+  "completion": {
+    "primaryCounter": "implementation",
+    "implementation": {
+      "completed": 6,
+      "total": 6,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "certification": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "publication": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    }
   },
-  "assessment_path": ".kbd-orchestrator/phases/phase-ideation-to-app-pipeline/assessment.md",
-  "plan_path": ".kbd-orchestrator/phases/phase-1-submodule-topology/plan.md",
-  "openspec_change": "openspec/changes/phase-1-submodule-topology/",
-  "next_command": "/kbd-execute phase-rust-workspace-bootstrap  # run first; phase-1 follows",
-  "parallel_safe_with": "phase-rust-workspace-bootstrap (recommendation: run bootstrap first for clean .mcp.json merge)"
+  "changes": [],
+  "children": {},
+  "migrationStatus": "legacy-read-only"
 }

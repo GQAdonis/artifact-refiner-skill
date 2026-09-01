@@ -1,0 +1,31 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "plan.md",
+      "claim": "The plan admits three blocking constraints are not covered by any change gate and pushes required gate creation to execute instead of incorporating it into the planned work.",
+      "evidence": "Constraint compliance table marks `references-resolve`, `schemas-parse`, and `no-brand-leakage` as `GAP \u2014 new gate required (see below)`, followed by `Execute must add these before the affected change can pass`; project constraints state blocking constraints `prevent archiving until resolved`.",
+      "suggested_fix": "Add explicit planned tasks/gate IDs to p7-02 and p7-05 before execution begins, with the exact commands from `.kbd-orchestrator/constraints.md`, so the plan itself covers all blocking constraints."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "claim": "Two required gate additions are not written as testable acceptance criteria.",
+      "evidence": "The plan specifies `p7-02 \u2014 add to Gate: every references/... path cited in prompts/ still resolves` and `p7-02 and p7-05 \u2014 add to Gate: no-brand-leakage grep over shipped content returns nothing`, while the constraints packet provides concrete shell checks for both (`grep -roh 'references/...` and `grep -rn 'sediment://' ...`).",
+      "suggested_fix": "Replace the prose gate additions with the exact shell checks from the constraints, including expected exit/output semantics."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "claim": "The plan omits the `plugin-manifest-current` warning constraint despite planning skill registration work.",
+      "evidence": "Warning constraints include `plugin-manifest-current` with description `plugin.json updated when new skills or agents were added`; the plan says p7-05 includes `skill registration` and tracks only `hook-scripts-executable` and `no-stub-comments` under warning constraints.",
+      "suggested_fix": "Add a p7-05 manual-review gate confirming `.claude-plugin/plugin.json` and marketplace metadata are current if the scaffold skill or agent registry changes."
+    }
+  ]
+}

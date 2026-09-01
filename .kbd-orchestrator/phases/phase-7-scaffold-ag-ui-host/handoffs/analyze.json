@@ -1,0 +1,39 @@
+{
+  "stage": "analyze",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "artifacts": ["analysis.md", "library-candidates.json", "decision-log.md"],
+  "status": "complete",
+  "recorded_at": "2026-08-28T01:05:00Z",
+  "candidate_count": 8,
+  "gaps_with_verdicts": ["G-1 BUILD (Node)", "G-2 ADOPT @ag-ui/client", "G-3 BUILD from in-repo pattern", "G-4 FIX-FIRST (upgraded to BLOCKING)"],
+  "summary": "Four adopt/build verdicts, all high confidence, within budget on every tier (T4 not needed). G-2 ADOPT @ag-ui/client 0.0.59 MIT — the hand-roll alternative was rejected on a concrete ground assess missed: EventSource cannot POST, and AG-UI requires POSTing RunAgentInput with Accept: text/event-stream, so a hand-rolled client needs fetch+ReadableStream+partial-JSON buffering, not '~10 lines'. G-1 BUILD in Node: all three candidate homes evaluated — openai-proxy rejected (out of repo, nothing to extend, non-self-contained output), Axum rejected (no SSE precedent; Rust AG-UI crates have 22-399 downloads), Node recommended so @ag-ui/encoder gives the event contract one source of truth. G-3 BUILD following scaffold-react-vite-tauri.sh (230 lines, thin wrapper) rather than forking the 1160-line base. G-4 upgraded WARNING to BLOCKING.",
+  "key_finding": {
+    "id": "G-4",
+    "severity": "BLOCKING — live defect in shipped code",
+    "summary": "Our ag-ui-spec schema declares TOOL_CALL_ARGS_DELTA; the shipped @ag-ui/core@0.0.59 package declares TOOL_CALL_ARGS. A protocol-conformant AG-UI spec is REJECTED by our validator today. Invisible because the only validated specs are our own two examples using our own wrong name. Additionally 10 event kinds are missing (local 14 vs shipped 23).",
+    "occurrences": ["references/schemas/ag-ui-spec.schema.json:76", "references/domain/ag-ui-spike.md:16", "references/domain/ag-ui.md:79", "scripts/normalize-agui.mjs:35"],
+    "evidence": "npm pack @ag-ui/core@0.0.59 — offline-reproducible against a pinned version, not a documentation citation",
+    "plan_requirement": "Fix before generating the host, or the generated host inherits a wrong contract."
+  },
+  "blocking_prerequisites_carried": [
+    {
+      "id": "G-6",
+      "summary": "migrate --apply overwrote every phase progress.json with bare counters, destroying narrative records (scope_note, live_verification). Still recoverable via git show HEAD: — nothing committed. One `git add -A` makes it permanent.",
+      "plan_requirement": "Restore from git HEAD, or record an explicit supersession decision, BEFORE the first phase-7 code change.",
+      "note": "Dropped from the first analyze draft and restored after adversarial review flagged it. Do not let it lapse again."
+    },
+    {
+      "id": "G-7",
+      "summary": "Runtime returns committedLocally:true for writes absent from the audit log; reproduced again during phase-7 stage recording.",
+      "plan_requirement": "Treat the filesystem as authoritative; do not trust the canonical runtime as the record."
+    }
+  ],
+  "warnings_from_adversarial_review": [
+    "UNRESOLVED (revision cap reached): the Node hosting mechanism is unevaluated — Vite dev-server middleware vs standalone Express/Hono/Fastify vs Node http handler. These differ in dependency weight and in whether demoing the generated app needs a second process. Plan must decide explicitly rather than inheriting 'Node' as if fully specified.",
+    "Three of the CRITICALs across three rounds were the same class of error: gaps with no research attached (G-6, the openai-proxy option, G-3) were silently dropped rather than given a recorded verdict. Plan should verify every assess gap has an explicit disposition before proceeding.",
+    "@ag-ui/* are pre-1.0 (0.0.59) with 10 transitive deps including rxjs 7.8.2 and protobuf tooling, inherited by every scaffolded app. Pin exact, not caret."
+  ],
+  "process_note": "kbd-analyze ships only SKILL.md — references/research-pipeline.md (declared the single source of truth for tiers/budgets/evidence format) and references/schemas/library-candidates.schema.json are both absent from the installed skill and the plugin cache. library-candidates.json follows the field set described inline in SKILL.md but is unvalidated against any schema. Same packaging-gap class as the missing handoff.schema.json in phase-3c.",
+  "next_stage": "spec",
+  "estimate_note": "Unchanged from assess: 8-14 changes across 2-3 sessions. G-4 is now a prerequisite fix rather than optional cleanup, adding a small change at the front."
+}

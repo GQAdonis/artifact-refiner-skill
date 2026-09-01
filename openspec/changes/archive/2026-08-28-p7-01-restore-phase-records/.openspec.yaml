@@ -1,0 +1,7 @@
+schema: spec-driven
+
+# p7-01 restores KBD phase state records destroyed by `migrate --apply`.
+# It modifies no capability specs — no behaviour changes, no requirements added,
+# changed, or removed. Per the validator's own guidance for pure
+# tooling/state changes, deltas are intentionally absent.
+skip_specs: true

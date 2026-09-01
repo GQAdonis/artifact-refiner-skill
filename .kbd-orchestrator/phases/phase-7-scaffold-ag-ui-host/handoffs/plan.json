@@ -1,0 +1,29 @@
+{
+  "stage": "plan",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "artifact": "plan.md",
+  "status": "complete",
+  "recorded_at": "2026-08-28T02:10:00Z",
+  "backend": "openspec",
+  "changes": 5,
+  "tasks": 91,
+  "gates": 16,
+  "evolver_bridge": null,
+  "summary": "Five changes in a strict dependency chain — p7-01 → p7-02 → p7-03 → p7-04 → p7-05 — so change order was forced by the spec-stage edges rather than chosen here. Plan's contribution is session batching (A: p7-01+p7-02 prerequisites; B: p7-03 alone, where the risk concentrates; C: p7-04+p7-05), agent assignment, effort sizing, and constraint-gate coverage. Adversarial review drove five new gates into the change tasks that did not exist before planning.",
+  "first_change": "p7-01-restore-phase-records",
+  "ordering_rationale": "p7-01 first is not a preference: its gate 5.4 blocks every other p7-* change, and its subject matter (recoverable-but-unrestored phase records) degrades permanently on any `git add -A`. p7-02 second because p7-03/p7-04 build against the event contract it corrects — generating a host against the current wrong enum would bake in the defect.",
+  "warnings_from_adversarial_review": [
+    "Both CRITICALs across two rounds were the same error: treating constraint coverage as something to describe rather than enforce. The first draft omitted three blocking constraints entirely; the second documented them as gaps and deferred gate creation to execute. Gates are now written into the tasks as runnable commands. Execute should treat any 'execute must add X' phrasing in a plan as planning work left undone.",
+    "p7-02 task 1.2 is a HALT, not a checkpoint. If the re-verified @ag-ui/core@0.0.59 enum differs from the recorded 23-kind list, stop and re-spec. Tasks 2.x/3.x hard-code the list; running them against a changed upstream writes a NEW wrong enum while appearing to succeed.",
+    "p7-03 and p7-04 share package.json and must not run in parallel worktrees. The dependency edge is what makes the shared file safe.",
+    "p7-05 reads assets/scaffold/agui/ paths by name from p7-03 and p7-04. Renaming any of them silently breaks p7-05; both changes now declare the path contract.",
+    "p7-01 can block on a human. Tasks 1.1, 3.2, 4.2 need operator confirmation; gate 5.3 asserts an '## Operator confirmation' entry in decision-log.md by grep, so an unanswered prompt fails loudly instead of reading as consent."
+  ],
+  "acceptance_note": "p7-05 gate 3.6 — incremental rendering, asserting the rendered text grows across frames — is the phase's real acceptance test. Every other criterion passes against a non-streaming stub. If one gate is enforced honestly, it is this one.",
+  "deferred": [
+    "G-7 (runtime reports committedLocally:true for writes absent from the audit log; reproduced 4x including this phase's own stage records) — deferred to its own investigation, recorded via p7-01 task 4.1 so it cannot vanish.",
+    "Tool-call rendering, STATE_* reduction, reconnection/backpressure, multi-turn history, production hosting."
+  ],
+  "next_stage": "apply",
+  "exact_next_command": "/kbd-apply p7-01-restore-phase-records"
+}

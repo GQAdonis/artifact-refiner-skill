@@ -1,0 +1,48 @@
+{
+  "stage": "analyze",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "artifacts": ["analysis.md", "library-candidates.json", "decision-log.md"],
+  "status": "complete",
+  "recorded_at": "2026-08-28T05:05:00Z",
+  "candidate_count": 6,
+  "summary": "A2UI is a real external protocol — a2ui-project/a2ui, 16,230 stars, pushed today, Apache-2.0, with an official React renderer (@a2ui/react@0.10.2) and independent ports to .NET, Swift, Android, and React Native. Our schema is artifact-refiner.dev-namespaced, cites no upstream, and diverges structurally at every level: `type` vs `component` discriminator, single tree vs envelope stream (createSurface/updateComponents/updateDataModel/...), bindings map vs DynamicString + updateDataModel, open ^[A-Z] pattern vs catalog.json. Specs our refiner validates are not A2UI protocol documents.",
+  "blocking_escalation": {
+    "id": "G-8",
+    "title": "Align our A2UI to the real protocol, rename the local dialect, or support both?",
+    "why_not_decided_here": "It changes the meaning of a shipped domain (direct:a2ui, PR #1) and invalidates published examples. The right answer turns on whether the refiner is meant to produce artifacts other systems consume — a product question, not a research one. Deciding it silently inside a research artifact would bury a breaking change.",
+    "options": [
+      "Align to upstream v1.0 — interoperable, @a2ui/react renders for free; breaking, invalidates both examples, refiner reworked to the envelope model",
+      "Keep the dialect and rename it — no breaking change, phase stays small; but the name is taken, permanently non-interoperable, future readers will assume conformance",
+      "Support both — migration path at roughly double the surface; not recommended"
+    ],
+    "analyze_observation": "Option 2 is cheapest today and most expensive later; alignment cost grows with every spec authored against the dialect."
+  },
+  "correction_to_prior_stage": {
+    "target": "assessment.md F-1 (mine, previous stage)",
+    "claim": "A2UI is a static document with no transport; 'arguably no store at all'",
+    "verdict": "WRONG",
+    "evidence": "Upstream: 'The A2UI Protocol facilitates the dynamic rendering of user interfaces by streaming JSON objects from an agent to a renderer... allowing for progressive rendering.' Transports are JSON Lines streams.",
+    "impact": "F-1 argued the phase-7 substrate does NOT transfer because A2UI has no stream. The opposite holds — A2UI is streaming-first, so the store/subscription/accumulation architecture transfers MORE than assess concluded. Root cause: I read our own schema and inferred the protocol from it."
+  },
+  "decisions": [
+    "Q2 CLOSED unconditionally: React either way. Under alignment @a2ui/react is the official renderer; under the dialect the scaffolder substrate is React and the Lit renderer has never rendered a conformant spec, so 'keep Lit' means rewrite-in-Lit, which is strictly worse.",
+    "ADOPT @a2ui/react@0.10.2 (Apache-2.0) conditional on G-8 aligning — eliminates G-1, G-4, and most of G-2. Pin exact (pre-1.0).",
+    "REJECT the existing Lit renderer as a basis; its preview shell (brand CSS, layout, screenshot harness) is salvageable, the ~30-line switch is not.",
+    "@a2ui/web_core@0.10.6 named as the framework-agnostic seam — arrives transitively for a React host, publishes more recently than the React wrapper."
+  ],
+  "warnings_from_adversarial_review": [
+    "DROPPED GAPS — third occurrence of the same error. An earlier draft collapsed G-1..G-4 into one row and omitted G-5/G-6/G-7 entirely. All eight gaps now carry explicit verdicts. Plan should verify every carried gap has a disposition before proceeding; this failure mode has now appeared in phase-7 analyze (3 CRITICALs) and here.",
+    "DECLINED CRITICAL: the judge held that leaving G-8 unresolved denies plan a determinate target. Declined with reasoning — G-8 is an owner decision about a shipped domain, and the phase is otherwise decidable (Q2 closed, all gaps verdicted, both branches estimated). Plan can be written the moment G-8 is answered.",
+    "@a2ui/react risks: pre-1.0; npm publish lags the repo by ~6 weeks (repo 2026-08-28, package 2026-07-17); `@a2ui/markdown-it` declared as `*`, an unbounded range in a published dependency.",
+    "Upstream specification/v1_0/** paths are external (Context7 /a2ui-project/a2ui), not in this repo. Re-verify via Context7 rather than expecting them to resolve locally.",
+    "G-7 (five unpinned unpkg @latest CDN loads) stands either way and makes any browser-DOM verification flaky until pinned."
+  ],
+  "estimate": {
+    "keep_dialect_finish_preview": "1 session, 4-6 changes — ships a permanently non-interoperable artifact type",
+    "align_upstream_adopt_renderer": "2-3 sessions, 8-12 changes — most of it reworking schema/normalizer/examples, not writing a renderer",
+    "support_both": "4+ sessions, not recommended",
+    "note": "The assess estimate assumed a hand-written renderer was the work. Under alignment it is not — the renderer is adopted and the work moves to the refiner and examples."
+  },
+  "next_stage": "spec",
+  "next_stage_blocked_on": "G-8 — spec cannot define changes until the document model is chosen."
+}

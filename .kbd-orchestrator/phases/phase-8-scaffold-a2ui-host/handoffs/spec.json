@@ -1,0 +1,42 @@
+{
+  "stage": "spec",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "backend": "openspec",
+  "backend_resolution": "kbd-apply detect → openspec (project.json.change_backend + openspec/changes/ exists)",
+  "zeespec_verdict": "n/a — no .zeespec/ directory; coverage gate inactive (opt-in)",
+  "status": "complete",
+  "recorded_at": "2026-08-29T00:20:00Z",
+  "unblocked_by": {
+    "id": "G-8",
+    "decision": "ALIGN to upstream A2UI v1.0",
+    "provenance": "operator, in session, via explicit four-option prompt (align / rename / support-both / defer). Recorded in decision-log.md as an Operator confirmation entry.",
+    "note": "Spec was genuinely blocked: the three options yield entirely different change sets, not variations on one, so proceeding under an assumption would have wasted the stage."
+  },
+  "changes_created": 5,
+  "changes": [
+    {"id": "p8-01-align-a2ui-schema", "depends_on": [], "tasks": 19, "role": "the contract — envelope model, flat components, DynamicString"},
+    {"id": "p8-02-rewrite-a2ui-normalizer", "depends_on": ["p8-01"], "tasks": 21, "role": "validator reworked to the real protocol; closes Q3"},
+    {"id": "p8-03-rewrite-a2ui-examples", "depends_on": ["p8-01", "p8-02"], "tasks": 19, "role": "the breaking half — examples + 6 referencing files"},
+    {"id": "p8-04-a2ui-render-host", "depends_on": ["p8-01", "p8-02"], "tasks": 21, "role": "adopt @a2ui/react; streaming store/hook/component"},
+    {"id": "p8-05-scaffold-a2ui-host", "depends_on": ["p8-03", "p8-04"], "tasks": 17, "role": "scaffolder + skill; browser-DOM acceptance"}
+  ],
+  "dependency_shape": "p8-01 → p8-02 → {p8-03, p8-04 in parallel} → p8-05. p8-03 and p8-04 are genuine siblings (no shared scope path), so plan may batch them together or run them in either order.",
+  "summary": "Five changes implementing the G-8 alignment decision. p8-01 replaces our invented schema with the real A2UI v1.0 envelope model (one-of createSurface/updateComponents/updateDataModel/deleteSurface/callFunction/actionResponse; flat component array with id references; DynamicString {path} leaves; catalog vocabulary). p8-02 reworks the 350-line normalizer to match, deriving its vocabulary from the schema rather than duplicating it. p8-03 carries the breaking half — both examples rewritten plus six files referencing direct:a2ui. p8-04 adopts @a2ui/react@0.10.2 with a streaming store per state-architecture.md. p8-05 emits the scaffolder, with browser-DOM verification.",
+  "key_decisions_at_spec": [
+    "Cycle detection is preserved across the model change, over the id-reference graph instead of the bindings graph. Losing it while switching models would be a silent regression of shipped behaviour.",
+    "The normalizer derives its accepted vocabulary from the schema at runtime rather than duplicating it — the p7-02 lesson, where a hand-maintained copy let TOOL_CALL_ARGS_DELTA live in two places at once.",
+    "p8-03 adds an old-dialect negative fixture so the pre-alignment format cannot creep back unnoticed. The corpus blind spot is how the AG-UI enum defect survived a whole phase.",
+    "p8-05 gate 3.6 asserts rendered DOM via Playwright (^1.51.0, already installed). Phase-7 closed with exactly one PARTIAL because 'renders in the browser' was verified at store level; a rendering host must not repeat that."
+  ],
+  "warnings_from_adversarial_review": [
+    "ORDERING ERROR (round 1 CRITICAL, fixed): p8-04 task 5.4 required a p8-03 fixture while the two were declared siblings. Fixed by making the test self-contained rather than adding an edge — a reducer unit test should not need example files.",
+    "ORDERING ERROR (round 2 CRITICAL, fixed): p8-05 declared only p8-04, so the graph p8-01→p8-02→p8-04→p8-05 was satisfiable WITHOUT p8-03 ever running, and its smoke gate would have exercised old-dialect fixtures. p8-03 added to p8-05's dependencies. Both CRITICALs were the same class — my own cross-change assertions outrunning the declared graph.",
+    "Q3 WAS FALSELY MARKED MOOT (round 1 WARNING, fixed): the G-8 decision table called expression-binding evaluation moot because the protocol defines callFunction — but p8-04 defers callFunction round-tripping, so nothing in the set would have closed it. Now p8-02 tasks 3.3/3.4 with gate 5.8: expression-like DynamicString leaves are rejected with a named error. Decision log corrected.",
+    "G-7 (five unpinned unpkg @latest loads in the preview template) is now a recorded deferral in p8-05's Out-of-scope rather than an untracked handoff warning. Under alignment the preview template may be superseded entirely, so pinning it could be wasted work — revisit when deciding its fate.",
+    "p8-01 task 2.6 (record upstream provenance in the schema) had no gate; gate 4.7 added to make it verifiable by grep."
+  ],
+  "breaking_change_note": "p8-03 is where the break lands. Both shipped examples become invalid and are rewritten. direct:a2ui keeps its name — it now means the real A2UI, which the name always implied — so content-type.schema.json needs no enum change.",
+  "process_note": "adversarial-review's build-review-packet.sh supports only the native-kbd spec layout (.kbd-orchestrator/changes/<id>/{spec.md,tasks.json,verification.md}) and exits 2 on openspec projects. Packet assembled manually and judged by a fresh-context subagent — weaker isolation than a gateway call, stated not hidden. Same gap as phase-7 spec.",
+  "next_stage": "plan",
+  "next_stage_note": "Ordering is fully constrained by the depends_on edges. Plan's remaining work is session batching (p8-03 and p8-04 are parallelisable), agent assignment, and confirming every constraint has a gate — the failure mode that produced both plan-stage CRITICALs in phase-7."
+}

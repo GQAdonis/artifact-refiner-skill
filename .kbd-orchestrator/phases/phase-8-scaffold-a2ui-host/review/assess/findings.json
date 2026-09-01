@@ -1,0 +1,38 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "assessment.md",
+      "claim": "The central renderer-contract findings rely on an uncited template file whose existence and contents are not established by the packet.",
+      "evidence": "F-2 cites `assets/templates/a2ui-preview-template.html:130` and F-4 cites `grep -c bindings a2ui-preview-template.html`, but `file_tree` only lists `./assets/templates` as a directory and `cited_paths` does not include `assets/templates/a2ui-preview-template.html`.",
+      "suggested_fix": "Add the cited template path to the evidence set with the relevant excerpt, or correct the path and claims if the renderer lives elsewhere."
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "assessment.md",
+      "claim": "The assessment's required component coverage is based on an unverified shipped example.",
+      "evidence": "F-2 says, \"The shipped example uses `Button`, `Container`, `Heading`, `TextField`,\" and G-4 says, \"Only 3 component types implemented; example needs 4+,\" but `cited_paths` verifies only `examples/a2ui-component-refinement/broken-circular.a2ui.json`; it does not verify `examples/a2ui-component-refinement/source.a2ui.json` or quote its contents.",
+      "suggested_fix": "Cite the example file path and quote the component nodes that establish the required component set."
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "assessment.md",
+      "claim": "The conclusion that no HTML generation/injection exists is not supported by the evidence given and may ignore existing render-related scripts.",
+      "evidence": "F-3 concludes, \"nothing in the repo substitutes them,\" based only on running `scripts/normalize-a2ui.mjs`; however the file tree includes render-related scripts such as `scripts/render-preview.mjs`, `scripts/compile-tsx-preview.mjs`, and conversion scripts, and the artifact provides no repository-wide search evidence for the placeholder names.",
+      "suggested_fix": "Support the claim with a repository-wide search for `{{A2UI_JSON}}`, `{{MANIFEST_JSON}}`, and related placeholders, and explicitly assess whether `scripts/render-preview.mjs` participates in A2UI rendering."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "Gap G-7 is introduced without a corresponding finding or concrete evidence.",
+      "evidence": "The Gap Report lists `G-7 | Preview loads Lit/HTMX/Alpine from unpkg.com@latest | MEDIUM | unpinned CDN, network-dependent, non-reproducible`, but no finding quotes the file or script containing these CDN URLs.",
+      "suggested_fix": "Add a finding with the exact file path and URL excerpts, or remove G-7 from the gap report."
+    }
+  ]
+}

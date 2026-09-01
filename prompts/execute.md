@@ -90,7 +90,14 @@ Browser preview fallback order:
 A2UI normalization pre-step (before preview, when `content_type = direct:a2ui`):
 1. Run `node scripts/normalize-a2ui.mjs --input <source.a2ui.json> --artifact-id <id> --out-dir <dist/previews/id>`
 2. If exit code is 1, report constraint violations from `normalize-report.json` to the Reflect phase. Do not proceed to HTML preview.
-3. If exit code is 0, proceed to HTML preview using `render-preview.mjs` with the normalized spec.
+3. If exit code is 0, the normalized message under `<out-dir>/normalized.a2ui.json` is the artifact.
+
+   **No HTML preview step exists for `direct:a2ui`.** `render-preview.mjs`
+   contains no A2UI handling, and nothing in the repo substitutes the
+   `{{A2UI_JSON}}` placeholders in `assets/templates/a2ui-preview-template.html`
+   — verified during phase-8 assess. Rendering is delivered by the runtime host
+   (`@a2ui/react`) that phase-8 p8-04/p8-05 scaffold, not by a template
+   injection step here. Treat the normalize report as the validation evidence.
 
 AG-UI normalization step (when `content_type = direct:ag-ui`):
 1. Run `node scripts/normalize-agui.mjs --input <source.ag-ui.json> --artifact-id <id> --out-dir <dist/previews/id>`
@@ -178,8 +185,9 @@ When the plan includes `render_preview`, execute in this order:
 
 0. **A2UI normalization** (only when `content_type` is `direct:a2ui`):
    - `node scripts/normalize-a2ui.mjs --input <source.a2ui.json> --artifact-id <id>`
-   - Validates against `references/schemas/a2ui-component.schema.json`, detects binding cycles, rejects undefined bindings.
-   - On success, writes `dist/previews/<id>/normalized.a2ui.json` and `normalize-report.json`. Skip step 1 (no TSX). Proceed to step 2 with `assets/templates/a2ui-preview-template.html` as the source template; the existing template-injection step substitutes `{{A2UI_JSON}}` from the normalized spec.
+   - Validates against `references/schemas/a2ui-component.schema.json`; checks id-reference resolution, cycles in the id-reference graph, reachability from the root, and data-model pointer resolution; rejects expression-like leaves.
+   - On success, writes `dist/previews/<id>/normalized.a2ui.json` and `normalize-report.json`. **Stop here** — the normalized message is the artifact and the report is the validation evidence.
+   - **Do not attempt HTML preview for `direct:a2ui`.** No injection step exists: nothing in the repo substitutes `{{A2UI_JSON}}` in `assets/templates/a2ui-preview-template.html`, and `render-preview.mjs` has no A2UI handling. An earlier version of this document asserted otherwise; that instruction was unexecutable. Rendering is delivered by the `@a2ui/react` runtime host (phase-8 p8-04/p8-05).
    - On failure, the script exits 1 and writes the violations to `normalize-report.json`. HARD FAIL the run; do not render.
 1. Compile TSX preview inputs when present:
    - `node scripts/compile-tsx-preview.mjs --entry <file.tsx> --artifact-id <id>`

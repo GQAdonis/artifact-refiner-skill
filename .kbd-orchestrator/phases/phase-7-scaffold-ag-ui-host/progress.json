@@ -1,0 +1,64 @@
+{
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "type": "feature",
+  "assessment_complete": true,
+  "assessment_path": ".kbd-orchestrator/phases/phase-7-scaffold-ag-ui-host/assessment.md",
+  "analyze_complete": true,
+  "analysis_path": ".kbd-orchestrator/phases/phase-7-scaffold-ag-ui-host/analysis.md",
+  "spec_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/phase-7-scaffold-ag-ui-host/plan.md",
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-7-scaffold-ag-ui-host/reflection.md",
+  "change_backend": "openspec",
+  "completion": {
+    "implementation": { "completed": 5, "total": 5, "status": "COMPLETE" },
+    "evidence": { "completed": 5, "total": 5, "status": "COMPLETE" },
+    "certification": { "completed": 5, "total": 6, "status": "PARTIAL" },
+    "publication": { "completed": 0, "total": 1, "status": "PENDING" }
+  },
+  "changes_completed": 5,
+  "changes_total": 5,
+  "acceptance_gates_passed": "5/6",
+  "partial_gate": "Criterion 4 (deltas render incrementally IN THE BROWSER) — incremental accumulation proven at the store level (32 snapshots, 31 growing, monotonic), but no DOM was rendered and no browser driven. The scaffolder emits AgentPanel without mounting it.",
+  "changes": [
+    { "id": "p7-01-restore-phase-records", "tasks_done": 12, "tasks_na": 2, "status": "ARCHIVED" },
+    { "id": "p7-02-fix-agui-event-enum", "tasks_done": 20, "tasks_na": 0, "status": "ARCHIVED" },
+    { "id": "p7-03-agui-server-surface", "tasks_done": 20, "tasks_na": 0, "status": "ARCHIVED" },
+    { "id": "p7-04-agui-client-store", "tasks_done": 19, "tasks_na": 0, "status": "ARCHIVED" },
+    { "id": "p7-05-scaffold-agui-host", "tasks_done": 16, "tasks_na": 2, "status": "ARCHIVED" }
+  ],
+  "specs_synced": [
+    "ag-ui-spec-validation",
+    "agui-server-surface",
+    "agui-client-store",
+    "agui-host-scaffolder"
+  ],
+  "specs_note": "openspec/specs/ was EMPTY before this phase; these four are the first synced capabilities in the repo.",
+  "live_verification": {
+    "scaffold": "scaffold-react-vite.sh + scaffold-react-vite-agui.sh both exit 0 on a fresh temp target",
+    "build": "pnpm build exits 0 in the generated app",
+    "lint": "pnpm lint exits 0; architectural rules verified ACTIVE by a probe that correctly errors",
+    "dev_server": "pnpm dev serves on :5173, single vite process, zero config-loader warnings",
+    "stream": "36 SSE frames, RUN_STARTED first, RUN_FINISHED last, Content-Type text/event-stream",
+    "incremental": "32 snapshots, 31 grew, monotonic prefix growth",
+    "adversarial_review": "9 rounds across 4 stages, 24 findings, 24/24 verified correct"
+  },
+  "preexisting_defects_fixed": [
+    "Architectural ESLint config had never run — scaffolder wrote eslint.config.mjs while shadcn wrote eslint.config.js; ESLint prefers .js. Every scaffolded app to date had unenforced layering.",
+    "pnpm build broken for every user — compilerOptions.baseUrl hard-errors under TypeScript 6.0.3 (TS5101).",
+    "pnpm lint failed on shadcn's own button.tsx via react-refresh/only-export-components."
+  ],
+  "own_defects_caught_by_smoke": [
+    "encodeSSE requires the EventType enum, not string — harness bundling skipped typecheck, pnpm build caught it.",
+    "React 19 removed the global JSX namespace; JSX.Element does not resolve."
+  ],
+  "deferred": [
+    "G-7 (runtime silently drops writes) — HIGH, caused real corruption; operator accepted deferral; lives outside this repo.",
+    "Browser-level DOM test for criterion 4.",
+    "Tool-call rendering, STATE_* reduction, reconnection/backpressure, multi-turn history, production hosting."
+  ],
+  "next_command": "/kbd-assess phase-8-scaffold-a2ui-host"
+}

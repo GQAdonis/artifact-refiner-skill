@@ -1,43 +1,46 @@
 {
+  "schemaVersion": "2",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 41,
+  "derivedRevision": 41,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 41
+  },
+  "conflictCount": 0,
   "phase": "phase-0-unblock",
-  "assessment_complete": true,
-  "plan_complete": true,
-  "execute_complete": true,
-  "execute_status": "COMPLETE",
-  "reflect_complete": true,
-  "reflection_path": ".kbd-orchestrator/phases/phase-0-unblock/reflection.md",
-  "rescope_note": "Re-scoped 2026-05-20 after execute-time reality check: template-forge-rs work deferred (file tree did not exist on disk). See execution.md.",
-  "assessment_path": ".kbd-orchestrator/phases/phase-ideation-to-app-pipeline/assessment.md",
-  "plan_path": ".kbd-orchestrator/phases/phase-0-unblock/plan.md",
-  "execution_path": ".kbd-orchestrator/phases/phase-0-unblock/execution.md",
-  "openspec_change": "openspec/changes/phase-0-unblock/",
-  "change_backend": "openspec",
+  "phaseId": "phase-0-unblock",
+  "parentPhase": null,
+  "last_updated": "2026-08-31T10:18:07.887086Z",
+  "last_updated_by": "kbd-runtime",
   "changes_total": 7,
   "changes_completed": 7,
-  "deliverables": [
-    "skills/convert-md-to-htmx/SKILL.md",
-    "skills/convert-htmx-react/SKILL.md",
-    "skills/rebrand-artifact/SKILL.md",
-    "skills/refine-moodboard/SKILL.md",
-    "skills/design-svg-logo/SKILL.md",
-    "docs/decisions/0001-sycophancy-correction-extraction.md",
-    ".claude-plugin/plugin.json (5 new skill paths added)"
-  ],
-  "validation": {
-    "frontmatter_check": "5/5 OK",
-    "plugin_json_valid": true,
-    "marketplace_validation": "passed (claude CLI not present, basic JSON validation passed)"
+  "implementation_total": 7,
+  "implementation_completed": 7,
+  "completion": {
+    "primaryCounter": "implementation",
+    "implementation": {
+      "completed": 7,
+      "total": 7,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "certification": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    },
+    "publication": {
+      "status": "PENDING",
+      "summary": null,
+      "blockers": []
+    }
   },
-  "next_command": "/kbd-reflect phase-0-unblock",
-  "open_questions": [
-    "ADR-0001: sycophancy-correction extraction option (A/B/C) — recommendation A",
-    "rust-mcp-filesystem upstream vs fork — recommendation upstream",
-    "openai-proxy wiring mode — recommendation external prerequisite"
-  ],
-  "phases_deferred": [
-    "phase-rust-workspace-bootstrap (template-forge-rs creation, was original phase-0)",
-    "phase-1-submodule-topology",
-    "phase-1b-inference-routing",
-    "phase-2-scaffold-react-vite"
-  ]
+  "changes": [],
+  "children": {},
+  "migrationStatus": "legacy-read-only"
 }

@@ -1,0 +1,24 @@
+{
+  "mode": "artifact",
+  "verdict": "PASS",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The assessment cites prior phase artifacts using paths that are not present in the repository tree, making the referenced evidence ambiguous.",
+      "evidence": "Artifact cites `phases/phase-2-scaffold-react-vite/plan.md:65` and `phase-4-scaffold-tauri-desktop/reflection.md:144`, but the file tree contains phase records only under `.kbd-orchestrator/phases/...`; `cited_paths` also reports these as broad matches rather than exact paths: `phase-4-scaffold-tauri-desktop/reflection.md -> 11 matches` and `phases/phase-2-scaffold-react-vite/plan.md -> 12 matches`.",
+      "suggested_fix": "Replace shortened phase paths with exact repository paths, e.g. `.kbd-orchestrator/phases/phase-2-scaffold-react-vite/plan.md`, and cite the exact artifact used."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The assessment promotes an externally sourced protocol delta into a local gap even though the packet does not contain verifiable evidence for the upstream claim.",
+      "evidence": "F-4 says `The upstream AWS Strands integration endpoint lists STEP_STARTED and STEP_FINISHED among supported types` but also states `That upstream claim ... is not verifiable from the packet alone. Re-verify by re-querying Context7 before acting on it.` The Gap Report nevertheless lists `G-4 | Event-kind enum missing STEP_STARTED/STEP_FINISHED | WARNING`.",
+      "suggested_fix": "Either include verifiable upstream evidence in the packet or downgrade G-4 to an open verification task for analyze before treating it as an implementation gap."
+    }
+  ]
+}

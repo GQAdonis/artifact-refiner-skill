@@ -1,0 +1,38 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "assessment.md",
+      "claim": "The assessment bases the server implementation contract on an upstream source that is not present or verifiable in the packet.",
+      "evidence": "F-5 says: \"From upstream (`sdks/typescript/packages/client/src/agent/http.ts` and the Strands endpoint), the server contract a generated host must satisfy...\" but `cited_paths` reports `MISSING  sdks/typescript/packages/client/src/agent/http.ts`, and no Strands endpoint source is included in the file tree or packet.",
+      "suggested_fix": "Either include verifiable excerpts/links for the upstream AG-UI contract in the packet or downgrade F-5 to an open question for analyze instead of treating it as established contract."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The claim that the local event-kind enum is behind the current protocol depends on unsupported upstream evidence.",
+      "evidence": "F-4 states: \"The upstream AWS Strands integration endpoint lists `STEP_STARTED` and `STEP_FINISHED` among supported types; the local enum contains neither,\" but the packet includes no AWS Strands endpoint artifact, path, or excerpt beyond this assertion.",
+      "suggested_fix": "Cite the exact upstream documentation or source excerpt that defines `STEP_STARTED` and `STEP_FINISHED`, or frame the enum update as a hypothesis to verify during analyze."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "G-2 concludes there is no AG-UI client in the scaffolder without evidence that rules out a hand-rolled or non-`@ag-ui` client.",
+      "evidence": "Gap Report G-2 says: \"No AG-UI client in the scaffolder\" with evidence \"no `@ag-ui` dep; no client emit\". The packet only shows the file tree and does not include grep output or contents of `scripts/scaffold-react-vite.sh`; absence of an `@ag-ui` dependency does not prove absence of any AG-UI/SSE client code.",
+      "suggested_fix": "Add concrete search evidence against the scaffolder output/templates, such as greps for `EventSource`, `text/event-stream`, `RUN_STARTED`, `RunAgentInput`, and `@ag-ui` across scripts/templates."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The assessment overstates that the existing state architecture answers the AG-UI streaming design question exactly.",
+      "evidence": "F-3 says the state architecture \"already mandates the exact shape an SSE host needs\" and that the streaming integration question is \"already answered,\" but the cited bullets only establish placement rules: `stores/**` owns realtime subscriptions, subscriptions coordinate through `initRealtime()`, and listeners must be in a store action. They do not assess AG-UI event parsing, run lifecycle handling, reconnect/error behavior, or message assembly.",
+      "suggested_fix": "Narrow the finding to say the existing architecture answers where the SSE subscription should live, then add separate gaps for unassessed client event handling semantics if needed."
+    }
+  ]
+}

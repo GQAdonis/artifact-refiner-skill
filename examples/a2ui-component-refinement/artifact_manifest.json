@@ -1,14 +1,14 @@
 {
   "artifact_type": "a2ui",
   "content_type": "direct:a2ui",
-  "generated_at": "2026-04-30T20:34:14.825Z",
+  "generated_at": "2026-08-29T00:00:00.000Z",
   "variants": [
     {
-      "name": "login-card",
+      "name": "notification-preferences",
       "files": [
         "examples/a2ui-component-refinement/source.a2ui.json",
-        "examples/a2ui-component-refinement/dist/previews/login-card/normalized.a2ui.json",
-        "examples/a2ui-component-refinement/dist/previews/login-card/normalize-report.json"
+        "examples/a2ui-component-refinement/dist/previews/notification-preferences/normalized.a2ui.json",
+        "examples/a2ui-component-refinement/dist/previews/notification-preferences/normalize-report.json"
       ]
     }
   ],
@@ -16,16 +16,10 @@
     "required": true,
     "runs": [
       {
-        "artifact_id": "login-card",
+        "artifact_id": "notification-preferences",
         "status": "success",
-        "normalized_spec": "examples/a2ui-component-refinement/dist/previews/login-card/normalized.a2ui.json",
-        "normalize_report": "examples/a2ui-component-refinement/dist/previews/login-card/normalize-report.json"
-      },
-      {
-        "artifact_id": "broken-circular",
-        "status": "failed",
-        "normalize_report": "examples/a2ui-component-refinement/dist/previews/broken-circular/normalize-report.json",
-        "expected_violation": "binding_cycle"
+        "normalized_spec": "examples/a2ui-component-refinement/dist/previews/notification-preferences/normalized.a2ui.json",
+        "report": "examples/a2ui-component-refinement/dist/previews/notification-preferences/normalize-report.json"
       }
     ]
   },
@@ -38,5 +32,25 @@
       "Negative path: broken-circular.a2ui.json is rejected with binding_cycle [a, b, c, a]",
       "HTML preview generation is delegated to the existing render-preview.mjs pipeline; not exercised in this example"
     ]
-  }
+  },
+  "protocol": {
+    "name": "A2UI",
+    "version": "v1.0",
+    "upstream": "https://github.com/a2ui-project/a2ui",
+    "note": "Examples target the real A2UI protocol. Prior to phase-8 they used a local dialect that was never A2UI."
+  },
+  "negative_fixtures": [
+    {
+      "name": "broken-circular",
+      "file": "examples/a2ui-component-refinement/broken-circular.a2ui.json",
+      "expects": "reference_cycle",
+      "why": "A cycle in the id-reference graph. JSON Schema cannot express acyclicity, so the normalizer enforces it."
+    },
+    {
+      "name": "broken-legacy-dialect",
+      "file": "examples/a2ui-component-refinement/broken-legacy-dialect.a2ui.json",
+      "expects": "legacy_dialect",
+      "why": "The pre-alignment local format. Retained so the dialect cannot creep back unnoticed \u2014 the corpus blind spot that hid TOOL_CALL_ARGS_DELTA for a whole phase."
+    }
+  ]
 }

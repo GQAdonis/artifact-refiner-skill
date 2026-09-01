@@ -1,0 +1,31 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "plan.md",
+      "claim": "The plan's constraint-compliance section omits multiple blocking constraints, so downstream execution can proceed without satisfying required archive blockers.",
+      "evidence": "The constraints define blocking checks for `references-resolve`, `schemas-parse`, and `no-brand-leakage`, but the plan's compliance table lists only `marketplace-validates`, `skill-frontmatter-present`, `hook-scripts-executable`, `no-stub-comments`, `submodules-clean`, and `no-hardcoded-secrets`.",
+      "suggested_fix": "Add explicit gates or validation steps for every blocking constraint, especially `references-resolve`, `schemas-parse`, and `no-brand-leakage`, and state when they must run."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "claim": "The plan gives conflicting gate numbers for the p7-01 blocker, making the required prerequisite check ambiguous.",
+      "evidence": "The ordered change list says p7-01 gate is `operator confirmation recorded (5.3)`, and the risk section says `Gate 5.3 makes that machine-checkable`, but the final command section says `p7-01 gate 5.4 blocks every other p7-* change`.",
+      "suggested_fix": "Correct the gate reference so all p7-01 blocking statements point to the same gate number and criterion."
+    },
+    {
+      "severity": "WARNING",
+      "file": "plan.md",
+      "claim": "The plan does not deliver the intra-change sequencing requested by the spec handoff.",
+      "evidence": "The spec handoff says the next stage's remaining work is `sequencing within changes and confirming the p7-01 operator decision actually gets made`, but the plan says it contributes `session batching, agent assignment, effort sizing` and provides only a session-level table, not ordered task sequencing within p7-01 through p7-05.",
+      "suggested_fix": "Add per-change task ordering, especially for p7-01's operator-confirmation path and any p7-03/p7-04/p7-05 asset/interface handoffs."
+    }
+  ]
+}

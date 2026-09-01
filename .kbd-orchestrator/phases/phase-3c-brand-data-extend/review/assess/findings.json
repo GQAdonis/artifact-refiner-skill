@@ -1,0 +1,34 @@
+{
+  "mode": "artifact",
+  "target": "assess",
+  "phase": "phase-3c-brand-data-extend",
+  "verdict": "PASS",
+  "judge_model": "claude-sonnet-4-5",
+  "isolation_mode": "harness-native",
+  "isolation_note": "REST gateway returned HTTP 401 token_expired at http://localhost:8181/v1; dispatch-judge.sh exit 3. Fell back to tier-2 fresh-context subagent per the documented chain. Weaker guarantee: same model family as producer.",
+  "producer_model": "claude-opus-5",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The inherited-state quote attributed to polish-pass progress.json acceptance_notes is not traceable to a specific source file path.",
+      "evidence": "The artifact quotes acceptance_notes but sources it generically. cited_paths shows 'progress.json -> 12 matches' with three sampled paths, none named polish-pass.",
+      "suggested_fix": "Cite the exact file path for the acceptance_notes quote so the Correction section is checkable."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "G-6 scope justification asserts a repo-wide blast radius without supporting evidence of other consumers in the packet.",
+      "evidence": "Scope Recommendation calls G-6 'a repo-wide serde strictness decision affecting every brand TOML consumer', but only one consumer (library.rs:52) is cited anywhere in the artifact.",
+      "suggested_fix": "Either cite the other consumers, or soften the claim to what was verified (single known consumer)."
+    },
+    {
+      "severity": "SUGGESTION",
+      "file": "assessment.md",
+      "claim": "F-1's claim that deny_unknown_fields is not applied is asserted rather than shown with a quoted absence-check.",
+      "evidence": "F-1 states the attribute 'is not applied' without quoting the struct attribute block or an empty grep, unlike F-4 which quotes '86 lines, 0 tests'.",
+      "suggested_fix": "Quote the struct attribute lines or an empty grep for deny_unknown_fields in brand.rs."
+    }
+  ]
+}

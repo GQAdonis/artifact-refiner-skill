@@ -1,0 +1,52 @@
+{
+  "mode": "artifact",
+  "target": "spec",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "rounds": 2,
+  "final_verdict": "ACCEPTED_AT_REVISION_CAP",
+  "producer_model": "claude-opus-5",
+  "judge_model": "claude-sonnet-4-5",
+  "isolation_mode": "harness-native",
+  "isolation_note": "build-review-packet.sh supports only the native-kbd spec layout and exits 2 for openspec projects. Packet assembled manually (mandate + operator decision + both prior handoffs + all 5 changes) and judged by a fresh-context subagent. Weaker than a gateway call; stated.",
+  "round_1": {
+    "verdict": "BLOCK",
+    "critical": 1,
+    "warning": 1,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "claim": "p8-04 task 5.4 required a p8-03 fixture while the two were declared siblings; the graph allowed p8-04 before p8-03.",
+        "disposition": "FIXED \u2014 test made self-contained rather than adding a dependency edge. A reducer unit test should not need example files."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "Q3 (arbitrary-expression bindings) marked moot via callFunction, which p8-04 defers \u2014 so nothing in the set closes it.",
+        "disposition": "FIXED \u2014 p8-02 tasks 3.3/3.4 + gate 5.8 reject expression-like DynamicString leaves with a named error. Decision log corrected from 'moot' to 'NOT moot'."
+      }
+    ]
+  },
+  "round_2": {
+    "verdict": "BLOCK",
+    "critical": 1,
+    "warning": 2,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "claim": "p8-05 declared only p8-04, so p8-01\u2192p8-02\u2192p8-04\u2192p8-05 was satisfiable without p8-03; its smoke gate would run on old-dialect fixtures.",
+        "disposition": "FIXED \u2014 p8-03 added to p8-05's dependencies with the reasoning recorded inline."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "G-7 acknowledged as open but owned by no change and tracked by no deferral.",
+        "disposition": "FIXED \u2014 recorded in p8-05 Out-of-scope with rationale: under alignment the preview template may be superseded, so pinning could be wasted work."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "p8-01 task 2.6 (record upstream provenance) had no corresponding gate.",
+        "disposition": "FIXED \u2014 gate 4.7 asserts by grep that the schema carries the catalogId and an a2ui.org/a2ui-project reference."
+      }
+    ]
+  },
+  "unresolved": [],
+  "note": "Five findings, all verified correct, all applied. Both CRITICALs were the same class: cross-change assertions in prose outrunning the declared dependency graph. Worth carrying into plan as a check."
+}

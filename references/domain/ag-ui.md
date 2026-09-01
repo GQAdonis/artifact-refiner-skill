@@ -68,20 +68,51 @@ Valid AG-UI Event Kinds
 
 Standard event kinds recognized by the validator:
 
+  Run lifecycle:
   - RUN_STARTED
   - RUN_FINISHED
   - RUN_ERROR
+
+  Step lifecycle:
+  - STEP_STARTED
+  - STEP_FINISHED
+
+  Text message:
   - TEXT_MESSAGE_START
   - TEXT_MESSAGE_CONTENT
   - TEXT_MESSAGE_END
   - TEXT_MESSAGE_CHUNK
+
+  Tool call:
   - TOOL_CALL_START
-  - TOOL_CALL_ARGS_DELTA
+  - TOOL_CALL_ARGS (carries a `delta` field — the *event* is not named `_DELTA`)
   - TOOL_CALL_END
+  - TOOL_CALL_CHUNK
+  - TOOL_CALL_RESULT
+
+  Reasoning message:
+  - REASONING_MESSAGE_START
+  - REASONING_MESSAGE_CONTENT
+  - REASONING_MESSAGE_END
+  - REASONING_MESSAGE_CHUNK
+
+  State and passthrough:
   - STATE_SNAPSHOT
   - STATE_DELTA
   - MESSAGES_SNAPSHOT
+  - RAW
   - CUSTOM (requires a matching entry in `custom_events`)
+
+  Source of truth: `references/schemas/ag-ui-spec.schema.json`
+  → `definitions.agEventKind.enum`, which `scripts/normalize-agui.mjs` reads at
+  runtime rather than duplicating. The list above mirrors the 23 kinds shipped in
+  `@ag-ui/core@0.0.59`; re-derive with:
+
+  ```
+  npm pack @ag-ui/core@<version> && tar -xzf ag-ui-core-<version>.tgz
+  grep -oE '"(RUN|STEP|TEXT_MESSAGE|TOOL_CALL|REASONING_MESSAGE|STATE|MESSAGES|RAW|CUSTOM)[A-Z_]*"' \
+    package/dist/index.js | tr -d '"' | sort -u
+  ```
 
 ---
 

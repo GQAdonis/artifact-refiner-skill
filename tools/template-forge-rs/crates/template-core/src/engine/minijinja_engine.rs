@@ -115,6 +115,8 @@ mod tests {
             },
             logo: None,
             contact: None,
+            motifs: None,
+            tone: None,
         }
     }
 

@@ -1,0 +1,37 @@
+{
+  "stage": "plan",
+  "phase": "phase-8-scaffold-a2ui-host",
+  "artifact": "plan.md",
+  "status": "complete",
+  "recorded_at": "2026-08-29T00:55:00Z",
+  "backend": "openspec",
+  "changes": 5,
+  "tasks": 106,
+  "evolver_bridge": null,
+  "summary": "Five changes implementing the G-8 alignment decision, in the phase's first genuinely parallel dependency shape: p8-01 → p8-02 → {p8-03 ‖ p8-04} → p8-05. p8-03 (data: examples and references) and p8-04 (code: store, hook, component) share no scope path and may run in separate worktrees — unlike phase-7 where every change shared package.json with its neighbour. Three sessions: A = contract + validator, B = the parallel pair, C = scaffolder plus the browser-DOM gate.",
+  "first_change": "p8-01-align-a2ui-schema",
+  "ordering_rationale": "p8-01 first is forced, not preferred: every other change encodes the document model it defines, so skipping it would bake a wrong contract into the normalizer, the examples, the store, and the scaffolder simultaneously.",
+  "task_count_note": "The spec handoff records 97 tasks; the current total is 106. The +9 delta is 5 gates from spec-stage review, 2 from this stage's constraint audit, and 2 from this stage's round-2 review. 106 is the number to size against.",
+  "constraint_coverage": {
+    "blocking_total": 7,
+    "all_gated": true,
+    "gates_added_during_planning": 9,
+    "note": "Gaps found during the pre-write audit were closed by writing gates into the change tasks, not by documenting them. Phase-7's plan stage produced two CRITICALs for exactly that distinction."
+  },
+  "warnings_from_adversarial_review": [
+    "BOTH CRITICALs were the same error, third phase running: claiming constraint coverage that the gate's actual scan path does not provide. p8-04's no-hardcoded-secrets gate greps assets/scaffold/a2ui/; the constraint greps scripts/ prompts/ references/; p8-05 creates scripts/scaffold-react-vite-a2ui.sh. Execute should read each gate's actual command, not its label.",
+    "Round 2 repeated the round-1 CRITICAL because round 1 fixed p8-05/tasks.md but left the plan's compliance table crediting p8-04 alone. Fixing an artifact without fixing its index leaves the next reader with the wrong picture.",
+    "p8-01 task 1.2 is a HALT, not a checkpoint. If the re-verified upstream protocol differs from what the proposal records, stop and re-spec — tasks 2.x hard-code the envelope key set, and running them against a changed protocol writes a NEW wrong schema that looks authoritative.",
+    "p8-02 must derive its accepted vocabulary from the schema at runtime, not duplicate it. A hand-maintained second copy is how TOOL_CALL_ARGS_DELTA survived in two places through an entire phase.",
+    "Both spec-stage CRITICALs were cross-change prose asserting an ordering the depends_on edges did not enforce. Execute should trust the edges, not the prose.",
+    "Q3 is security-relevant and its closure is p8-02 gate 5.8 (expression-like DynamicString leaves rejected with a named error, asserted by matching the message). Not optional — the G-8 decision table originally called it moot via callFunction, which p8-04 defers."
+  ],
+  "risk_note": "p8-02 is the hardest change: a 350-line rewrite where every core assumption moves (recursive tree descent → flat-array indexing; bindings-graph cycle detection → id-reference cycle detection; regex vocabulary → catalog membership). The specific regression to watch is cycle detection surviving the model change — a flat array with id references describes cycles just as easily, no schema catches them, and losing it would be invisible until a malformed spec hangs a renderer.",
+  "acceptance_note": "p8-05 gate 3.6 — rendered DOM asserted via Playwright by role and text, not string-matching HTML — is the phase's acceptance test. Phase-7 closed with one PARTIAL because 'renders in the browser' was verified at store level; a rendering host that never observes rendering would verify the wrong thing twice.",
+  "deferred": [
+    "G-7 (five unpinned unpkg @latest loads in a2ui-preview-template.html) — tracked deferral in p8-05 Out-of-scope. Under alignment the preview template may be superseded entirely, so pinning a file that may be deleted is likely wasted work.",
+    "callFunction / actionResponse round-tripping, multi-surface management, custom catalog authoring."
+  ],
+  "next_stage": "apply",
+  "exact_next_command": "/kbd-apply p8-01-align-a2ui-schema"
+}

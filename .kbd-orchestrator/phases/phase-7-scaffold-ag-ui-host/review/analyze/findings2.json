@@ -1,0 +1,17 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "analysis.md",
+      "claim": "The server-surface recommendation omits one of the three homes the assessment explicitly required analyze to consider: extending openai-proxy.",
+      "evidence": "Prior handoff open question: \"Where does the server surface live? Extending openai-proxy is out-of-repo; scaffold-react-vite-axum.sh (431 lines) is the closest existing home; a Node dev-server route is a third option.\" Analysis says, \"The assessment offered three homes. Evidence narrows it to one,\" but then evaluates only \"Rust/Axum \u2014 reject\" and \"Node \u2014 recommend\"; there is no verdict or rationale for extending openai-proxy.",
+      "suggested_fix": "Add an explicit openai-proxy candidate evaluation with a verdict, including whether out-of-repo status makes it impossible, deferred, or still required by the phase definition."
+    }
+  ]
+}

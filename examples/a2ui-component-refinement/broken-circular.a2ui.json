@@ -1,17 +1,13 @@
 {
-  "version": "a2ui/v1",
-  "metadata": {
-    "name": "broken-circular",
-    "description": "Negative-path example: bindings form a cycle a -> b -> c -> a. Normalizer must reject this with a binding_cycle violation."
-  },
-  "bindings": {
-    "a": { "kind": "ref", "ref": "b" },
-    "b": { "kind": "ref", "ref": "c" },
-    "c": { "kind": "ref", "ref": "a" }
-  },
-  "root": {
-    "id": "container",
-    "type": "Container",
-    "bindings": { "value": { "$ref": "a" } }
+  "version": "v1.0",
+  "createSurface": {
+    "surfaceId": "circular",
+    "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+    "components": [
+      { "id": "root", "component": "Card", "child": "panel" },
+      { "id": "panel", "component": "Column", "children": ["label", "nested"] },
+      { "id": "label", "component": "Text", "text": "Cycle below" },
+      { "id": "nested", "component": "Card", "child": "panel" }
+    ]
   }
 }

@@ -83,8 +83,9 @@ After **each phase completes**:
 | Content Type Pattern | Evaluation Strategy | Reflect Focus |
 |---|---|---|
 | `direct:*` | `output_inspection` | Evaluate the generated artifact directly |
-| `direct:a2ui` | `output_inspection` | Validate against `references/schemas/a2ui-component.schema.json`; cycle-check the bindings graph; normalize before render |
+| `direct:a2ui` | `output_inspection` | Validate against `references/schemas/a2ui-component.schema.json`; check id-reference resolution, cycles, and reachability; normalize |
 | `direct:ag-ui` | `output_inspection` | Validate against `references/schemas/ag-ui-spec.schema.json`; cross-ref tool names and event kinds via `scripts/normalize-agui.mjs`; generate coverage report |
+| `direct:mcp-ui` | `output_inspection` | Validate against `references/schemas/mcp-ui-resource.schema.json`; check the `ui://` URI scheme and reject out-of-scope content shapes via `scripts/normalize-mcp-ui.mjs`; adapter `references/domain/mcp-ui.md` |
 | `meta:*` (no test gen) | `prompt_quality` | Evaluate prompt clarity, specificity, platform fit |
 | `meta:*` (test gen on) | `test_execution` | Generate test output, evaluate against constraints |
 | `meta:composite` | Per-component | Each component uses its own strategy |

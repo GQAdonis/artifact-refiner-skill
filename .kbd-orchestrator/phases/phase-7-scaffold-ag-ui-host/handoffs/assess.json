@@ -1,0 +1,29 @@
+{
+  "stage": "assess",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "artifact": "assessment.md",
+  "status": "complete",
+  "recorded_at": "2026-08-28T00:30:00Z",
+  "summary": "Phase-7 is genuinely unstarted and larger than its inherited estimate. The definition of record is 'React scaffold + AG-UI client + openai-proxy AG-UI surface wiring'; only the React scaffold exists. The decisive finding is that the openai-proxy AG-UI SSE surface — which the phase-4 reflection said was 'already running via phase-1b' — does not exist: phase-1b's own scope_note says configuration-and-discovery only, and all four AG-UI endpoint candidates on the live proxy return 404. That server surface must be built, and it was invisible in every prior estimate. Seven gaps: G-1..G-3 BLOCKING (server surface, client, scaffolder), G-4/G-5 WARNING (stale event enum, undecided build-vs-adopt), G-6 BLOCKING-process (migration destroyed phase records), G-7 WARNING-process (runtime silently drops writes).",
+  "open_questions": [
+    "Adopt @ag-ui/client + @ag-ui/encoder or hand-roll? SSE framing is ~10 lines; the packages buy RunAgentInput Zod validation and protobuf negotiation, at the cost of dependencies in every scaffolded app. This is the phase's main build-vs-adopt decision — analyze should evaluate it rather than assume.",
+    "Where does the server surface live? Extending openai-proxy is out-of-repo; scaffold-react-vite-axum.sh (431 lines) is the closest existing home; a Node dev-server route is a third option.",
+    "What agent backs the host? A mock event emitter proves the transport and keeps the phase bounded; wiring a real LLM turns this into an inference-integration phase.",
+    "Store reduction semantics for streamed events — how TEXT_MESSAGE_CONTENT deltas accumulate, whether STATE_SNAPSHOT/STATE_DELTA map onto the app store or a separate slice, and how aborted runs unwind state. The state architecture settles placement but not these."
+  ],
+  "warnings_from_adversarial_review": [
+    "G-4 rests on an externally-sourced claim: upstream reportedly supports STEP_STARTED/STEP_FINISHED, which our enum lacks. The local half (grep count 0) is verifiable; the upstream half came from Context7 and must be re-confirmed at plan time before editing the schema. Do not treat the protocol delta as established.",
+    "F-5's transport contract cites upstream ag-ui-protocol/ag-ui paths that do not exist in this repo. They are external protocol authority, not local evidence, and are labelled as such in the assessment. Re-query Context7 to re-verify rather than assuming they resolve locally.",
+    "Corrected during review: the state architecture settles only WHERE streaming lives, not HOW events reduce into state. An earlier draft claimed the design question was fully answered, which would have let plan skip real design work."
+  ],
+  "blocking_precondition": {
+    "id": "G-6",
+    "summary": "Last session's `prometheus kbd migrate --apply` overwrote every phase progress.json with runtime-derived counters, replacing narrative records (scope_note, live_verification, acceptance notes) with bare N/N. phase-1b went from 19 keys to counters; its scope_note was needed to disprove F-1 and had to be recovered via `git show HEAD:`.",
+    "status": "recoverable — nothing committed, so git HEAD holds every original",
+    "risk": "a `git add -A` makes the loss permanent and silent",
+    "recommendation": "restore from git, or explicitly decide the counters supersede the narrative, BEFORE any phase-7 code work"
+  },
+  "next_stage": "analyze",
+  "next_stage_rationale": "Question 1 is a genuine build-vs-adopt decision with dependency consequences for every scaffolded app; analyze exists for exactly this and should not be skipped.",
+  "estimate_note": "Not a one-session phase. Reference class is phase-4 (15 changes) and phase-2 (9 changes). Expect 8-14 changes across 2-3 sessions, with the server surface (G-1) carrying the risk."
+}

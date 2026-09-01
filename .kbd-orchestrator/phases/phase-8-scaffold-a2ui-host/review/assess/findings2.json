@@ -1,0 +1,38 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "assessment.md",
+      "claim": "The assessment's central renderer findings depend on a template file whose existence is not supported by the packet.",
+      "evidence": "The artifact repeatedly cites `assets/templates/a2ui-preview-template.html` as tracked in-repo, but `file_tree` only lists `./assets/templates` and `cited_paths` does not include `assets/templates/a2ui-preview-template.html`; the central findings F-2, F-3, F-4, and F-6 all rely on that file.",
+      "suggested_fix": "Add the template path to the cited path validation or include enough verified file content in the packet to establish that the file exists and contains the cited renderer/template code."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The assessment contradicts its own open scope question by making the template-injector gap mandatory under both possible readings.",
+      "evidence": "Open Question 1 says reading (b) is `a scaffold-react-vite-a2ui.sh emitting an app that renders A2UI specs at runtime`, but Scope Recommendation says `In scope under either reading` includes `G-2 \u2014 a template injector that actually emits HTML`.",
+      "suggested_fix": "Split required gaps by Q1 outcome: make the template injector mandatory only for the preview-pipeline reading unless the assessment justifies why the scaffolder reading also requires it."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The assessment relies on prior phase conclusions that are not present in the review packet.",
+      "evidence": "`prior_handoffs` is null, while the artifact claims `Origin: Deferred since the ideation-to-app pipeline; recommended by phase-7 reflection` and says `Phase-7's reflection recommended this phase on the premise that it \"exercises the substrate a second time.\"`",
+      "suggested_fix": "Include the relevant phase-7 reflection excerpt in `prior_handoffs` or restate the finding as unverified context rather than evidence for F-1."
+    },
+    {
+      "severity": "WARNING",
+      "file": "assessment.md",
+      "claim": "The verification recommendation to use Playwright is unsupported by the packet.",
+      "evidence": "The artifact states `Playwright is already in devDependencies`, but the packet provides only the existence of `./package.json` in `file_tree` and no package contents confirming a Playwright dependency.",
+      "suggested_fix": "Cite the relevant `package.json` entry or weaken the criterion to require a browser-DOM test without asserting Playwright is already available."
+    }
+  ]
+}

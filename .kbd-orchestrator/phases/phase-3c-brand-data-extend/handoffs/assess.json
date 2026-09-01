@@ -1,0 +1,19 @@
+{
+  "stage": "assess",
+  "phase": "phase-3c-brand-data-extend",
+  "artifact": "assessment.md",
+  "status": "complete",
+  "recorded_at": "2026-08-27T13:15:00Z",
+  "summary": "Gate 8.4 root cause confirmed empirically, not documentarily: BrandData (brand.rs:11) has no motifs or tone field, and library.rs:52 deserializes without deny_unknown_fields, so serde silently discards both. A live render probe proved it — a TOML motif titled 'Test Motif' produced grep count 0 in output, and a 2-word tone array rendered as the hardcoded 5-chip fallback, with render exiting 0 and emitting no warning. The producer side (refine-moodboard.mjs) is already correct and needs no work; the gap is exclusively the Rust consumer. Six gaps filed: G-1..G-3 BLOCKING (add Motif struct plus two Option fields), G-4/G-5 HIGH (template for-branches have never executed; no round-trip test exists), G-6 MEDIUM (deferred).",
+  "open_questions": [
+    "Fallback semantics: when a brand supplies fewer than six motifs, render only its own or top up from the hardcoded set? Recommendation: only its own, to keep provenance unambiguous.",
+    "Should G-6 (deny_unknown_fields) be filed as a follow-up change so the silent-discard defect class is tracked rather than rediscovered?"
+  ],
+  "warnings_from_adversarial_review": [
+    "Isolation degraded: REST gateway returned HTTP 401 token_expired, so review used the tier-2 harness-native subagent (same model family as producer). Renew the gateway credential via /liter-llm-bridge configure before the next stage or that weaker guarantee persists across the phase.",
+    "W-2 (applied): the assessment originally justified deferring G-6 by claiming it affects 'every brand TOML consumer'. That was an overclaim — there is exactly one deserialization site. The deferral now rests on input compatibility with existing brand TOMLs on disk, which is verified.",
+    "Correction to inherited state: polish-pass/progress.json:14 claims the moodboard template 'iterates correctly when data is present (verified via fallback path)'. Verifying the fallback path only exercises the {% else %} branch. The {% for %} branch is unreachable while G-1..G-3 stand and has never executed. Plan should treat its first execution as new work, not as regression-checking known-good code."
+  ],
+  "next_stage": "plan",
+  "estimate_note": "Waypoint carried ~30 min for the struct change alone. Adding the round-trip test (G-5) and verifying the loop branch pushes it to roughly 45-60 min."
+}

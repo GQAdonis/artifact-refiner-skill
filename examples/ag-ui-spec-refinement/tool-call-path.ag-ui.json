@@ -1,0 +1,120 @@
+{
+  "version": "ag-ui/v1",
+  "metadata": {
+    "description": "AG-UI spec exercising the full tool-call event path: START -> ARGS -> END -> RESULT, plus step lifecycle and reasoning events. Added by p7-02 to close a corpus blind spot — no prior example referenced TOOL_CALL_ARGS, which is why the schema shipped the non-existent kind TOOL_CALL_ARGS_DELTA undetected.",
+    "author": "prometheus-skill-pack",
+    "tags": [
+      "tool-call",
+      "streaming",
+      "regression-guard"
+    ],
+    "runtime": "node"
+  },
+  "agent": {
+    "name": "invoice-extraction-agent",
+    "description": "Extracts structured line items from an uploaded invoice, streaming tool arguments as they are constructed so the UI can preview the extraction before it completes."
+  },
+  "tools": [
+    {
+      "name": "extract_line_items",
+      "description": "Parse an invoice document into structured line items.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Identifier of the uploaded invoice document."
+          },
+          "currency_hint": {
+            "type": "string",
+            "description": "Expected currency code, used to disambiguate ambiguous symbols."
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      }
+    },
+    {
+      "name": "reconcile_totals",
+      "description": "Check that extracted line items sum to the stated invoice total.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "line_items": {
+            "type": "array",
+            "description": "Line items produced by extract_line_items.",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "line_items"
+        ]
+      }
+    }
+  ],
+  "event_emission": [
+    {
+      "tool": "extract_line_items",
+      "on_event": "STEP_STARTED",
+      "fragment": "ExtractionStepIndicator",
+      "condition": "Emitted when the extraction step begins. Marks the step active in the multi-step progress rail."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_START",
+      "fragment": "ExtractionPreviewPanel",
+      "condition": "Emitted when the tool call opens. Renders an empty argument preview ready to receive streamed deltas."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_ARGS",
+      "fragment": "ExtractionPreviewPanel",
+      "condition": "Emitted for each incremental argument delta. The event carries a `delta` field, but the event kind itself is TOOL_CALL_ARGS — not TOOL_CALL_ARGS_DELTA. This binding is the regression guard for that distinction."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_END",
+      "fragment": "ExtractionPreviewPanel",
+      "condition": "Emitted when argument streaming completes. Freezes the preview and shows a spinner while the tool executes."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_RESULT",
+      "fragment": "LineItemTable",
+      "condition": "Emitted when the tool returns. Populates LineItemTable with the extracted rows."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "STEP_FINISHED",
+      "fragment": "ExtractionStepIndicator",
+      "condition": "Emitted when the extraction step completes. Marks the step done in the progress rail."
+    },
+    {
+      "tool": "reconcile_totals",
+      "on_event": "REASONING_MESSAGE_START",
+      "fragment": "ReconciliationRationale",
+      "condition": "Emitted when the agent begins explaining a totals discrepancy. Opens the rationale disclosure."
+    },
+    {
+      "tool": "reconcile_totals",
+      "on_event": "REASONING_MESSAGE_CONTENT",
+      "fragment": "ReconciliationRationale",
+      "condition": "Emitted for each reasoning delta. Appended to the rationale body."
+    },
+    {
+      "tool": "reconcile_totals",
+      "on_event": "REASONING_MESSAGE_END",
+      "fragment": "ReconciliationRationale",
+      "condition": "Emitted when the rationale is complete. Collapses the disclosure to a one-line summary."
+    },
+    {
+      "tool": "reconcile_totals",
+      "on_event": "TOOL_CALL_RESULT",
+      "fragment": "ReconciliationBadge",
+      "condition": "Emitted with the reconciliation verdict. Renders a pass/fail badge beside the invoice total."
+    }
+  ]
+}

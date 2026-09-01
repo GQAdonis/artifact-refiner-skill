@@ -1,0 +1,62 @@
+{
+  "mode": "artifact",
+  "target": "plan",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "rounds": 2,
+  "final_verdict": "ACCEPTED_AT_REVISION_CAP",
+  "producer_model": "claude-opus-5",
+  "judge_model": "kbd-judge",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "round_1": {
+    "verdict": "BLOCK",
+    "critical": 1,
+    "warning": 2,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "claim": "Constraint-compliance table omitted three blocking constraints (references-resolve, schemas-parse, no-brand-leakage), so execution could proceed without satisfying required archive blockers.",
+        "disposition": "FIXED — all seven blocking constraints now enumerated with applicability and satisfaction points."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "Conflicting gate numbers for the p7-01 blocker (5.3 in two places, 5.4 in another).",
+        "disposition": "FIXED — both are real but distinct: 5.3 is the operator-confirmation artifact, 5.4 is the ordering rule. Now disambiguated explicitly."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "Plan did not deliver the intra-change sequencing the spec handoff requested.",
+        "disposition": "FIXED — sequencing analysed per change and shown to be already forced by task dependencies; the two non-obvious constraints (p7-02 HALT, p7-03/p7-04 shared package.json) called out explicitly rather than left implicit."
+      }
+    ]
+  },
+  "round_2": {
+    "verdict": "BLOCK",
+    "critical": 1,
+    "warning": 2,
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "claim": "Plan admitted three blocking constraints had no gate and pushed gate creation to execute instead of incorporating it into planned work.",
+        "disposition": "FIXED — this was the substantive one. Documenting a gap is not planning it. Gates written directly into openspec tasks: p7-02 5.5 (schemas-parse), 5.6 (references-resolve), 5.7 (no-brand-leakage), p7-05 3.8 (no-brand-leakage)."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "Two gate additions were prose, not testable acceptance criteria.",
+        "disposition": "FIXED — each gate is now a runnable command with a defined pass condition."
+      },
+      {
+        "severity": "WARNING",
+        "claim": "plugin-manifest-current warning constraint omitted despite planned skill-registration work.",
+        "disposition": "FIXED — p7-05 gate 3.9 asserts .claude-plugin/plugin.json lists the new skill."
+      }
+    ]
+  },
+  "unresolved": [],
+  "side_effects": [
+    "openspec/changes/p7-02-fix-agui-event-enum/tasks.md — gates 5.5, 5.6, 5.7 added",
+    "openspec/changes/p7-05-scaffold-agui-host/tasks.md — gates 3.8, 3.9 added; gate 4.1 range corrected 3.1-3.7 → 3.1-3.9",
+    "plan.md header counts corrected 86 tasks/13 gates → 91 tasks/16 gates"
+  ],
+  "note": "All six findings across both rounds verified correct and applied. Both CRITICALs were the same underlying error: treating constraint coverage as something to describe rather than something to enforce. Nothing left outstanding at the cap."
+}

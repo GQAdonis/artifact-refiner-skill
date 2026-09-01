@@ -8,6 +8,10 @@
     "preview:render": "node scripts/render-preview.mjs"
   },
   "devDependencies": {
+    "@a2ui/react": "0.10.2",
+    "@a2ui/web_core": "0.10.6",
+    "@ag-ui/client": "0.0.59",
+    "@ag-ui/encoder": "0.0.59",
     "@babel/generator": "^7.29.1",
     "@babel/parser": "^7.29.3",
     "@babel/traverse": "^7.29.0",

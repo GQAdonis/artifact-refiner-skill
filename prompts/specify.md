@@ -150,10 +150,10 @@ This blueprint drives the Plan phase.
 Classify the content type during Specify using these heuristics (see `references/content-types.md`):
 
 1. **Explicit** — User says "create a prompt for...", "write instructions to..." → `meta:*`
-2. **File extension** — `.tsx` → `direct:react`, `.html` → `direct:html`, `.py` → `direct:code`, `.a2ui.json` / `.a2ui.yaml` → `direct:a2ui`, `.ag-ui.json` / `.ag-ui.yaml` → `direct:ag-ui`
-3. **Spec marker** — Source file contains `"version": "a2ui/v1"` (or any `a2ui/v*`) at the top level → `direct:a2ui`; contains `"version": "ag-ui/v1"` (or any `ag-ui/v*`) → `direct:ag-ui`
-4. **Artifact type** — `logo` → `direct:image`, `ui` → `direct:react` or `direct:html`, `a2ui` → `direct:a2ui`, `ag-ui` → `direct:ag-ui`
-5. **Intent keywords** — "generate", "produce", "create" → `direct:*`; "prompt for", "instructions to" → `meta:*`; "a2ui spec", "agent-to-ui" → `direct:a2ui`; "ag-ui spec", "agent spec", "copilotkit spec", "event emission", "tool wiring" → `direct:ag-ui`
+2. **File extension** — `.tsx` → `direct:react`, `.html` → `direct:html`, `.py` → `direct:code`, `.a2ui.json` / `.a2ui.yaml` → `direct:a2ui`, `.ag-ui.json` / `.ag-ui.yaml` → `direct:ag-ui`, `.mcp-ui.json` → `direct:mcp-ui`
+3. **Spec marker** — Source file contains a top-level A2UI envelope operation (`createSurface`, `updateComponents`, `updateDataModel`, `deleteSurface`, `callFunction`, `actionResponse`) with `"version": "v1.0"` → `direct:a2ui`; contains `"version": "ag-ui/v1"` (or any `ag-ui/v*`) → `direct:ag-ui`. Note: `"version": "a2ui/v1"` is the **pre-alignment dialect**, not the protocol — still routed to `direct:a2ui` so the normalizer can reject it by name rather than leaving it unclassified. Contains an embedded resource whose `uri` begins with **`ui://`** → `direct:mcp-ui`. **Key on the URI scheme, never on HTML content** — an MCP-UI resource carries a `text/html` payload, so a content-based heuristic would capture every `direct:html` artifact.
+4. **Artifact type** — `logo` → `direct:image`, `ui` → `direct:react` or `direct:html`, `a2ui` → `direct:a2ui`, `ag-ui` → `direct:ag-ui`, `mcp-ui` → `direct:mcp-ui`
+5. **Intent keywords** — "generate", "produce", "create" → `direct:*`; "prompt for", "instructions to" → `meta:*`; "a2ui spec", "agent-to-ui" → `direct:a2ui`; "ag-ui spec", "agent spec", "copilotkit spec", "event emission", "tool wiring" → `direct:ag-ui`; "mcp-ui", "mcp app", "ui resource", "ui:// resource" → `direct:mcp-ui`
 6. **Default** — If ambiguous, ask the user or default to `direct:*`
 
 For `meta:*` content types, also set:

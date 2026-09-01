@@ -4,7 +4,12 @@
   "title": "AG-UI Agent Specification",
   "description": "Schema for AG-UI agent-side specifications. Codifies the structural rules described in references/domain/ag-ui.md so that constraint validation has a deterministic source of truth. Cross-reference integrity (tool names in event_emission must reference declared tools; on_event values must be valid AG-UI event kinds) is enforced by the normalization adapter, not by this schema.",
   "type": "object",
-  "required": ["version", "agent", "tools", "event_emission"],
+  "required": [
+    "version",
+    "agent",
+    "tools",
+    "event_emission"
+  ],
   "additionalProperties": false,
   "properties": {
     "version": {
@@ -14,7 +19,7 @@
     },
     "agent": {
       "$ref": "#/definitions/agentIdentity",
-      "description": "Agent identity block — name and optional description."
+      "description": "Agent identity block \u2014 name and optional description."
     },
     "tools": {
       "type": "array",
@@ -42,11 +47,17 @@
       "type": "object",
       "description": "Optional spec-level metadata. Free-form; kept opaque to validators.",
       "properties": {
-        "description": { "type": "string" },
-        "author": { "type": "string" },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
         "tags": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "runtime": {
           "type": "string",
@@ -68,16 +79,25 @@
         "RUN_STARTED",
         "RUN_FINISHED",
         "RUN_ERROR",
+        "STEP_STARTED",
+        "STEP_FINISHED",
         "TEXT_MESSAGE_START",
         "TEXT_MESSAGE_CONTENT",
         "TEXT_MESSAGE_END",
         "TEXT_MESSAGE_CHUNK",
         "TOOL_CALL_START",
-        "TOOL_CALL_ARGS_DELTA",
+        "TOOL_CALL_ARGS",
         "TOOL_CALL_END",
+        "TOOL_CALL_CHUNK",
+        "TOOL_CALL_RESULT",
+        "REASONING_MESSAGE_START",
+        "REASONING_MESSAGE_CONTENT",
+        "REASONING_MESSAGE_END",
+        "REASONING_MESSAGE_CHUNK",
         "STATE_SNAPSHOT",
         "STATE_DELTA",
         "MESSAGES_SNAPSHOT",
+        "RAW",
         "CUSTOM"
       ],
       "description": "Valid AG-UI protocol event kinds per the CopilotKit AG-UI specification."
@@ -89,7 +109,9 @@
     },
     "agentIdentity": {
       "type": "object",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -105,7 +127,10 @@
     },
     "toolDefinition": {
       "type": "object",
-      "required": ["name", "description"],
+      "required": [
+        "name",
+        "description"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -120,9 +145,19 @@
           "type": "object",
           "description": "JSON Schema object describing the tool's parameter envelope. Omit for tools with no parameters.",
           "properties": {
-            "type": { "type": "string", "const": "object" },
-            "properties": { "type": "object" },
-            "required": { "type": "array", "items": { "type": "string" } }
+            "type": {
+              "type": "string",
+              "const": "object"
+            },
+            "properties": {
+              "type": "object"
+            },
+            "required": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
           "additionalProperties": true
         },
@@ -135,7 +170,10 @@
     },
     "emissionRule": {
       "type": "object",
-      "required": ["tool", "on_event"],
+      "required": [
+        "tool",
+        "on_event"
+      ],
       "additionalProperties": false,
       "properties": {
         "tool": {
@@ -152,13 +190,16 @@
         },
         "condition": {
           "type": "string",
-          "description": "Optional human-readable description of the condition under which this rule fires. Informational only — not machine-evaluated."
+          "description": "Optional human-readable description of the condition under which this rule fires. Informational only \u2014 not machine-evaluated."
         }
       }
     },
     "customEventDefinition": {
       "type": "object",
-      "required": ["kind", "description"],
+      "required": [
+        "kind",
+        "description"
+      ],
       "additionalProperties": false,
       "properties": {
         "kind": {

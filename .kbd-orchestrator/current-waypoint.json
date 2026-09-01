@@ -1,36 +1,32 @@
 {
-  "phase": "(awaiting next assessment)",
-  "stage": "phase_complete",
-  "next_command": "/kbd-assess phase-3c-brand-data-extend  OR  /kbd-assess phase-7-scaffold-ag-ui-host  OR  /kbd-assess phase-6-scaffold-flutter",
-  "previous_phase": "polish-pass (complete; 10/11 gates pass; reflection authored)",
-  "previous_phase_status": {
-    "phase": "polish-pass",
-    "changes_completed": 11,
-    "acceptance_gates_passed": "10/11",
-    "partial_gate": "8.4 (LLM motifs/tone end-to-end) — BrandData struct lacks serde fields; documented as follow-up phase",
-    "reflection_path": ".kbd-orchestrator/phases/polish-pass/reflection.md"
+  "schemaVersion": "5",
+  "generatedBy": "kbd-runtime",
+  "projectionContractVersion": 2,
+  "sourceRevision": 42,
+  "derivedRevision": 42,
+  "frontier": {
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 42
   },
-  "change_backend": "openspec",
-  "completed_in_sequence": [
-    "phase-0-unblock (re-scoped)",
-    "phase-rust-workspace-bootstrap",
-    "phase-1-submodule-topology",
-    "phase-sc-extraction",
-    "phase-1b-inference-routing",
-    "phase-2-scaffold-react-vite",
-    "phase-3-conversion-layer",
-    "phase-prefer-endpoint-consumption",
-    "phase-4-scaffold-tauri-desktop (hybrid)",
-    "phase-3b-aux-conversions",
-    "polish-pass"
+  "conflictCount": 0,
+  "projectId": "d4d5c8ba-3a2a-404d-915d-bdf985019c93",
+  "runId": "(awaiting next assessment)-20260827T132829Z",
+  "path": [
+    "phase-0-unblock"
   ],
-  "recommended_next": "phase-3c-brand-data-extend",
-  "recommended_next_rationale": "Closes polish-pass partial gate 8.4 (11/11). Small, well-scoped Rust struct extension (~30 min). Surfaced by polish-pass smoke; not yet planned.",
-  "phases_deferred": [
-    "phase-3c-brand-data-extend (NEW — surfaced by polish-pass)",
-    "phase-7-scaffold-ag-ui-host",
-    "phase-6-scaffold-flutter",
-    "phase-8-scaffold-a2ui-host",
-    "phase-9-scaffold-mcp-ui"
-  ]
+  "phaseIds": [
+    "phase-0-unblock"
+  ],
+  "activePhaseId": "polish-pass",
+  "phase": "phase-0-unblock",
+  "childPointer": null,
+  "change": null,
+  "currentTask": null,
+  "status": "completed",
+  "completionMetric": "implementation",
+  "implementationCompleted": 89,
+  "implementationTotal": 91,
+  "planRevision": 1,
+  "revision": 42,
+  "exactNextCommand": null,
+  "updatedAt": "2026-08-31T10:18:10.260826Z"
 }

@@ -708,7 +708,13 @@ node -e '
   raw = raw.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
   const c = JSON.parse(raw);
   c.compilerOptions = c.compilerOptions || {};
-  c.compilerOptions.baseUrl = c.compilerOptions.baseUrl || ".";
+  // No baseUrl: TypeScript 6 errors on it (TS5101 "deprecated") and TS 7 drops
+  // it entirely. The path mappings below are already tsconfig-relative
+  // ("./src/*"), which is exactly what baseUrl-less resolution expects, so
+  // removing it changes nothing about how "@/..." resolves.
+  // A pre-existing baseUrl (e.g. from a hand-edited target) is removed rather
+  // than left in place, since its presence is what triggers the error.
+  delete c.compilerOptions.baseUrl;
   c.compilerOptions.paths = {
     "@/app/*":      ["./src/app/*"],
     "@/features/*": ["./src/features/*"],
@@ -897,11 +903,28 @@ if ! [[ -f eslint.config.mjs || -f eslint.config.js ]]; then
   log "  Installing eslint + typescript-eslint…"
   pnpm add -D eslint typescript-eslint @eslint/js --silent 2>&1 | sed 's/^/    /' || true
 fi
-cat > eslint.config.mjs <<'ESLINT'
+
+# ESLint resolves ONE flat config, preferring eslint.config.js over .mjs. shadcn
+# init already wrote eslint.config.js, so writing our architectural rules to
+# .mjs left them silently inert — a component importing a store linted clean.
+# Write to whichever file ESLint will actually load, and remove the shadowed
+# one so a stale copy cannot masquerade as the active config.
+ESLINT_CONFIG="eslint.config.mjs"
+if [[ -f eslint.config.js ]]; then
+  ESLINT_CONFIG="eslint.config.js"
+  rm -f eslint.config.mjs
+  log "  shadcn wrote eslint.config.js — merging architectural rules into it"
+fi
+cat > "${ESLINT_CONFIG}" <<'ESLINT'
 // Architectural ESLint config — enforces state-architecture.md layering.
 // Customize per project; the defaults are the strict three-layer rule.
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
+// shadcn installs eslint-plugin-react-refresh and its generated files carry
+// `eslint-disable react-refresh/...` directives. This config replaces shadcn's,
+// so the plugin must be registered here or those directives dangle ("rule not
+// found") and lint fails on generated code.
+import reactRefresh from "eslint-plugin-react-refresh";
 
 export default tseslint.config(
   { ignores: ["dist/**", "node_modules/**", "src-tauri/target/**", "server/target/**"] },
@@ -940,6 +963,22 @@ export default tseslint.config(
         ],
         patterns: [{ group: ["**/components/**"], message: "Stores must not import from components." }],
       }],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: { "react-refresh": reactRefresh },
+    rules: {
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+    },
+  },
+  {
+    // Vendored shadcn primitives co-export a component and its `cva` variants
+    // from one file. That layout comes from upstream shadcn and is re-created on
+    // every `shadcn add`, so exempt it rather than fighting it.
+    files: ["src/shared/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 );

@@ -1,0 +1,34 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "analysis.md",
+      "line": 0,
+      "claim": "The analysis leaves the phase's blocking scope decision unresolved, so plan has no determinate target to implement.",
+      "evidence": "prior_handoffs says Q1 is a \"blocking scope\" question: \"What is a 'rendering host'? (a) finish the existing preview pipeline ... or (b) a scaffold-react-vite-a2ui.sh emitting an app...\" and says \"Q1's scope split changes what analyze even researches.\" The artifact still lists it as unresolved: \"Open Questions Remaining ... Q1 (from assess): finish the preview vs. emit a scaffolder \u2014 now subordinate to G-8.\" It also leaves \"G-8 (blocking): align, rename, or support both. Owner's decision.\"",
+      "suggested_fix": "Do not hand this to plan as-is; either obtain the owner decision for G-8 and Q1 before planning, or produce explicitly separate analyze outputs for each allowed branch with a clear instruction that plan must not merge them."
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "library-candidates.json",
+      "line": 0,
+      "claim": "The analysis drops three of the seven assessment gaps, including high-severity gaps, leaving downstream planning without required coverage.",
+      "evidence": "analysis.md states the input had \"3 open questions, 7 gaps\" and prior_handoffs summarizes \"Seven gaps: G-1/G-2/G-3 BLOCKING, G-4/G-5/G-6 HIGH, G-7 MEDIUM.\" But library-candidates.json only has gap entries for \"G-8\" and \"G-1..G-4\"; there is no analysis, conditional disposition, or candidate impact for G-5, G-6, or G-7.",
+      "suggested_fix": "Add explicit analyze-stage disposition for G-5, G-6, and G-7 under each G-8/Q1 branch, or state with evidence why each is obsolete."
+    },
+    {
+      "severity": "WARNING",
+      "file": "library-candidates.json",
+      "line": 0,
+      "claim": "The @a2ui/react candidate records React peer compatibility as both unchecked and verified.",
+      "evidence": "The candidate risks include \"peerDependency react ^19.2.7 must be checked against what the base scaffolder installs,\" but the same candidate also states \"peer_compat_verified\": \"react ^19.2.7 vs npm latest 19.2.8 \u2014 satisfied; scaffold-react-vite.sh:148 targets React 19\". analysis.md similarly says \"Compatibility verified, not assumed\".",
+      "suggested_fix": "Remove the stale risk or rewrite it as a verified compatibility constraint to pin/maintain, not an unresolved check."
+    }
+  ]
+}

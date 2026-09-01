@@ -1,0 +1,26 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "analysis.md",
+      "line": 0,
+      "claim": "The analysis drops blocking gap G-3 (scaffolder) from the prior assessment instead of carrying it forward or explaining why analyze has no work for it.",
+      "evidence": "Prior handoff summary says: \"Seven gaps: G-1..G-3 BLOCKING (server surface, client, scaffolder)\". The artifact's `library-candidates.json` `gaps` array covers only `G-2`, `G-1`, and `G-4`; `analysis.md` sections likewise address client, server surface, event enum drift, and process gaps G-6/G-7, with no G-3 entry or disposition.",
+      "suggested_fix": "Add an explicit G-3 section/disposition that either evaluates scaffolder build/adopt options or records it as non-research implementation work that plan must cover."
+    },
+    {
+      "severity": "WARNING",
+      "file": "analysis.md",
+      "line": 0,
+      "claim": "The recommendation to build the server surface \"in Node\" leaves the actual Node hosting mechanism unevaluated.",
+      "evidence": "The artifact concludes: \"Server surface: BUILD, in Node, not Axum\" and \"A Node route can use `@ag-ui/encoder`\", but also states: \"The server itself is still BUILD \u2014 no candidate implements the route, only the encoding.\" No Node route host/server option is evaluated despite the file tree showing scaffold scripts rather than an existing Node API server surface.",
+      "suggested_fix": "Evaluate and choose the concrete Node server integration path for the scaffolded app, such as Vite middleware/dev-server plugin, standalone Node HTTP server, Express/Fastify/Hono, or explicitly defer that design decision to plan with acceptance constraints."
+    }
+  ]
+}

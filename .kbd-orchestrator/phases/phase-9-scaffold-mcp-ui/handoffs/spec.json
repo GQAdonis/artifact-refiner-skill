@@ -1,0 +1,70 @@
+{
+  "stage": "spec",
+  "phase": "phase-9-scaffold-mcp-ui",
+  "artifact": "openspec/changes/p9-01-mcp-ui-content-type/proposal.md",
+  "supporting_artifacts": ["spec-review.md", "decision-log.md", "library-candidates.json", "evidence/"],
+  "status": "complete",
+  "recorded_at": "2026-08-31T00:00:00Z",
+  "backend": "openspec",
+  "zeespec_verdict": "n/a — no .zeespec directory; the coverage gate is opt-in and inactive",
+  "summary": "Five OpenSpec changes written for phase-9, reviewed together across 13 adversarial rounds (30 findings, 30/30 accepted, final PASS). Two scope changes came out of the review rather than the plan: externalUrl was DROPPED after grepping the shipped packages showed no text/uri-list mimeType anywhere, and the schema's mimeType literals were corrected to text/html;profile=mcp-app — the MCP Apps spelling both @mcp-ui/client and @modelcontextprotocol/ext-apps actually emit.",
+  "changes": [
+    {"id": "p9-01-mcp-ui-content-type", "depends_on": [], "summary": "direct:mcp-ui enum entry, mcp-ui-resource.schema.json, domain adapter, routing"},
+    {"id": "p9-02-mcp-ui-normalizer", "depends_on": ["p9-01"], "summary": "normalize-mcp-ui.mjs with a schema-path override and four named violations plus a residual"},
+    {"id": "p9-03-mcp-ui-examples", "depends_on": ["p9-01", "p9-02"], "summary": "example corpus — 2 positive, 5 negative, each well-formed except its one defect"},
+    {"id": "p9-04-mcp-ui-render-host", "depends_on": ["p9-01", "p9-02", "p9-03"], "summary": "AppRenderer surface, resource store, Vite mock, sandbox proxy, trust-boundary tests"},
+    {"id": "p9-05-scaffold-mcp-ui-host", "depends_on": ["p9-03", "p9-04"], "summary": "scaffold-react-vite-mcp-ui.sh + refine-mcp-ui skill"}
+  ],
+  "scope_changes_from_analyze": [
+    {
+      "what": "externalUrl DROPPED from scope",
+      "why": "Analyze Q3 presumed it was a mimeType variant a schema could support cheaply. Upstream models it as a distinct content shape ({type:'externalUrl', iframeUrl}), and grepping @mcp-ui/client@7.1.1 and @modelcontextprotocol/ext-apps@1.7.5 found NO text/uri-list mimeType in either. Supporting it would have meant inventing a wire format — the exact failure mode phases 7 and 8 spent themselves correcting.",
+      "impact": "One delivery mode in scope: inline HTML, in two admitted mimeType spellings."
+    },
+    {
+      "what": "mimeType literals corrected",
+      "why": "text/html;profile=mcp-app is what both shipped packages emit — verified by grep. My first schema draft used bare text/html and text/uri-list; the latter exists in neither package.",
+      "impact": "Branch A is the MCP Apps spelling (what p9-04's live gate drives); branch B is bare text/html for legacy producers."
+    },
+    {
+      "what": "remoteDom rejection is structural, not mimeType-based",
+      "why": "There is no remoteDom mimeType to exclude — upstream carries it as {type:'remoteDom', script, framework}.",
+      "impact": "Rejected via additionalProperties plus a named unsupported_content_shape violation."
+    }
+  ],
+  "open_questions_resolved_here": [
+    "Q1 (sandbox origin) — serve the proxy same-origin AND override permissions to drop allow-same-origin, keeping the no-second-process property. p9-04 gate 5.2 asserts the rendered attribute; if the handshake breaks without it, fall back to a second origin and DO NOT restore the permissive default.",
+    "Q2 (AppRenderer vs AppFrame) — AppRenderer with pre-fetched html, which keeps the mock at three JSON-RPC methods. p9-04 task 3.2 verifies that empirically against the running app rather than trusting the types.",
+    "Q3 (externalUrl in v1) — no; see scope_changes_from_analyze.",
+    "Q4 (which change owns the trust-boundary gates) — p9-04 owns all five, and its task 7.1 states explicitly that the standing no-hardcoded-secrets gate does NOT scan assets/."
+  ],
+  "carry_forward_for_plan": [
+    "p9-04 is the largest change and carries every trust-boundary gate plus the browser-DOM gate. Its dependency chain (2.8a → 4.2 → 6.5 → 2.8b → {5.4, 6.5b}) is acyclic but NOT in section order; the plan must not reorder it.",
+    "p9-05 depends on BOTH p9-03 and p9-04. Declaring only p9-04 would leave the graph satisfiable without the corpus — the exact hole review caught in phase-8's p8-05.",
+    "p9-01 and p9-02 both need a validator before p9-02's normalizer exists; p9-01 §4 names a scratchpad harness importing normalize-a2ui.mjs's validator (the one with real oneOf after phase-8).",
+    "Do NOT add the new skill to .claude-plugin/plugin.json. It has no skills key; CLAUDE.md:54 is the stale half of a contradiction flagged since phase-7, and p8-05 declined the same edit."
+  ],
+  "adversarial_review": {
+    "rounds": 13,
+    "findings": 30,
+    "critical": 24,
+    "warning": 6,
+    "accepted": "30/30",
+    "final_verdict": "PASS",
+    "judge_model": "kbd-judge",
+    "producer_model": "claude-opus-5",
+    "cross_model_check": "verified-distinct",
+    "isolation_mode": "rest-gateway",
+    "packet_assembly": "manual — build-review-packet.sh supports only the native-kbd spec layout",
+    "cap_exceeded": true,
+    "cap_rationale": "Rounds 1-8 were still producing 3-5 CRITICALs each, and they were substantive: an unbuildable fixture, a gate that would fail on a blank page, schema literals no shipped package emits. Rounds 9-12 shifted to catching defects my own fixes had introduced. Round 13 returned PASS with one WARNING — the convergence signal.",
+    "highest_value_finding": "Round 6 asked for the actual remoteDom mimeType literal. Grepping the installed packages to answer it revealed the MCP Apps spelling (text/html;profile=mcp-app) and the total absence of text/uri-list — which invalidated BOTH schema branches I had written and removed externalUrl from scope entirely."
+  },
+  "recurring_pattern": "COVERAGE CLAIMED OVER THE WRONG PATH, third phase running. Round 2 caught p9-01 and p9-05 both asserting the no-hardcoded-secrets gate covered SKILL.md and skills/, which it does not scan — written into tasks that cite phase-8's identical failure. Knowing the lesson did not prevent repeating it; the check did. Every constraint claim now names uncovered files and carries a runnable grep.",
+  "tooling_gaps": [
+    "build-review-packet.sh handles only the native-kbd spec layout; OpenSpec change sets must be assembled by hand. Flagged in phase-8, still open.",
+    "The packet includes neither decision-log.md nor a phase evidence/ directory, so operator decisions and vendored upstream artifacts are invisible to the judge."
+  ],
+  "runtime_note": "G-7 runtime write-drop still in force; filesystem is authoritative.",
+  "next_command": "/kbd-plan phase-9-scaffold-mcp-ui"
+}

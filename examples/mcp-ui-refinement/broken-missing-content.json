@@ -1,0 +1,93 @@
+{
+  "type": "resource",
+  "resource": {
+    "uri": "ui://demo/notification-preferences",
+    "mimeType": "text/html;profile=mcp-app",
+    "a2ui": [
+      {
+        "version": "v1.0",
+        "createSurface": {
+          "surfaceId": "notification-preferences",
+          "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+          "components": [
+            {
+              "id": "root",
+              "component": "Card",
+              "child": "layout"
+            },
+            {
+              "id": "layout",
+              "component": "Column",
+              "children": [
+                "heading",
+                "description",
+                "actions"
+              ],
+              "align": "start"
+            },
+            {
+              "id": "heading",
+              "component": "Text",
+              "text": {
+                "path": "/title"
+              }
+            },
+            {
+              "id": "description",
+              "component": "Text",
+              "text": {
+                "path": "/body"
+              }
+            },
+            {
+              "id": "actions",
+              "component": "Row",
+              "children": [
+                "accept",
+                "decline"
+              ],
+              "justify": "end"
+            },
+            {
+              "id": "accept",
+              "component": "Button",
+              "child": "accept-label",
+              "action": {
+                "event": {
+                  "name": "enable_notifications"
+                }
+              }
+            },
+            {
+              "id": "accept-label",
+              "component": "Text",
+              "text": {
+                "path": "/acceptLabel"
+              }
+            },
+            {
+              "id": "decline",
+              "component": "Button",
+              "child": "decline-label",
+              "action": {
+                "event": {
+                  "name": "dismiss"
+                }
+              }
+            },
+            {
+              "id": "decline-label",
+              "component": "Text",
+              "text": "Not now"
+            }
+          ],
+          "dataModel": {
+            "title": "Enable notifications",
+            "body": "Get alerts when an order status changes.",
+            "acceptLabel": "Enable"
+          }
+        }
+      }
+    ]
+  }
+}

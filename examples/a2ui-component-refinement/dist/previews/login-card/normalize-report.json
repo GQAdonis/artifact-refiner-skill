@@ -1,8 +1,0 @@
-{
-  "status": "success",
-  "artifact_id": "login-card",
-  "input": "examples/a2ui-component-refinement/source.a2ui.json",
-  "schema": "/Users/gqadonis/Projects/prometheus/prometheus-skill-pack/skills/imported/artifact-refiner/references/schemas/a2ui-component.schema.json",
-  "violations": [],
-  "generated_at": "2026-04-30T20:34:14.825Z"
-}

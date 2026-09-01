@@ -1,0 +1,31 @@
+{
+  "stage": "spec",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "backend": "openspec",
+  "backend_resolution": "project.json.specBackend absent → change_backend: openspec + openspec/changes/ exists",
+  "zeespec_verdict": "n/a — no .zeespec/ directory; coverage gate inactive (opt-in)",
+  "status": "complete",
+  "recorded_at": "2026-08-28T01:40:00Z",
+  "changes_created": 5,
+  "changes": [
+    {"id": "p7-01-restore-phase-records", "origin": "G-6 BLOCKING prerequisite", "depends_on": [], "gate": "blocks all other p7-* changes"},
+    {"id": "p7-02-fix-agui-event-enum", "origin": "G-4 upgraded to BLOCKING", "depends_on": ["p7-01"]},
+    {"id": "p7-03-agui-server-surface", "origin": "G-1 BUILD", "depends_on": ["p7-02"]},
+    {"id": "p7-04-agui-client-store", "origin": "G-2 ADOPT", "depends_on": ["p7-02", "p7-03"]},
+    {"id": "p7-05-scaffold-agui-host", "origin": "G-3 BUILD", "depends_on": ["p7-03", "p7-04"]}
+  ],
+  "summary": "Five changes covering every gap and prerequisite carried from assess and analyze, with no gap left without a disposition. Two open questions analyze could not close are decided here because a spec cannot be executed while they are open: (1) mock agent, not a real LLM — a real LLM converts this into an inference-integration phase; (2) Vite dev-server middleware plugin, not a standalone Express/Hono/Fastify process — chosen on the same self-containment argument that disqualified openai-proxy in analyze, since a scaffolded app must stand up under `pnpm dev` alone. The middleware's dev-only limitation is called out as a required README task in p7-05 rather than left implicit.",
+  "decisions_made_at_spec": [
+    {"question": "mock agent vs real LLM", "answer": "MOCK — proves the transport and satisfies every verification criterion; a real LLM adds credential handling, streaming translation, and its own failure modes."},
+    {"question": "Node hosting mechanism (carried UNRESOLVED out of analyze at its revision cap)", "answer": "Vite dev-server middleware plugin. No second process, no extra runtime dependency, `pnpm dev` runs the whole demo. Consequence stated: dev-only, so p7-05 task 1.6 makes the README say so plainly."}
+  ],
+  "warnings_from_adversarial_review": [
+    "TOOLING DEFECT: build-review-packet.sh only supports the native-kbd backend — it looks for .kbd-orchestrator/changes/<id>/{spec.md,tasks.json,verification.md} and exits 2 for openspec projects. kbd-spec explicitly supports openspec, so the spec-stage vet cannot run via the normal path here. Packet was assembled manually and judged by a fresh-context subagent: weaker isolation than a gateway call, stated not hidden.",
+    "Cross-change coupling that no gate would have caught: p7-05 reads assets/scaffold/agui/ paths by name from p7-03 and p7-04. A rename in either would silently break p7-05. Both now declare the paths as a downstream contract — execute must not relocate them without updating p7-05 in the same commit.",
+    "package.json is shared between p7-03 and p7-04. The dependency edge makes it safe, but the two must not run in parallel worktrees.",
+    "p7-02 depends on a pre-1.0 package (@ag-ui/core@0.0.59) whose enum may move. Task 1.2 halts and escalates on mismatch rather than editing against a new reading."
+  ],
+  "process_note": "kbd-spec's own references (native-backend.md) and the adversarial-review spec-stage collector both assume native-kbd. Third packaging/backend gap in this phase after the missing research-pipeline.md and library-candidates.schema.json in analyze.",
+  "next_stage": "plan",
+  "next_stage_note": "Ordering is already fully constrained by the depends_on edges above, so plan's main remaining work is sequencing within changes and confirming the p7-01 operator decision actually gets made — gate 5.3 makes that machine-checkable."
+}

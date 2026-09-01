@@ -1,0 +1,120 @@
+{
+  "phase": "phase-8-scaffold-a2ui-host",
+  "type": "feature",
+  "assessment_complete": true,
+  "assessment_path": ".kbd-orchestrator/phases/phase-8-scaffold-a2ui-host/assessment.md",
+  "analyze_complete": true,
+  "analysis_path": ".kbd-orchestrator/phases/phase-8-scaffold-a2ui-host/analysis.md",
+  "spec_complete": true,
+  "plan_complete": true,
+  "plan_path": ".kbd-orchestrator/phases/phase-8-scaffold-a2ui-host/plan.md",
+  "execute_complete": true,
+  "execute_status": "COMPLETE",
+  "reflect_complete": true,
+  "reflection_path": ".kbd-orchestrator/phases/phase-8-scaffold-a2ui-host/reflection.md",
+  "change_backend": "openspec",
+  "completion": {
+    "implementation": {
+      "completed": 5,
+      "total": 5,
+      "status": "COMPLETE"
+    },
+    "evidence": {
+      "completed": 5,
+      "total": 5,
+      "status": "COMPLETE"
+    },
+    "certification": {
+      "completed": 5,
+      "total": 6,
+      "status": "COMPLETE_WITH_SUPERSEDED"
+    },
+    "publication": {
+      "completed": 0,
+      "total": 1,
+      "status": "PENDING"
+    }
+  },
+  "changes_completed": 5,
+  "changes_total": 5,
+  "tasks_completed": 106,
+  "tasks_open": 0,
+  "acceptance_gates_passed": "5/6 substantively met; 1 superseded",
+  "superseded_criterion": "Criterion 1 (normalize-a2ui.mjs emits an .html file) was written before the G-8 alignment decision. Under alignment the renderer is @a2ui/react at runtime, so no template-injection step exists or should. Criteria 2 and 3 named dialect concepts (Heading, literal/ref bindings) that the protocol does not have; both are met in substance under the real model.",
+  "operator_decision": {
+    "id": "G-8",
+    "decision": "Align direct:a2ui to the real A2UI v1.0 protocol",
+    "breaking": true,
+    "note": "Both shipped examples became invalid and were rewritten in p8-03. Chosen over renaming the local dialect or supporting both."
+  },
+  "changes": [
+    {
+      "id": "p8-01-align-a2ui-schema",
+      "tasks_done": 21,
+      "status": "ARCHIVED"
+    },
+    {
+      "id": "p8-02-rewrite-a2ui-normalizer",
+      "tasks_done": 22,
+      "status": "ARCHIVED"
+    },
+    {
+      "id": "p8-03-rewrite-a2ui-examples",
+      "tasks_done": 19,
+      "status": "ARCHIVED"
+    },
+    {
+      "id": "p8-04-a2ui-render-host",
+      "tasks_done": 24,
+      "status": "ARCHIVED"
+    },
+    {
+      "id": "p8-05-scaffold-a2ui-host",
+      "tasks_done": 20,
+      "status": "ARCHIVED"
+    }
+  ],
+  "specs_synced": [
+    "a2ui-protocol-conformance",
+    "a2ui-render-host",
+    "a2ui-host-scaffolder"
+  ],
+  "live_verification": {
+    "scaffold": "scaffold-react-vite.sh + scaffold-react-vite-a2ui.sh both exit 0 on a fresh temp target; exactly one feature directory",
+    "build": "pnpm build exits 0 in the generated app",
+    "lint": "pnpm lint exits 0 with architectural rules active",
+    "dev_server": "serves on :5173, single listener verified via lsof",
+    "browser_dom": "Playwright \u2014 2 distinct DOM states across the message sequence, role=button present, 0 page errors",
+    "unknown_component": "renderer emitted 'Unknown component: Heading' rather than degrading silently",
+    "normalizer": "positive example exit 0; broken-circular and broken-legacy-dialect both exit 1 with named violations",
+    "adversarial_review": "8 rounds across 4 stages, 33 findings, 33/33 verified correct"
+  },
+  "preexisting_defects_found": [
+    "Built-in validator implemented oneOf as anyOf; `not` and `anyOf` unimplemented \u2014 every schema guard was silently inert",
+    "A2UI renderer could never render a conformant spec (3 lowercase cases vs PascalCase schema, zero overlap)",
+    "No HTML ever produced; nothing substitutes the template's {{A2UI_JSON}} placeholders",
+    "Bindings never resolved by the renderer",
+    "Two prompts/execute.md instructions directed an HTML injection step that does not exist",
+    "The real catalog has 18 components and no `Heading`, despite the name appearing in a type union"
+  ],
+  "own_defects_caught_by_gates": [
+    "dynamicString defined but never applied \u2014 an expression leaf validated (caught by my own schema fixture)",
+    "oneOf used where {path} matched two branches, rejecting valid input",
+    "Orphan detection could not detect orphans \u2014 every unreferenced node treated as a root",
+    "Feature directory derived from raw basename instead of to_kebab, creating a duplicate slice (caught by smoke test)",
+    "Component imported a type from stores/, violating architectural layering (caught by pnpm lint)"
+  ],
+  "deferred": [
+    "G-7 runtime write-drop; filesystem authoritative",
+    "callFunction / actionResponse round-tripping, multi-surface management, custom catalog authoring",
+    "Five unpinned unpkg@latest CDN loads in a2ui-preview-template.html"
+  ],
+  "next_command": "/kbd-assess phase-9-scaffold-mcp-ui  (precondition: verify MCP-UI is not another A2UI)",
+  "post_reflect_followup": {
+    "item": "scaffold-react-vite-agui.sh feature-name bug",
+    "status": "FIXED and verified",
+    "severity_was": "HIGH",
+    "verified": "demo2app target: base creates demo-2-app, wrapper reports demo-2-app, exactly one feature dir, build 0, lint 0, explicit --feature still honoured",
+    "note": "Was the top recommendation in reflection.md section 10. Now closed."
+  }
+}

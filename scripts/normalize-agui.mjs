@@ -23,22 +23,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
 const SCHEMA_PATH = join(REPO_ROOT, 'references/schemas/ag-ui-spec.schema.json');
 
-const VALID_EVENT_KINDS = new Set([
-  'RUN_STARTED',
-  'RUN_FINISHED',
-  'RUN_ERROR',
-  'TEXT_MESSAGE_START',
-  'TEXT_MESSAGE_CONTENT',
-  'TEXT_MESSAGE_END',
-  'TEXT_MESSAGE_CHUNK',
-  'TOOL_CALL_START',
-  'TOOL_CALL_ARGS_DELTA',
-  'TOOL_CALL_END',
-  'STATE_SNAPSHOT',
-  'STATE_DELTA',
-  'MESSAGES_SNAPSHOT',
-  'CUSTOM',
-]);
+// Derived from the schema rather than duplicated. A hand-maintained copy is how
+// `TOOL_CALL_ARGS_DELTA` (a name AG-UI never used) survived here and in the
+// schema simultaneously: two lists that must agree by discipline eventually
+// disagree. One source of truth removes the failure mode instead of re-checking
+// for it.
+const VALID_EVENT_KINDS = new Set(
+  JSON.parse(readFileSync(SCHEMA_PATH, 'utf8')).definitions.agEventKind.enum,
+);
 
 const TOOL_NAME_RE = /^[a-z_][a-z0-9_]*$/;
 const CUSTOM_KIND_RE = /^CUSTOM_[A-Z_]+$/;

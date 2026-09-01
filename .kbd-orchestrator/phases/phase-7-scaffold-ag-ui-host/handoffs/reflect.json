@@ -1,0 +1,54 @@
+{
+  "stage": "reflect",
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "artifact": "reflection.md",
+  "status": "complete",
+  "recorded_at": "2026-08-28T03:20:00Z",
+  "outcome": {
+    "changes": "5/5 archived",
+    "tasks": "87 done, 4 N/A, 0 open",
+    "acceptance": "5/6 MET, 1 PARTIAL",
+    "sessions_used": 1,
+    "sessions_estimated": "2-3"
+  },
+  "summary": "Phase-7 delivered a working AG-UI host scaffolder: a freshly scaffolded app builds, lints, and streams agent responses under `pnpm dev` with no second process, verified by 32 render snapshots of which 31 grew monotonically. Criterion 4 is PARTIAL rather than MET because 'renders in the browser' was verified at the store-reduction level, not in a rendered DOM — the scaffolder emits AgentPanel but does not mount it, so no browser was ever driven.",
+  "deltas_found": [
+    "D-1 (most serious): the architectural ESLint config had NEVER run in any scaffolded app. scaffold-react-vite.sh wrote eslint.config.mjs while shadcn had already written eslint.config.js; ESLint loads one flat config and prefers .js. Proven with a probe file that should have errored and did not. Fixed — the same probe now errors correctly.",
+    "D-2: `pnpm build` was broken for every user. scaffold-react-vite.sh:711 set compilerOptions.baseUrl, which TypeScript 6.0.3 hard-errors on (TS5101). Removed rather than silenced.",
+    "D-3: `pnpm lint` failed on shadcn's own button.tsx via react-refresh/only-export-components. Fixed by registering the plugin with a vendored-UI exemption.",
+    "D-4: live protocol defect — our schema declared TOOL_CALL_ARGS_DELTA where @ag-ui/core@0.0.59 declares TOOL_CALL_ARGS, so conformant specs were rejected. Enum was also missing 10 of 23 kinds. Survived review because no example exercised the tool-call path."
+  ],
+  "corrective_actions": [
+    "Three pre-existing base-scaffolder defects fixed (D-1..D-3), each approved by the operator when flagged.",
+    "Event enum corrected and a tool-call example added to close the corpus blind spot that hid D-4.",
+    "Five constraint gates written into change tasks as runnable commands after plan review found them described-but-unenforced.",
+    "polish-pass repaired to 11/11 COMPLETE after the apply driver misattributed a phase-7 change to it under G-7."
+  ],
+  "quality_gate": {
+    "gate": "adversarial-review (artifact-refiner QA not applicable — no refined artifacts, all changes are code or state)",
+    "rounds": 9,
+    "findings": 24,
+    "critical": 7,
+    "warning": 17,
+    "verified_correct": "24/24",
+    "recurring_pattern": "3 of 7 CRITICALs were one root cause: gaps with no research attached were silently dropped rather than given a recorded verdict (G-6, the openai-proxy option, G-3). A gap with no research still needs a verdict.",
+    "second_pattern": "Both plan CRITICALs were describing constraint coverage instead of enforcing it — deferring gate creation to execute is planning work left undone.",
+    "isolation_note": "analyze and plan ran true cross-model (verified-distinct). assess degraded to tier-2 (gateway 401); spec degraded because the packet builder supports only the native-kbd layout."
+  },
+  "sycophancy_gate": "unavailable — sycophancy.sh not installed; degraded gracefully per contract, no score recorded",
+  "technical_debt": [
+    "G-7 HIGH: runtime returns committedLocally:true for writes absent from the audit log across 5 command types. Caused real corruption this phase. Deferral accepted by the operator; lives in the prometheus binary outside this repo.",
+    "No progress.json for phase-7 — the apply driver was disabled under the G-7 rule. Archived changes are the record.",
+    "Criterion 4 unproven in a DOM; AgentPanel is emitted but never mounted.",
+    "@ag-ui/* pre-1.0 pinned exact; @types/uuid is a runtime dep upstream, shipped into every scaffolded app.",
+    "CLAUDE.md:54 contradicts CLAUDE.md:31 on whether skills are listed in plugin.json — line 54 is stale.",
+    "kbd-analyze ships without research-pipeline.md or library-candidates.schema.json; adversarial-review's packet builder handles only the native-kbd spec layout."
+  ],
+  "recommended_next_phase": "phase-8-scaffold-a2ui-host",
+  "recommendation_rationale": "The A2UI domain already shipped (PR #1), and phase-7 built the entire substrate a host scaffolder needs — wrapper pattern, dev-middleware approach, store layering, and now-working ESLint enforcement. It is the cheapest phase that exercises that substrate a second time, which is how it gets validated as reusable rather than bespoke.",
+  "suggested_first": [
+    "Browser-level test for criterion 4: mount AgentPanel and assert text growth in a real DOM. Closes the phase's only PARTIAL; Playwright is already in devDependencies.",
+    "Fix CLAUDE.md:54 — a one-line doc correction that caused a detour this phase."
+  ],
+  "alternates": ["phase-6-scaffold-flutter", "phase-9-scaffold-mcp-ui"]
+}

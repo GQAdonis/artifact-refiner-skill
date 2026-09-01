@@ -1,0 +1,64 @@
+{
+  "stage": "analyze",
+  "phase": "phase-9-scaffold-mcp-ui",
+  "artifact": "analysis.md",
+  "supporting_artifacts": ["library-candidates.json", "decision-log.md", "evidence/"],
+  "status": "complete",
+  "recorded_at": "2026-08-30T00:00:00Z",
+  "summary": "Operator answered G-7 go, scoped to the client. Analysis resolved all 8 gaps and produced one finding that inverted the phase's shape: @mcp-ui/client@7.1.1 does NOT export UIResourceRenderer, the legacy single-iframe renderer the upstream docs still describe. Only AppRenderer and AppFrame ship, both require a hosted sandbox proxy, and @modelcontextprotocol/ext-apps is a hard dependency rather than something deferrable. The phase must therefore ship the double-iframe MCP Apps architecture. Estimate revised UP to 3 sessions, against my own first draft of 2.",
+  "decisions": [
+    {"id": "D-001", "decision": "G-7 go — operator; scoped to the client, not the @mcp-ui/* line as a whole"},
+    {"id": "D-002", "decision": "The ui:// resource rides inside the tool-call result content array (isUIResource is typed against EmbeddedResource), so resources/* is not required in the general case"},
+    {"id": "D-003", "decision": "UIResourceRenderer does not exist in 7.1.1; ship AppRenderer or AppFrame, both requiring a hosted sandbox proxy and ext-apps"},
+    {"id": "D-003a", "decision": "The mock's method set is CONDITIONAL on host configuration — passing pre-fetched html keeps it at 3 methods; letting AppRenderer fetch adds resources/read. One coupled decision, not two."},
+    {"id": "D-004", "decision": "G-2 — Vite dev-server middleware mock, transposing phase-7's vite-plugin-agui-mock.ts. Rejected extending template-mcp (stdio transport, poor cohesion) and scaffold-react-vite-axum.sh as precedent (build-time embed, not a dev API)."},
+    {"id": "D-005", "decision": "G-6 — adopt @mcp-ui/client@7.1.1 + @modelcontextprotocol/ext-apps@1.7.5, both pinned exact; decline @mcp-ui/server (the schema is the contract instead)"},
+    {"id": "D-006", "decision": "G-5 — five explicit trust-boundary gates. The library's DEFAULT sandbox is 'allow-scripts allow-same-origin allow-forms', safe only if the proxy is genuinely cross-origin."},
+    {"id": "D-007", "decision": "G-8 — compliant-host reading; a client-only deliverable cannot be demonstrated"},
+    {"id": "D-008", "decision": "G-1 — direct:mcp-ui content type, adapter, schema, examples, citing upstream from the first commit. remoteDom out of scope."},
+    {"id": "D-009", "decision": "G-3/G-4 — surface + resource store + sandbox proxy; scaffold-react-vite-mcp-ui.sh following the thrice-proven wrapper shape"}
+  ],
+  "gap_disposition": {
+    "G-1": "in scope (D-008)",
+    "G-2": "in scope — Vite mock, not template-mcp (D-004)",
+    "G-3": "in scope — AppRenderer/AppFrame + sandbox proxy (D-003, D-009)",
+    "G-4": "in scope (D-009)",
+    "G-5": "in scope — 5 gates (D-006)",
+    "G-6": "RESOLVED — client + ext-apps (D-005)",
+    "G-7": "RESOLVED — operator: go (D-001)",
+    "G-8": "RESOLVED — compliant host (D-007)"
+  },
+  "estimate": {
+    "sessions": 3,
+    "direction": "UP from my own first draft of 2; equal to the top of assess's 2-3 range",
+    "why_down": "D-002 and D-004 removed the assumed cost of writing a protocol-speaking server",
+    "why_up_more": "D-003 added the double-iframe MCP Apps architecture: hosted sandbox proxy, AppBridge, ext-apps as a real dependency, and a sandbox/CSP posture that must be reasoned about rather than accepted"
+  },
+  "open_questions_for_spec": [
+    "DECISIVE: must the sandbox proxy be a genuine second origin? The library default pairs allow-scripts with allow-same-origin; upstream's mitigation is that the proxy is cross-origin. Serving it same-origin on another path would silently void that. Options: (a) cross-origin proxy, keep defaults; (b) same-origin, override permissions to drop allow-same-origin; (c) both. Settle by observing the rendered frame, not the docs.",
+    "AppRenderer or AppFrame? AppFrame takes pre-fetched html plus a hand-built AppBridge and may be the smaller surface for a mock-driven demo. Coupled to D-003a.",
+    "Is externalUrl worth including in v1, given it loads a third-party origin into the smoke test? rawHtml alone may be the honest v1.",
+    "Which change owns the five D-006 gates? Phase-8's lesson: a constraint gated over the wrong path is ungated."
+  ],
+  "verification_carried_forward": [
+    "Browser-DOM gate is non-negotiable — phase-8 shipped a renderer that could not render any conformant spec, and only running it in a DOM caught that",
+    "Assert the RENDERED sandbox attribute and the proxy origin, not the source",
+    "Wire onFallbackRequest to fail loudly rather than hang on an unhandled JSON-RPC method"
+  ],
+  "adversarial_review": {
+    "rounds": 3,
+    "findings": 6,
+    "critical": 3,
+    "warning": 3,
+    "accepted": "6/6",
+    "judge_model": "kbd-judge",
+    "producer_model": "claude-opus-5",
+    "cross_model_check": "verified-distinct",
+    "isolation_mode": "rest-gateway",
+    "cap_exceeded": true,
+    "highest_value_finding": "Round 1 CRITICAL demanded provenance for D-002's central claim. Re-grounding it in shipped .d.ts revealed that UIResourceRenderer — the component I had recommended — does not exist in 7.1.1. One shortcut (citing docs instead of types) had produced four downstream errors: a phantom component, a wrong dependency verdict, a wrong architecture, and a low estimate."
+  },
+  "tooling_gap_for_reflection": "build-review-packet.sh includes neither decision-log.md nor a phase evidence/ directory, so an operator decision and any vendored upstream artifact are invisible to the judge. Round 3 raised a CRITICAL on exactly that. Worked around by vendoring types into evidence/ and citing them; the builder should include both by default.",
+  "runtime_note": "G-7 runtime write-drop still in force; filesystem is authoritative.",
+  "next_command": "/kbd-spec phase-9-scaffold-mcp-ui"
+}

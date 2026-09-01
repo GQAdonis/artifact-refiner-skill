@@ -1,46 +1,84 @@
 {
-  "version": "a2ui/v1",
-  "metadata": {
-    "name": "login-card",
-    "description": "Minimal A2UI login card demonstrating bindings, refs, and component nesting"
-  },
-  "bindings": {
-    "primary_color": { "kind": "literal", "value": "#3b82f6" },
-    "username_placeholder": { "kind": "literal", "value": "you@example.com" },
-    "submit_label": { "kind": "literal", "value": "Sign in" },
-    "submit_endpoint": { "kind": "expression", "expression": "config.api.url + '/login'" },
-    "themed_primary": { "kind": "ref", "ref": "primary_color" }
-  },
-  "root": {
-    "id": "login-card",
-    "type": "Container",
-    "props": { "padding": "24px", "rounded": true },
-    "bindings": { "accent": { "$ref": "themed_primary" } },
-    "children": [
+  "version": "v1.0",
+  "createSurface": {
+    "surfaceId": "notification-preferences",
+    "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+    "components": [
       {
-        "id": "title",
-        "type": "Heading",
-        "props": { "level": 2, "text": "Welcome back" }
+        "id": "root",
+        "component": "Card",
+        "child": "layout"
       },
       {
-        "id": "username-field",
-        "type": "TextField",
-        "props": { "label": "Email" },
-        "bindings": { "placeholder": { "$ref": "username_placeholder" } }
+        "id": "layout",
+        "component": "Column",
+        "children": [
+          "heading",
+          "description",
+          "actions"
+        ],
+        "align": "start"
       },
       {
-        "id": "password-field",
-        "type": "TextField",
-        "props": { "label": "Password", "type": "password" }
-      },
-      {
-        "id": "submit-button",
-        "type": "Button",
-        "bindings": {
-          "label": { "$ref": "submit_label" },
-          "action": { "$ref": "submit_endpoint" }
+        "id": "heading",
+        "component": "Text",
+        "text": {
+          "path": "/title"
         }
+      },
+      {
+        "id": "description",
+        "component": "Text",
+        "text": {
+          "path": "/body"
+        }
+      },
+      {
+        "id": "actions",
+        "component": "Row",
+        "children": [
+          "accept",
+          "decline"
+        ],
+        "justify": "end"
+      },
+      {
+        "id": "accept",
+        "component": "Button",
+        "child": "accept-label",
+        "action": {
+          "event": {
+            "name": "enable_notifications"
+          }
+        }
+      },
+      {
+        "id": "accept-label",
+        "component": "Text",
+        "text": {
+          "path": "/acceptLabel"
+        }
+      },
+      {
+        "id": "decline",
+        "component": "Button",
+        "child": "decline-label",
+        "action": {
+          "event": {
+            "name": "dismiss"
+          }
+        }
+      },
+      {
+        "id": "decline-label",
+        "component": "Text",
+        "text": "Not now"
       }
-    ]
+    ],
+    "dataModel": {
+      "title": "Enable notifications",
+      "body": "Get alerts when an order status changes.",
+      "acceptLabel": "Enable"
+    }
   }
 }

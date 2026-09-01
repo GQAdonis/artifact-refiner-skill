@@ -1,0 +1,54 @@
+{
+  "phase": "phase-6-a2ui-flutter-host",
+  "type": "feature",
+  "assessment_complete": true,
+  "execute_complete": true,
+  "reflect_complete": false,
+  "completion": { "implementation": { "completed": 1, "total": 1, "status": "COMPLETE" } },
+  "delivered": {
+    "scaffolder": "scripts/scaffold-flutter-a2ui.sh",
+    "skill": "skills/scaffold-flutter-a2ui/SKILL.md",
+    "assets": [
+      "assets/scaffold/flutter-a2ui/a2ui_translation.dart",
+      "assets/scaffold/flutter-a2ui/a2ui_surface_controller.dart",
+      "assets/scaffold/flutter-a2ui/a2ui_surface_widget.dart",
+      "assets/scaffold/flutter-a2ui/a2ui_parity_test.dart"
+    ]
+  },
+  "gates": {
+    "scaffold_fresh_project": 0,
+    "parity_test": "2/2 pass — asserts heading + body + two labelled buttons, the SAME facts the web browser gate asserts",
+    "negative_case": "a malformed document renders a visible error rather than an empty surface",
+    "flutter_analyze": "No issues found",
+    "idempotent": "second run is a no-op; one asset entry, three lib files, parity still green",
+    "self_verifying": "the scaffolder RUNS the parity test before reporting success and exits 1 if it fails"
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "decision": "Build in artifact-refiner as scaffold-flutter-a2ui.sh, not in hybrid-mobile-architecture-src",
+      "rationale": "This repo owns A2UI protocol knowledge (v1.0 schema, v0.9 translation, catalog quirks); the mobile project owns app generation. Forking protocol knowledge across repos is how gen_ui_types came to define an A2uiEvent that models an AG-UI run stream. Parity is also only testable where both hosts live.",
+      "cost": "Two repos must stay in step. Mitigated by reading the package name from pubspec.yaml rather than assuming, and failing loudly on an unexpected layout."
+    },
+    {
+      "id": "D-002",
+      "decision": "genui + a2ui_core, NOT a2ui_flutter",
+      "rationale": "a2ui_flutter@0.0.1-wip002 is 1890 bytes — an unmodified `dart create` template (class Awesome { bool get isAwesome => true; }), README 'TODO: add readme'. It is a reserved name with no implementation. genui@0.10.2 is the real renderer: 77 files, 11377 LOC, 12 widget classes, same catalog vocabulary and same version number as @a2ui/react@0.10.2."
+    }
+  ],
+  "parity_seam": {
+    "note": "The v1.0->v0.9 translation now exists in THREE places and all must agree.",
+    "sites": [
+      "assets/scaffold/a2ui/a2ui-surface.tsx  toSdkMessages()   (web/AG-UI)",
+      "assets/scaffold/mcp-ui/guest/a2ui-guest.tsx  toV09Messages()  (MCP-UI)",
+      "assets/scaffold/flutter-a2ui/a2ui_translation.dart  toV09Messages()  (Flutter)"
+    ],
+    "both_halves_required": "retarget catalogId or the renderer raises 'Catalog not found'; split v1.0's inline components/dataModel or the surface is created but never populated and renders EMPTY with no error"
+  },
+  "carry_forward": [
+    "A2uiEvent in hybrid-mobile-architecture-src/assets/templates/rust/gen_ui_types/src/events.rs:81 models an AG-UI-shaped run lifecycle (RunStarted/RunFinished/RunError) under an A2UI name. Zero overlap with A2UI's six operations. Frozen seam with consumers outside this repo — ESCALATED, not fixed.",
+    "genui@0.10.2 resolves a2ui_core@0.0.1-wip002, not the published 0.1.1. Works; a bump is a change to verify, not assume.",
+    "The Dart SDK constraint is >=3.10.0; verified on Flutter 3.48.0 beta / Dart 3.14.0."
+  ],
+  "next_command": "/kbd-reflect phase-6-a2ui-flutter-host"
+}

@@ -1,0 +1,19 @@
+{
+  "version": "a2ui/v1",
+  "metadata": {
+    "name": "login-card",
+    "description": "NEGATIVE PATH — must FAIL. This is the pre-alignment local dialect that predates phase-8: a nested `root` tree with a `type` discriminator and a top-level `bindings` map, including an `expression` binding. It was never the A2UI protocol. Retained so the dialect cannot creep back unnoticed."
+  },
+  "bindings": {
+    "primary_color": { "kind": "literal", "value": "#3b82f6" },
+    "submit_endpoint": { "kind": "expression", "expression": "config.api.url + '/login'" }
+  },
+  "root": {
+    "id": "login-card",
+    "type": "Container",
+    "props": { "padding": "24px" },
+    "children": [
+      { "id": "submit", "type": "Button", "bindings": { "endpoint": "submit_endpoint" } }
+    ]
+  }
+}

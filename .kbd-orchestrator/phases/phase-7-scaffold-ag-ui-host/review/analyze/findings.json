@@ -1,0 +1,31 @@
+{
+  "mode": "artifact",
+  "verdict": "BLOCK",
+  "judge_model": "kbd-judge",
+  "producer_model": "claude-opus-5",
+  "isolation_mode": "rest-gateway:http://localhost:8181/v1",
+  "cross_model_check": "verified-distinct",
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "file": "analysis.md",
+      "claim": "The analysis drops the assessment's explicit blocking precondition G-6, so the next plan can proceed to phase-7 code work while the phase records remain at risk.",
+      "evidence": "prior_handoffs.blocking_precondition says G-6 requires restoring or explicitly accepting migrated phase records \"BEFORE any phase-7 code work\"; analysis.md has no G-6 section and library-candidates.json only lists gaps G-2, G-1, and G-4.",
+      "suggested_fix": "Carry G-6 forward as a blocking prerequisite in analysis.md and library-candidates.json, with an explicit plan-stage requirement to restore from git or record the supersession decision before implementation changes."
+    },
+    {
+      "severity": "WARNING",
+      "file": "analysis.md",
+      "claim": "The artifact gives contradictory guidance on exact version pinning for pre-1.0 AG-UI packages.",
+      "evidence": "Decision 1 says \"the plan stage should pin exact versions rather than use a caret range\" and Open Questions Remaining item 3 says \"Version pinning \u2014 given 0.0.59, pin exact rather than caret. Plan should decide and record it.\" library-candidates.json then lists as remaining: \"Whether to pin @ag-ui/* exactly given pre-1.0 status.\"",
+      "suggested_fix": "Mark exact pinning as a resolved recommendation, not an open question; the remaining plan task should be only to implement and record the exact pinned versions."
+    },
+    {
+      "severity": "WARNING",
+      "file": "analysis.md",
+      "claim": "The G-4 blocking upgrade rests on external upstream enum evidence that is not made durable or verifiable inside the packet.",
+      "evidence": "analysis.md says it diffed against upstream `sdks/typescript/packages/core/src/events.ts` and quotes an enum snippet, but cited_paths marks `sdks/typescript/packages/core/src/events.ts` as MISSING; prior_handoffs warned that upstream AG-UI paths \"do not exist in this repo\" and to \"Re-query Context7 to re-verify rather than assuming they resolve locally.\"",
+      "suggested_fix": "Record a durable upstream URL, package version, commit SHA, or npm tarball path for the enum evidence before instructing plan to edit the local schema as a blocking fix."
+    }
+  ]
+}

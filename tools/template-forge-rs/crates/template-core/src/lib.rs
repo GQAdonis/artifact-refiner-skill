@@ -15,6 +15,7 @@ pub mod library;
 
 pub use brand::{
     BrandColors, BrandContact, BrandData, BrandLogo, BrandMeta, BrandTypography, ColorPalette,
+    Motif,
 };
 pub use engine::{build_engine, EngineSelection, TemplateEngine};
 pub use library::{list_brands, load_brand};

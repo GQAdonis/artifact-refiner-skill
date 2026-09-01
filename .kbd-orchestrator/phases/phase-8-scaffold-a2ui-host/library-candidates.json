@@ -1,0 +1,232 @@
+{
+  "phase": "phase-8-scaffold-a2ui-host",
+  "generated_at": "2026-08-28T04:40:00Z",
+  "mode": "stack-specified",
+  "stack": "React 19 + Vite + TypeScript (scaffolder substrate); Lit + HTMX (existing preview)",
+  "schema_note": "references/schemas/library-candidates.schema.json is NOT installed with kbd-analyze (only SKILL.md ships). Shape follows the field set described inline in SKILL.md; unvalidated.",
+  "budget": {
+    "tier1_queries": 3,
+    "tier2_queries": 3,
+    "tier3_queries": 6,
+    "tier4_queries": 0,
+    "cap_per_tier": 8,
+    "within_budget": true,
+    "tier4_skipped_reason": "T1-T3 produced a decisive finding that reframes the phase; further breadth would not change the recommendation."
+  },
+  "headline_finding": {
+    "id": "F-A",
+    "severity": "BLOCKING \u2014 reframes the phase",
+    "summary": "A2UI is a real external protocol with a 16,230-star upstream (a2ui-project/a2ui, pushed 2026-08-28) and an official Apache-2.0 React renderer (@a2ui/react). Our schema is namespaced artifact-refiner.dev, cites no upstream, and diverges from the real protocol at every structural level.",
+    "divergence": {
+      "component_key": {
+        "ours": "\"type\": \"Container\"",
+        "upstream": "\"component\": \"Text\" (const discriminator)"
+      },
+      "data_binding": {
+        "ours": "top-level bindings map with literal/ref/expression kinds",
+        "upstream": "DynamicString wrappers + updateDataModel envelope messages"
+      },
+      "document_shape": {
+        "ours": "{ version, metadata, bindings, root } \u2014 a single tree",
+        "upstream": "envelope stream: createSurface / updateComponents / updateDataModel / deleteSurface / callFunction / actionResponse"
+      },
+      "component_vocabulary": {
+        "ours": "unconstrained ^[A-Z][A-Za-z0-9]*$",
+        "upstream": "catalog.json declaring an explicit component set"
+      }
+    },
+    "consequence": "Specs our refiner validates are NOT A2UI-protocol documents. Any host built to our schema cannot consume real agent output, and any real A2UI agent output fails our validator. This is the TOOL_CALL_ARGS_DELTA defect class from phase-7, one level up: not a wrong enum value but a wrong document model."
+  },
+  "correction_to_assess": {
+    "target": "assessment.md F-1",
+    "claim": "A2UI is a declarative component tree with no transport \u2014 'the spec is a static document', 'arguably no store at all'",
+    "verdict": "WRONG",
+    "evidence": "Upstream specification/v1_0/docs/a2ui_protocol.md: 'The A2UI Protocol facilitates the dynamic rendering of user interfaces by streaming JSON objects from an agent to a renderer... allowing for progressive rendering as the renderer processes incoming messages.' The glossary defines an A2UI message as supporting streaming, finished or interrupted. Transports are JSON Lines streams.",
+    "impact": "F-1 argued the phase-7 substrate does not transfer BECAUSE A2UI has no stream. The opposite is true: A2UI is streaming-first, so the store/subscription/progressive-accumulation substrate transfers MORE than assess concluded, not less. The AG-UI event vocabulary still differs, but the architectural shape is the same."
+  },
+  "gaps": [
+    {
+      "gap_id": "G-8",
+      "title": "Our A2UI schema is not the A2UI protocol",
+      "verdict": "DECIDE-FIRST",
+      "confidence": "high",
+      "severity": "BLOCKING",
+      "rationale": "Discovered during analyze; not present in the assessment's gap report. Every other gap's framing depends on whether we align to upstream or keep a local dialect.",
+      "options": [
+        {
+          "name": "Align to upstream A2UI v1.0",
+          "pros": [
+            "specs interoperate with real agents",
+            "@a2ui/react renders them for free",
+            "catalog system replaces our ad-hoc componentType pattern"
+          ],
+          "cons": [
+            "breaking change to a shipped domain (PR #1)",
+            "invalidates both shipped examples",
+            "refiner must be reworked to the envelope model"
+          ]
+        },
+        {
+          "name": "Keep the local dialect, rename it",
+          "pros": [
+            "no breaking change",
+            "phase-8 stays small"
+          ],
+          "cons": [
+            "the name A2UI is taken and means something else",
+            "permanently non-interoperable",
+            "future readers will assume protocol conformance"
+          ]
+        },
+        {
+          "name": "Support both",
+          "pros": [
+            "migration path"
+          ],
+          "cons": [
+            "two document models, two renderers, roughly double the surface"
+          ]
+        }
+      ]
+    },
+    {
+      "gap_id": "G-1",
+      "title": "Renderer component types cannot match any conformant spec",
+      "severity": "BLOCKING",
+      "verdict": "MOOT-IF-ALIGNING",
+      "note": "Under alignment @a2ui/react implements the catalog vocabulary and the local componentType pattern disappears. Under the dialect this stands exactly as assessed.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-2",
+      "title": "No template injector; no HTML ever produced",
+      "severity": "BLOCKING",
+      "verdict": "READING-(a)-ONLY",
+      "note": "A runtime React host renders from the spec and never substitutes {{A2UI_JSON}} into a static template. Only reading (a) needs an injector.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-3",
+      "title": "Bindings never resolved",
+      "severity": "BLOCKING",
+      "verdict": "RESHAPED-IF-ALIGNING",
+      "note": "Upstream uses DynamicString wrappers plus updateDataModel envelope messages, not a top-level bindings map with literal/ref/expression kinds. Aligning replaces the gap rather than fixing it.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-4",
+      "title": "Only 3 component types implemented; example needs 4+",
+      "severity": "HIGH",
+      "verdict": "MOOT-IF-ALIGNING",
+      "note": "@a2ui/react ships the component set; hand-implementing types is only work under the dialect.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-5",
+      "title": "Phase scope undefined: finish preview vs emit a scaffolder",
+      "severity": "HIGH",
+      "verdict": "SUBORDINATE-TO-G-8",
+      "note": "Still open (assess Q1), but now downstream of G-8: aligning makes the scaffolder reading substantially cheaper because the renderer is adopted rather than written.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-6",
+      "title": "expression binding evaluation strategy undecided",
+      "severity": "HIGH",
+      "verdict": "MOOT-IF-ALIGNING",
+      "note": "The protocol defines callFunction with callableFrom metadata instead of arbitrary expression strings, so the security question dissolves under alignment. Live under the dialect \u2014 recommend rejecting expression in v1.",
+      "carried_from": "assessment.md gap report"
+    },
+    {
+      "gap_id": "G-7",
+      "title": "Preview loads Lit/HTMX/Alpine from unpkg @latest",
+      "severity": "MEDIUM",
+      "verdict": "STANDS-EITHER-WAY",
+      "note": "Five unpinned CDN loads (assess F-6). Independent of G-8; relevant because a browser-DOM verification against @latest dependencies is a flaky test.",
+      "carried_from": "assessment.md gap report"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "@a2ui/react",
+      "version": "0.10.2",
+      "license": "Apache-2.0",
+      "verdict": "ADOPT-IF-ALIGNING",
+      "evidence": {
+        "upstream_repo": "a2ui-project/a2ui",
+        "stars": 16230,
+        "repo_pushed": "2026-08-28",
+        "npm_releases": 11,
+        "npm_created": "2026-03-17",
+        "npm_latest_publish": "2026-07-17",
+        "dependencies": [
+          "@a2ui/markdown-it (*)",
+          "@a2ui/web_core ^0.10.5",
+          "clsx ^2.1.1",
+          "markdown-it ^14.2.0",
+          "zod ^3.25.76"
+        ],
+        "peer_dependencies": [
+          "react ^19.2.7",
+          "react-dom ^19.2.7",
+          "zod ^3.25.76"
+        ]
+      },
+      "rationale": "The official renderer for the real protocol. If G-8 resolves toward alignment, this eliminates G-1, G-4, and most of G-2 outright \u2014 there is no reason to hand-write a component interpreter that upstream already ships and maintains.",
+      "risks": [
+        "Pre-1.0 (0.10.2) \u2014 pin exact.",
+        "Publish cadence lags the repo: repo pushed 2026-08-28, package last published 2026-07-17 (~6 weeks). The npm artifact is not tracking main closely.",
+        "`@a2ui/markdown-it` is declared as `*` \u2014 an unbounded version range in a published dependency, which is a packaging smell and a supply-chain risk.",
+        "peerDependency react ^19.2.7 \u2014 VERIFIED satisfied (npm latest 19.2.8; scaffold-react-vite.sh:148 targets React 19). No longer an open risk."
+      ],
+      "peer_compat_verified": "react ^19.2.7 vs npm latest 19.2.8 \u2014 satisfied; scaffold-react-vite.sh:148 targets React 19"
+    },
+    {
+      "name": "Existing Lit renderer in a2ui-preview-template.html",
+      "verdict": "REJECT-AS-BASIS",
+      "rationale": "Handles three lowercase component types that cannot match our own schema's PascalCase pattern (assess F-2), resolves no bindings (assess F-4), and implements neither our dialect nor upstream A2UI. Whatever G-8 decides, this is not a foundation \u2014 it is roughly 30 lines of switch statement that has never rendered a conformant spec.",
+      "salvageable": "The surrounding preview shell (brand CSS variables, header/main layout, screenshot harness) is reusable independent of the renderer."
+    },
+    {
+      "name": "@easyops-cn/a2ui-sdk",
+      "verdict": "REJECT",
+      "rationale": "Not published to npm despite a Context7 entry. Unavailable as a dependency."
+    },
+    {
+      "name": "CopilotKit/generative-ui",
+      "verdict": "DEFER",
+      "rationale": "Umbrella library spanning AG-UI, A2UI, and Open-JSON-UI. Same verdict as phase-7's @copilotkit/react-core: a full framework whose opinions collide with this repo's scaffolder conventions. Revisit only if the goal expands to a complete agentic-UI product surface."
+    },
+    {
+      "name": "@a2ui/web_core",
+      "version": "0.10.6",
+      "license": "Apache-2.0",
+      "verdict": "TRANSITIVE-OK",
+      "rationale": "Framework-agnostic engine beneath @a2ui/react \u2014 deps are zod, date-fns, zod-to-json-schema, @preact/signals-core, with NO React peer. Arrives transitively for a React host. Publishes more recently than @a2ui/react (2026-08-03 vs 2026-07-17), so the staleness concern is specific to the React wrapper, not the stack. Named so plan knows the non-React seam exists.",
+      "surfaced_by": "adversarial review round 1"
+    },
+    {
+      "name": "A2UI.Blazor / a2ui-swift / A2UI-Android / a2ui-react-native",
+      "verdict": "OUT-OF-SCOPE-BY-PLATFORM",
+      "rationale": "Ports to .NET, Swift, Android, and React Native \u2014 none consumable from a Vite/React TypeScript host. Corroborative value only: four independent ports across four ecosystems is evidence A2UI is a real multi-implementation standard, which is what makes our divergence consequential.",
+      "surfaced_by": "adversarial review round 1"
+    }
+  ],
+  "open_questions_resolved": [
+    {
+      "question": "Q2 (from assess): Lit + HTMX or React?",
+      "answer": "React, UNCONDITIONALLY. Under alignment, @a2ui/react is the official renderer. Under the dialect, still React \u2014 the scaffolder substrate is React (phase-7's wrapper, architectural ESLint, store/hook/component layering), and the existing Lit renderer has never rendered a conformant spec, so 'keep Lit' means REWRITE in Lit, not reuse. What G-8 changes is whether the renderer is adopted or written, not the framework."
+    }
+  ],
+  "open_questions_remaining": [
+    "G-8 (NEW, blocking): align our A2UI to the real protocol, rename the local dialect, or support both? Not an analyze decision \u2014 it changes the meaning of a shipped domain and invalidates published examples.",
+    "Q1 (from assess, still open): finish the preview pipeline, or emit a scaffolder? Now subordinate to G-8 \u2014 aligning upstream makes the scaffolder reading substantially cheaper, since @a2ui/react does the rendering.",
+    "Q3 (from assess): expression-binding evaluation. Moot if aligning upstream (the protocol defines callFunction with callableFrom metadata instead); live if keeping the dialect."
+  ],
+  "upstream_provenance": {
+    "source": "Context7 MCP, library id /a2ui-project/a2ui",
+    "note": "specification/v1_0/** paths are upstream GitHub files, NOT in this repo. Cited as external protocol authority; re-verify via Context7 or by fetching upstream.",
+    "locally_verifiable": "our schema $id is artifact-refiner.dev; grep over references/domain/a2ui.md finds no external spec reference"
+  },
+  "gap_coverage_note": "Every gap from the assessment now carries an explicit verdict. An earlier draft collapsed G-1..G-4 into one 'CONDITIONAL' row and omitted G-5/G-6/G-7 entirely \u2014 the same dropped-carry-forward error adversarial review caught three times in phase-7 analyze. A gap with no research attached still needs a recorded verdict."
+}

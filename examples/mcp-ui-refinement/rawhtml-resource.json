@@ -1,0 +1,94 @@
+{
+  "type": "resource",
+  "resource": {
+    "uri": "ui://demo/notification-preferences",
+    "mimeType": "text/html;profile=mcp-app",
+    "text": "<!DOCTYPE html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><title>A2UI surface</title></head>\n<body>\n  <div id=\"a2ui-root\" role=\"region\" aria-label=\"Agent surface\">Rendering agent surface\u2026</div>\n<script type=\"application/json\" id=\"a2ui-messages\">[{\"version\": \"v1.0\", \"createSurface\": {\"surfaceId\": \"notification-preferences\", \"catalogId\": \"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json\", \"components\": [{\"id\": \"root\", \"component\": \"Card\", \"child\": \"layout\"}, {\"id\": \"layout\", \"component\": \"Column\", \"children\": [\"heading\", \"description\", \"actions\"], \"align\": \"start\"}, {\"id\": \"heading\", \"component\": \"Text\", \"text\": {\"path\": \"/title\"}}, {\"id\": \"description\", \"component\": \"Text\", \"text\": {\"path\": \"/body\"}}, {\"id\": \"actions\", \"component\": \"Row\", \"children\": [\"accept\", \"decline\"], \"justify\": \"end\"}, {\"id\": \"accept\", \"component\": \"Button\", \"child\": \"accept-label\", \"action\": {\"event\": {\"name\": \"enable_notifications\"}}}, {\"id\": \"accept-label\", \"component\": \"Text\", \"text\": {\"path\": \"/acceptLabel\"}}, {\"id\": \"decline\", \"component\": \"Button\", \"child\": \"decline-label\", \"action\": {\"event\": {\"name\": \"dismiss\"}}}, {\"id\": \"decline-label\", \"component\": \"Text\", \"text\": \"Not now\"}], \"dataModel\": {\"title\": \"Enable notifications\", \"body\": \"Get alerts when an order status changes.\", \"acceptLabel\": \"Enable\"}}}]</script>\n<script>\n  // Minimal A2UI host. The messages are INLINE \u2014 the A2UI renderer is fed\n  // messages rather than fetching them, so this works under the MCP-UI sandbox's\n  // `connect-src: none` default. That compatibility is why MCP-UI can carry A2UI\n  // at all; see the schema $comment.\n  window.addEventListener('message', function (e) {\n    if (e.data && e.data.type === 'ui-lifecycle-iframe-render-data') { /* host data */ }\n  });\n  window.parent.postMessage({ type: 'ui-lifecycle-iframe-ready' }, '*');\n</script>\n</body></html>",
+    "a2ui": [
+      {
+        "version": "v1.0",
+        "createSurface": {
+          "surfaceId": "notification-preferences",
+          "catalogId": "https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json",
+          "components": [
+            {
+              "id": "root",
+              "component": "Card",
+              "child": "layout"
+            },
+            {
+              "id": "layout",
+              "component": "Column",
+              "children": [
+                "heading",
+                "description",
+                "actions"
+              ],
+              "align": "start"
+            },
+            {
+              "id": "heading",
+              "component": "Text",
+              "text": {
+                "path": "/title"
+              }
+            },
+            {
+              "id": "description",
+              "component": "Text",
+              "text": {
+                "path": "/body"
+              }
+            },
+            {
+              "id": "actions",
+              "component": "Row",
+              "children": [
+                "accept",
+                "decline"
+              ],
+              "justify": "end"
+            },
+            {
+              "id": "accept",
+              "component": "Button",
+              "child": "accept-label",
+              "action": {
+                "event": {
+                  "name": "enable_notifications"
+                }
+              }
+            },
+            {
+              "id": "accept-label",
+              "component": "Text",
+              "text": {
+                "path": "/acceptLabel"
+              }
+            },
+            {
+              "id": "decline",
+              "component": "Button",
+              "child": "decline-label",
+              "action": {
+                "event": {
+                  "name": "dismiss"
+                }
+              }
+            },
+            {
+              "id": "decline-label",
+              "component": "Text",
+              "text": "Not now"
+            }
+          ],
+          "dataModel": {
+            "title": "Enable notifications",
+            "body": "Get alerts when an order status changes.",
+            "acceptLabel": "Enable"
+          }
+        }
+      }
+    ]
+  }
+}

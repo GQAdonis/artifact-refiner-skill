@@ -12,6 +12,7 @@
         "direct:html",
         "direct:a2ui",
         "direct:ag-ui",
+        "direct:mcp-ui",
         "direct:content",
         "direct:image",
         "direct:code",

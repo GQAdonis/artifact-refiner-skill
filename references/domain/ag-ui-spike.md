@@ -13,7 +13,7 @@ defines how AI agents communicate with frontend applications in real time. It sp
 - **Run lifecycle events** — `RUN_STARTED`, `RUN_FINISHED`, `RUN_ERROR`
 - **Text streaming events** — `TEXT_MESSAGE_START`, `TEXT_MESSAGE_CONTENT`,
   `TEXT_MESSAGE_END`, `TEXT_MESSAGE_CHUNK`
-- **Tool call events** — `TOOL_CALL_START`, `TOOL_CALL_ARGS_DELTA`, `TOOL_CALL_END`
+- **Tool call events** — `TOOL_CALL_START`, `TOOL_CALL_ARGS`, `TOOL_CALL_END`
 - **State synchronization events** — `STATE_SNAPSHOT`, `STATE_DELTA`,
   `MESSAGES_SNAPSHOT`
 - **Custom events** — `CUSTOM` (application-defined payloads)

@@ -80,7 +80,16 @@ ember = ${tomlString(p.ember)}
 ember_alt = ${tomlString(p.ember_alt ?? p.ember)}
 info = ${tomlString(p.info ?? "#60A5FA")}
 border = ${tomlString(p.border ?? "#1E2A3A")}`;
-  let out = `[meta]
+  // TOML: a bare `key = value` after a table header belongs to THAT table, so
+  // every top-level scalar must be emitted before the first `[table]`. `tone`
+  // used to be appended at the end, where it was silently absorbed into the
+  // last `[[motifs]]` entry (or `[typography]`) and never reached
+  // `BrandData.tone`.
+  let out = "";
+  if (Array.isArray(spec.tone) && spec.tone.length > 0) {
+    out += `tone = [${spec.tone.map(tomlString).join(", ")}]\n\n`;
+  }
+  out += `[meta]
 name = ${tomlString(spec.meta.name)}
 tagline = ${tomlString(spec.meta.tagline)}
 description = ${tomlString(spec.meta.description)}
@@ -101,9 +110,6 @@ mono = ${tomlString(spec.typography.mono)}
     for (const m of spec.motifs) {
       out += `\n[[motifs]]\ntitle = ${tomlString(m.title)}\ndescription = ${tomlString(m.description)}\n`;
     }
-  }
-  if (Array.isArray(spec.tone) && spec.tone.length > 0) {
-    out += `\ntone = [${spec.tone.map(tomlString).join(", ")}]\n`;
   }
   return out;
 }

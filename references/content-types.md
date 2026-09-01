@@ -14,7 +14,8 @@ Content types follow the pattern `{mode}:{kind}`:
 |------|--------|----------------|------------|
 | `direct:react` | `.tsx` / `.jsx` components | `domain/ui.md` | Render → screenshot → visual inspection |
 | `direct:html` | HTML/HTMX markup | `domain/ui.md` | Render → screenshot → visual inspection |
-| `direct:a2ui` | `.a2ui.json` component specs | `domain/a2ui.md` | Schema validation → cycle check → normalize → render → screenshot |
+| `direct:a2ui` | A2UI v1.0 protocol messages (`.a2ui.json`) | `domain/a2ui.md` | Schema validation → id-reference + cycle + reachability check → normalize |
+| `direct:mcp-ui` | MCP-UI resources embedded in tool results (`ui://`) | `domain/mcp-ui.md` | Schema validation → URI-scheme + content-shape check → normalize |
 | `direct:content` | Reports, specs, docs | `domain/content.md` | Structure, tone, completeness |
 | `direct:image` | SVG/PNG/WebP files | `domain/image.md` or `domain/logo.md` | Visual quality, dimensions, format |
 | `direct:code` | Source files (any lang) | `domain/code.md` | Syntax, tests, lint, conventions |
@@ -104,3 +105,16 @@ components:
 ```
 
 Each component is evaluated independently using its own strategy. The Reflect phase produces a per-component assessment and an overall convergence decision.
+
+## Note on `direct:a2ui`
+
+`direct:a2ui` denotes messages of the **A2UI v1.0 protocol** defined by
+[a2ui-project/a2ui](https://github.com/a2ui-project/a2ui) (Apache-2.0). A2UI is
+an external protocol; this repository does not define it.
+
+Before phase-8, this content type used a locally-invented format —
+`{version, metadata, bindings, root}` with a `type` discriminator and a nested
+component tree — under the same name. That format was never A2UI. Specs authored
+against it are rejected by the current schema; see
+`examples/a2ui-component-refinement/broken-legacy-dialect.a2ui.json` for the
+fixture that guards against its return.

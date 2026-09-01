@@ -1,0 +1,48 @@
+{
+  "version": "ag-ui/v1",
+  "metadata": {
+    "description": "NEGATIVE PATH — must FAIL validation. Uses TOOL_CALL_ARGS_DELTA, a kind AG-UI never defined but which this repo's schema wrongly accepted until p7-02. Guards the rename: if the validator ever accepts this file again, the wrong name has been reintroduced.",
+    "author": "prometheus-skill-pack",
+    "tags": [
+      "negative-path",
+      "regression-guard"
+    ],
+    "runtime": "node"
+  },
+  "agent": {
+    "name": "legacy-args-delta-agent",
+    "description": "Intentionally invalid spec retained as a regression guard. Do not use as a template."
+  },
+  "tools": [
+    {
+      "name": "extract_line_items",
+      "description": "Parse an invoice document into structured line items.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Identifier of the uploaded invoice document."
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      }
+    }
+  ],
+  "event_emission": [
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_START",
+      "fragment": "ExtractionPreviewPanel",
+      "condition": "Valid kind — present so the file fails on exactly one thing."
+    },
+    {
+      "tool": "extract_line_items",
+      "on_event": "TOOL_CALL_ARGS_DELTA",
+      "fragment": "ExtractionPreviewPanel",
+      "condition": "INVALID: TOOL_CALL_ARGS_DELTA is not an AG-UI event kind. Upstream defines TOOL_CALL_ARGS, whose payload carries a `delta` field. Validation MUST reject this entry."
+    }
+  ]
+}

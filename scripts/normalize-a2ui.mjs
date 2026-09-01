@@ -72,20 +72,56 @@ function validate(schema, instance, path = '$', root = schema, errors = []) {
     return validate(target, instance, path, root, errors);
   }
 
+  // oneOf: EXACTLY one branch must match. The previous implementation stopped at
+  // the first match, which is anyOf semantics — a message carrying two envelope
+  // operations validated cleanly because `createSurface` matched and the walk
+  // stopped. Envelope exclusivity depends on real oneOf.
   if (schema.oneOf) {
-    let matched = false;
+    let matches = 0;
     for (const sub of schema.oneOf) {
       const subErrors = [];
       validate(sub, instance, path, root, subErrors);
-      if (subErrors.length === 0) {
-        matched = true;
-        break;
-      }
+      if (subErrors.length === 0) matches += 1;
     }
-    if (!matched) {
+    if (matches === 0) {
       errors.push({ path, message: `No oneOf branch matched` });
+    } else if (matches > 1) {
+      errors.push({
+        path,
+        message: `Matched ${matches} oneOf branches; exactly one is permitted`,
+      });
     }
     return errors;
+  }
+
+  // anyOf: at least one branch matches.
+  if (schema.anyOf) {
+    const matched = schema.anyOf.some((sub) => {
+      const subErrors = [];
+      validate(sub, instance, path, root, subErrors);
+      return subErrors.length === 0;
+    });
+    if (!matched) {
+      errors.push({ path, message: `No anyOf branch matched` });
+    }
+    return errors;
+  }
+
+  // not: the subschema must NOT match. Carries the dialect guards (`type`,
+  // `bindings`) and the expression-leaf guard, so omitting it would silently
+  // disable every rejection this change exists to enforce.
+  if (schema.not) {
+    const subErrors = [];
+    validate(schema.not, instance, path, root, subErrors);
+    if (subErrors.length === 0) {
+      errors.push({
+        path,
+        message: schema.description
+          ? `Rejected by guard: ${schema.description}`
+          : `Value matched a forbidden schema`,
+      });
+    }
+    // fall through: sibling keywords still apply
   }
 
   if (schema.type) {
@@ -173,102 +209,247 @@ function validate(schema, instance, path = '$', root = schema, errors = []) {
 
 // Walk component tree and collect (binding-id -> ref-target) edges plus
 // referenced ids per component. Returns { graph, refsFromComponents }.
-function collectBindingGraph(spec) {
-  const graph = new Map(); // binding id -> Set<binding id>
-  const refsFromComponents = new Set(); // binding ids referenced from components
+// ---------------------------------------------------------------------------
+// A2UI v1.0 structural analysis
+//
+// The pre-alignment format nested components inside one another and carried a
+// `bindings` map; cycles were possible in the BINDINGS graph. The real protocol
+// uses a FLAT component array whose parent-child structure is expressed by id
+// reference — so cycles are still possible, just in a different graph, and JSON
+// Schema still cannot express acyclicity. Losing this check while changing
+// models would be a silent regression, so it moved rather than disappeared.
+// ---------------------------------------------------------------------------
 
-  const bindings = spec.bindings ?? {};
-  for (const [id, binding] of Object.entries(bindings)) {
-    const out = new Set();
-    if (binding.kind === 'ref' && binding.ref) {
-      out.add(binding.ref);
-    }
-    graph.set(id, out);
+const OPERATION_KEYS = [
+  'createSurface',
+  'updateComponents',
+  'updateDataModel',
+  'deleteSurface',
+  'callFunction',
+  'actionResponse',
+];
+
+/** True when the document is the pre-alignment dialect, not a protocol message. */
+function looksLikeLegacyDialect(spec) {
+  if (!spec || typeof spec !== 'object') return false;
+  const hasOperation = OPERATION_KEYS.some((k) => k in spec);
+  if (hasOperation) return false;
+  return 'root' in spec || 'bindings' in spec || 'metadata' in spec;
+}
+
+/** The single operation key present, or null. */
+function operationOf(spec) {
+  const present = OPERATION_KEYS.filter((k) => k in spec);
+  return present.length === 1 ? present[0] : null;
+}
+
+/** Components carried by whichever operation this message performs. */
+function componentsOf(spec) {
+  const op = operationOf(spec);
+  if (!op) return [];
+  return spec[op]?.components ?? [];
+}
+
+/** Index by id. Duplicate ids are a hard error: later entries would shadow. */
+function indexComponents(components) {
+  const byId = new Map();
+  const duplicates = [];
+  for (const c of components) {
+    if (!c || typeof c !== 'object' || typeof c.id !== 'string') continue;
+    if (byId.has(c.id)) duplicates.push(c.id);
+    else byId.set(c.id, c);
   }
+  return { byId, duplicates };
+}
 
-  function walk(component) {
-    if (!component) return;
-    if (component.bindings) {
-      for (const value of Object.values(component.bindings)) {
-        if (value && typeof value === 'object' && '$ref' in value) {
-          refsFromComponents.add(value.$ref);
-        }
+/** id -> [child ids], from `child` and `children`. */
+function buildReferenceGraph(byId) {
+  const graph = new Map();
+  for (const [id, c] of byId) {
+    const kids = [];
+    if (typeof c.child === 'string') kids.push(c.child);
+    if (Array.isArray(c.children)) {
+      for (const k of c.children) if (typeof k === 'string') kids.push(k);
+    }
+    graph.set(id, kids);
+  }
+  return graph;
+}
+
+/** Referenced ids with no declared component. */
+function findDanglingRefs(byId, graph) {
+  const dangling = [];
+  for (const [id, kids] of graph) {
+    for (const k of kids) {
+      if (!byId.has(k)) dangling.push({ from: id, missing: k });
+    }
+  }
+  return dangling;
+}
+
+/**
+ * First cycle in the id-reference graph, as the participating ids.
+ * Iterative DFS with an explicit stack — a recursive walk would blow the stack
+ * on a deep surface, and a malformed surface is exactly when that happens.
+ */
+function detectReferenceCycle(graph) {
+  const WHITE = 0, GRAY = 1, BLACK = 2;
+  const color = new Map([...graph.keys()].map((id) => [id, WHITE]));
+
+  for (const origin of graph.keys()) {
+    if (color.get(origin) !== WHITE) continue;
+    const stack = [{ id: origin, path: [origin], i: 0 }];
+    color.set(origin, GRAY);
+
+    while (stack.length) {
+      const frame = stack[stack.length - 1];
+      const kids = graph.get(frame.id) ?? [];
+      if (frame.i >= kids.length) {
+        color.set(frame.id, BLACK);
+        stack.pop();
+        continue;
+      }
+      const next = kids[frame.i++];
+      if (!graph.has(next)) continue;           // dangling: reported separately
+      if (color.get(next) === GRAY) {
+        const at = frame.path.indexOf(next);
+        return at >= 0 ? [...frame.path.slice(at), next] : [...frame.path, next];
+      }
+      if (color.get(next) === WHITE) {
+        color.set(next, GRAY);
+        stack.push({ id: next, path: [...frame.path, next], i: 0 });
       }
     }
-    if (Array.isArray(component.children)) {
-      component.children.forEach(walk);
-    }
   }
-  walk(spec.root);
-
-  return { graph, refsFromComponents };
+  return null;
 }
 
-function detectCycles(graph) {
-  const WHITE = 0,
-    GRAY = 1,
-    BLACK = 2;
-  const color = new Map([...graph.keys()].map((k) => [k, WHITE]));
-  const path = [];
-  let cycle = null;
+/**
+ * Ids not reachable from a root. Orphans indicate a generation bug and would
+ * otherwise pass unnoticed — they simply never render.
+ */
+function findUnreachable(byId, graph) {
+  if (byId.size === 0) return [];
+  const referenced = new Set();
+  for (const kids of graph.values()) for (const k of kids) referenced.add(k);
+  const roots = [...byId.keys()].filter((id) => !referenced.has(id));
+  if (roots.length === 0) return [];            // every node referenced: a cycle, reported separately
 
-  function dfs(node) {
-    if (cycle) return;
-    color.set(node, GRAY);
-    path.push(node);
-    for (const next of graph.get(node) ?? []) {
-      if (!graph.has(next)) continue; // unknown ref — flagged elsewhere
-      const c = color.get(next);
-      if (c === GRAY) {
-        const start = path.indexOf(next);
-        cycle = path.slice(start).concat(next);
-        return;
-      } else if (c === WHITE) {
-        dfs(next);
-        if (cycle) return;
+  // A surface has ONE root. Treating every unreferenced node as a root would
+  // make an orphan its own root and therefore trivially reachable — which is
+  // exactly the bug this check exists to catch. Walk from the first root only;
+  // any further unreferenced node is an orphan by definition.
+  const seen = new Set();
+  const stack = [roots[0]];
+  while (stack.length) {
+    const id = stack.pop();
+    if (seen.has(id)) continue;
+    seen.add(id);
+    for (const k of graph.get(id) ?? []) if (byId.has(k)) stack.push(k);
+  }
+  return [...byId.keys()].filter((id) => !seen.has(id));
+}
+
+/** Resolve a JSON Pointer (subset: /a/b) against the data model. */
+function resolvePointer(dataModel, pointer) {
+  if (pointer === '/') return dataModel;
+  const parts = pointer.slice(1).split('/').map((p) => p.replace(/~1/g, '/').replace(/~0/g, '~'));
+  let cur = dataModel;
+  for (const part of parts) {
+    if (cur == null || typeof cur !== 'object' || !(part in cur)) return undefined;
+    cur = cur[part];
+  }
+  return cur;
+}
+
+/**
+ * Walk leaf values for {"path": …} pointers and expression-like objects.
+ *
+ * The expression check closes assess Q3: the pre-alignment dialect allowed
+ * `{"kind":"expression","expression":"config.api.url + '/login'"}` — arbitrary
+ * JavaScript requiring an evaluator. The protocol has no expression language;
+ * computed behaviour goes through catalog-declared functions. Rejecting here
+ * means an unreviewed evaluator cannot reach a scaffolded app by omission.
+ */
+function checkLeaves(components, dataModel) {
+  const deadPointers = [];
+  const expressions = [];
+
+  const walk = (value, componentId, keyPath) => {
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => walk(v, componentId, `${keyPath}[${i}]`));
+      return;
+    }
+    if (value == null || typeof value !== 'object') return;
+
+    if ('expression' in value || 'kind' in value) {
+      expressions.push({ component: componentId, at: keyPath, value });
+      return;
+    }
+    if ('path' in value && typeof value.path === 'string') {
+      if (resolvePointer(dataModel ?? {}, value.path) === undefined) {
+        deadPointers.push({ component: componentId, at: keyPath, path: value.path });
       }
+      return;
     }
-    color.set(node, BLACK);
-    path.pop();
-  }
+    for (const [k, v] of Object.entries(value)) walk(v, componentId, `${keyPath}.${k}`);
+  };
 
-  for (const node of graph.keys()) {
-    if (color.get(node) === WHITE) {
-      dfs(node);
-      if (cycle) break;
+  for (const c of components) {
+    if (!c || typeof c !== 'object') continue;
+    for (const [k, v] of Object.entries(c)) {
+      if (k === 'id' || k === 'component' || k === 'child' || k === 'children') continue;
+      walk(v, c.id, k);
     }
   }
-  return cycle;
+  return { deadPointers, expressions };
 }
 
-function findUndefinedRefs(spec, refsFromComponents) {
-  const defined = new Set(Object.keys(spec.bindings ?? {}));
-  const undef = [];
-  for (const ref of refsFromComponents) {
-    if (!defined.has(ref)) undef.push(ref);
+/**
+ * Component names accepted by the schema.
+ *
+ * Derived from the schema at runtime, never duplicated here. A hand-maintained
+ * second copy is how `TOOL_CALL_ARGS_DELTA` lived in two places at once through
+ * an entire phase. When the schema declares only a shape pattern rather than an
+ * explicit catalog, that pattern is the check — recorded in the report so a
+ * reader can tell how strict the validation actually was.
+ */
+function componentNameCheck(schema) {
+  const def = schema.definitions?.componentName;
+  if (Array.isArray(def?.enum)) {
+    return { mode: 'catalog-enum', accepts: (n) => def.enum.includes(n), source: def.enum };
   }
-  for (const [id, binding] of Object.entries(spec.bindings ?? {})) {
-    if (binding.kind === 'ref' && binding.ref && !defined.has(binding.ref)) {
-      undef.push(`${id} -> ${binding.ref}`);
-    }
+  if (typeof def?.pattern === 'string') {
+    const re = new RegExp(def.pattern);
+    return { mode: 'shape-pattern', accepts: (n) => re.test(n), source: def.pattern };
   }
-  return undef;
+  return { mode: 'none', accepts: () => true, source: null };
 }
 
+function findInvalidComponentNames(components, check) {
+  return components
+    .filter((c) => c && typeof c.component === 'string' && !check.accepts(c.component))
+    .map((c) => ({ id: c.id, component: c.component }));
+}
+
+/** Stable key order; the flat array keeps its authored order. */
 function normalize(spec) {
-  // Deterministic key ordering: version, metadata, bindings, root.
-  // Inside components: id, type, props, bindings, children.
-  // Inside bindings (top-level map): keys sorted alphabetically.
   const out = {};
   if ('version' in spec) out.version = spec.version;
-  if ('metadata' in spec) out.metadata = spec.metadata;
-  if ('bindings' in spec && spec.bindings) {
-    out.bindings = {};
-    for (const key of Object.keys(spec.bindings).sort()) {
-      out.bindings[key] = spec.bindings[key];
+  for (const key of OPERATION_KEYS) {
+    if (!(key in spec)) continue;
+    const op = spec[key];
+    const norm = {};
+    for (const k of ['surfaceId', 'catalogId', 'call', 'args']) {
+      if (k in op) norm[k] = op[k];
     }
+    if (Array.isArray(op.components)) norm.components = op.components.map(normalizeComponent);
+    for (const k of ['dataModel', 'surfaceParams']) {
+      if (k in op) norm[k] = op[k];
+    }
+    for (const [k, v] of Object.entries(op)) if (!(k in norm)) norm[k] = v;
+    out[key] = norm;
   }
-  if ('root' in spec) out.root = normalizeComponent(spec.root);
   return out;
 }
 
@@ -276,14 +457,13 @@ function normalizeComponent(component) {
   if (!component || typeof component !== 'object') return component;
   const out = {};
   if ('id' in component) out.id = component.id;
-  if ('type' in component) out.type = component.type;
-  if ('props' in component) out.props = component.props;
-  if ('bindings' in component) out.bindings = component.bindings;
-  if (Array.isArray(component.children)) {
-    out.children = component.children.map(normalizeComponent);
-  }
+  if ('component' in component) out.component = component.component;
+  if ('child' in component) out.child = component.child;
+  if ('children' in component) out.children = component.children;
+  for (const [k, v] of Object.entries(component)) if (!(k in out)) out[k] = v;
   return out;
 }
+
 
 function loadJson(path) {
   return JSON.parse(readFileSync(path, 'utf8'));
@@ -313,16 +493,79 @@ function main() {
   }
 
   const schema = loadJson(SCHEMA_PATH);
-  const schemaErrors = validate(schema, spec);
-
-  const { graph, refsFromComponents } = collectBindingGraph(spec);
-  const undefRefs = findUndefinedRefs(spec, refsFromComponents);
-  const cycle = detectCycles(graph);
-
   const violations = [];
+
+  // Named ahead of schema validation. A pre-alignment document fails the schema
+  // with a pile of generic errors that never say WHY; anyone holding an old spec
+  // should learn it is the wrong format, not just that something is invalid.
+  if (looksLikeLegacyDialect(spec)) {
+    violations.push({
+      kind: 'legacy_dialect',
+      message:
+        'This is the pre-alignment a2ui format ({version, metadata, bindings, root} ' +
+        'with a `type` discriminator). It is not an A2UI v1.0 protocol message. ' +
+        'See openspec/changes/archive/2026-08-29-p8-01-align-a2ui-schema and ' +
+        'references/domain/a2ui.md for the current message model.',
+    });
+  }
+
+  const schemaErrors = validate(schema, spec);
   if (schemaErrors.length) violations.push({ kind: 'schema', errors: schemaErrors });
-  if (undefRefs.length) violations.push({ kind: 'undefined_bindings', refs: undefRefs });
-  if (cycle) violations.push({ kind: 'binding_cycle', cycle });
+
+  const operation = operationOf(spec);
+  const components = componentsOf(spec);
+  const dataModel = operation ? spec[operation]?.dataModel : undefined;
+
+  const { byId, duplicates } = indexComponents(components);
+  if (duplicates.length) {
+    violations.push({ kind: 'duplicate_component_id', ids: duplicates });
+  }
+
+  const graph = buildReferenceGraph(byId);
+
+  const dangling = findDanglingRefs(byId, graph);
+  if (dangling.length) {
+    violations.push({ kind: 'dangling_reference', refs: dangling });
+  }
+
+  const cycle = detectReferenceCycle(graph);
+  if (cycle) {
+    violations.push({ kind: 'reference_cycle', cycle });
+  }
+
+  // Only meaningful once the graph is sound: with a cycle present every node is
+  // referenced, so "unreachable" would report nothing and mask the real fault.
+  if (!cycle) {
+    const unreachable = findUnreachable(byId, graph);
+    if (unreachable.length) {
+      violations.push({ kind: 'unreachable_component', ids: unreachable });
+    }
+  }
+
+  const { deadPointers, expressions } = checkLeaves(components, dataModel);
+  if (deadPointers.length) {
+    violations.push({ kind: 'dead_data_pointer', refs: deadPointers });
+  }
+  if (expressions.length) {
+    violations.push({
+      kind: 'expression_leaf',
+      message:
+        'Expression-like leaf rejected: A2UI has no expression language. ' +
+        'Arbitrary expression evaluation is a code-execution hazard; use ' +
+        'catalog-declared functions instead.',
+      leaves: expressions,
+    });
+  }
+
+  const nameCheck = componentNameCheck(schema);
+  const badNames = findInvalidComponentNames(components, nameCheck);
+  if (badNames.length) {
+    violations.push({
+      kind: 'unknown_component',
+      message: `Unknown component name (check mode: ${nameCheck.mode}). Unknown components are a hard error, never a fallback render.`,
+      components: badNames,
+    });
+  }
 
   ensureDir(outDir);
 
@@ -331,6 +574,9 @@ function main() {
     artifact_id: artifactId,
     input,
     schema: SCHEMA_PATH,
+    operation,
+    component_count: components.length,
+    component_name_check: nameCheck.mode,
     violations,
     generated_at: new Date().toISOString(),
   };

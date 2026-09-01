@@ -1,0 +1,209 @@
+{
+  "phase": "phase-7-scaffold-ag-ui-host",
+  "generated_at": "2026-08-28T00:45:00Z",
+  "mode": "stack-specified",
+  "stack": "React 19 + Vite + TypeScript (client); Axum or Node (server surface)",
+  "schema_note": "references/schemas/library-candidates.schema.json is NOT installed with this skill (only SKILL.md ships). Shape below follows the field set described in SKILL.md; validate before relying on it programmatically.",
+  "budget": {
+    "tier1_queries": 2,
+    "tier2_queries": 3,
+    "tier3_queries": 6,
+    "tier4_queries": 0,
+    "cap_per_tier": 8,
+    "within_budget": true,
+    "tier4_skipped_reason": "Tiers 1-3 produced decisive evidence; no stack comparison needed."
+  },
+  "gaps": [
+    {
+      "gap_id": "G-2",
+      "title": "AG-UI client for the scaffolded React app",
+      "verdict": "ADOPT",
+      "confidence": "high",
+      "candidates": [
+        {
+          "name": "@ag-ui/client",
+          "version": "0.0.59",
+          "license": "MIT",
+          "verdict": "ADOPT",
+          "evidence": {
+            "upstream_repo": "ag-ui-protocol/ag-ui",
+            "stars": 15595,
+            "pushed_at": "2026-08-27",
+            "npm_releases": 74,
+            "latest_publish": "2026-08-27",
+            "first_publish": "2025-04-30",
+            "transitive_deps": [
+              "zod",
+              "rxjs",
+              "uuid",
+              "@ag-ui/core",
+              "@types/uuid",
+              "@ag-ui/proto",
+              "@ag-ui/encoder",
+              "fast-json-patch",
+              "untruncate-json",
+              "compare-versions"
+            ]
+          },
+          "rationale": "Maintenance signal is strong: pushed yesterday, 74 releases, latest published the same day as this analysis. It supplies the RunAgentInput Zod schema, AbortController-based run cancellation, and untruncate-json for partial-frame recovery \u2014 all things a hand-rolled client would have to reinvent badly.",
+          "risks": [
+            "Pre-1.0 (0.0.59). No semver stability guarantee; breaking changes may land in patch releases.",
+            "Pulls rxjs 7.8.1 and protobuf tooling into every scaffolded app, whether or not the app streams.",
+            "@types/uuid appears as a runtime dependency rather than a devDependency \u2014 a packaging smell worth watching."
+          ]
+        },
+        {
+          "name": "hand-rolled EventSource client",
+          "verdict": "REJECT",
+          "rationale": "EventSource cannot POST, and the AG-UI transport requires POSTing a RunAgentInput body with Accept: text/event-stream. A hand-rolled client would need fetch + ReadableStream + manual frame parsing, plus reimplementation of partial-JSON recovery. The assessment's '~10 lines' estimate covered only frame formatting, not the client.",
+          "supersedes": "assessment F-5 sizing"
+        },
+        {
+          "name": "@copilotkit/react-core",
+          "version": "1.69.3",
+          "license": "MIT",
+          "verdict": "DEFER",
+          "rationale": "The reference AG-UI frontend, healthy (published 2026-08-27) and far more mature at 1.69.3. But it is a full agent-UI framework with opinionated components, which conflicts with this repo's own scaffolder conventions and state architecture. Revisit only if the phase goal expands from transport to full chat UI."
+        }
+      ]
+    },
+    {
+      "gap_id": "G-1",
+      "title": "AG-UI server surface",
+      "verdict": "BUILD",
+      "confidence": "high",
+      "candidates": [
+        {
+          "name": "@ag-ui/encoder (server-side, Node route)",
+          "version": "0.0.59",
+          "license": "MIT",
+          "verdict": "ADOPT-IF-NODE",
+          "rationale": "EventEncoder.encodeSSE is literally `data: ${JSON.stringify(event)}\\n\\n` and getContentType() handles negotiation. Trivial to adopt if the surface lives in Node, and it keeps encoding aligned with upstream."
+        },
+        {
+          "name": "Axum SSE route in scaffold-react-vite-axum.sh",
+          "verdict": "BUILD",
+          "rationale": "The scaffolder exists (431 lines) but has NO SSE precedent \u2014 grep for sse/event-stream/stream found only asset-serving and SPA-fallback code. Everything would be net-new Rust.",
+          "risks": [
+            "No existing streaming code to extend",
+            "Splits the event-type source of truth across TS and Rust"
+          ]
+        },
+        {
+          "name": "ag-ui-rs / ag-ui / tirea-protocol-ag-ui (crates.io)",
+          "verdict": "REJECT",
+          "evidence": {
+            "ag-ui": "v0.1.0, 22 downloads",
+            "ag-ui-rs": "v0.3.1, 108 downloads",
+            "tirea-protocol-ag-ui": "v0.5.0, 399 downloads"
+          },
+          "rationale": "All effectively unused. Download counts in the tens-to-hundreds indicate no production adoption and no maintenance guarantee. Depending on one would be a larger risk than writing the ~40 lines of SSE framing directly."
+        },
+        {
+          "name": "Extend openai-proxy (original plan of record)",
+          "verdict": "REJECT",
+          "rationale": "Three independent reasons. (1) Out of repo \u2014 phase-1b's scope_note states 'No openai-proxy vendoring'; a phase that must modify a codebase this repo does not contain cannot verify its own acceptance criteria. (2) Nothing to extend \u2014 all four AG-UI endpoint candidates 404 (assess F-1), so this is net-new work wherever it lands. (3) Wrong coupling \u2014 every scaffolded app would depend on a separately-deployed proxy at localhost:8181, making generated output non-self-contained.",
+          "note": "openai-proxy remains correct for inference routing; it is the wrong home for a protocol surface the scaffolded app must own.",
+          "source": "plan.md:65 named this as the plan of record; evaluated and rejected on evidence."
+        }
+      ]
+    },
+    {
+      "gap_id": "G-4",
+      "title": "Event-kind enum drift",
+      "verdict": "FIX-FIRST",
+      "confidence": "high",
+      "severity_upgraded": "Assess rated this WARNING with 2 missing kinds. The shipped tarball shows 10 missing kinds AND one incorrect name. Upgraded to BLOCKING.",
+      "wrong_name": {
+        "ours": "TOOL_CALL_ARGS_DELTA",
+        "upstream": "TOOL_CALL_ARGS",
+        "impact": "A protocol-conformant AG-UI spec using TOOL_CALL_ARGS is REJECTED by our validator today. This is a live correctness defect in shipped code, not a forward-looking gap.",
+        "occurrences": [
+          "references/schemas/ag-ui-spec.schema.json:76",
+          "references/domain/ag-ui-spike.md:16",
+          "references/domain/ag-ui.md:79",
+          "scripts/normalize-agui.mjs:35"
+        ]
+      },
+      "missing_kinds": [
+        "RAW",
+        "REASONING_MESSAGE_START",
+        "REASONING_MESSAGE_CONTENT",
+        "REASONING_MESSAGE_END",
+        "REASONING_MESSAGE_CHUNK",
+        "STEP_STARTED",
+        "STEP_FINISHED",
+        "TOOL_CALL_ARGS",
+        "TOOL_CALL_CHUNK",
+        "TOOL_CALL_RESULT"
+      ],
+      "local_enum_size": 14,
+      "upstream_observed_size": 23,
+      "evidence_provenance": {
+        "method": "published npm tarball, not documentation",
+        "reproduce": "npm pack @ag-ui/core@0.0.59 && tar -xzf ag-ui-core-0.0.59.tgz && grep -oE '\"(RUN|STEP|TEXT_MESSAGE|TOOL_CALL|REASONING_MESSAGE|STATE|MESSAGES|RAW|CUSTOM)[A-Z_]*\"' package/dist/index.js | tr -d '\"' | sort -u",
+        "artifact": "@ag-ui/core@0.0.59 dist/index.js",
+        "note": "Offline-reproducible against a pinned version. Supersedes the earlier docs-path citation, which did not resolve in this repo."
+      }
+    },
+    {
+      "gap_id": "G-3",
+      "title": "scaffold-react-vite-agui.sh does not exist",
+      "verdict": "BUILD",
+      "confidence": "high",
+      "no_external_candidates": true,
+      "rationale": "No external candidate applies. T1 search for generic Vite/React scaffold generators returned nothing usable, and adopting a third-party generator would discard this repo's established conventions (brand-TOML injection, kebab-case rename pass, import-rewrite, architectural ESLint config). The correct model is the in-repo precedent, not an external tool.",
+      "candidates": [
+        {
+          "name": "in-repo scaffolder pattern",
+          "verdict": "BUILD-FROM-PATTERN",
+          "evidence": {
+            "scaffold-react-vite.sh": "1160 lines \u2014 base pattern",
+            "scaffold-react-vite-tauri.sh": "230 lines \u2014 thin wrapper over the base, closest size analogue",
+            "scaffold-react-vite-axum.sh": "431 lines \u2014 server-adjacent variant"
+          },
+          "rationale": "scaffold-react-vite-tauri.sh (230 lines) is the closest analogue: a thin wrapper that layers one concern onto the base scaffolder. An AG-UI variant should follow that shape rather than forking the 1160-line base."
+        }
+      ]
+    }
+  ],
+  "open_questions_resolved": [
+    {
+      "question": "Adopt @ag-ui/* or hand-roll?",
+      "answer": "Adopt @ag-ui/client for the client; adopt @ag-ui/encoder only if the server is Node. The hand-roll option was rejected on a concrete technical ground the assessment missed: EventSource cannot POST."
+    },
+    {
+      "question": "Where does the server surface live?",
+      "answer": "Node route. All three candidate homes evaluated: openai-proxy REJECTED (out of repo, nothing to extend, non-self-contained output), Axum REJECTED (no SSE precedent, no viable Rust crate), Node RECOMMENDED (reuses @ag-ui/encoder so the event contract has one source of truth)."
+    },
+    {
+      "question": "Pin @ag-ui/* exactly or use a caret range?",
+      "answer": "Pin exact (0.0.59). Pre-1.0 packages may ship breaking changes in a patch bump. Plan implements and records the pins; the decision itself is closed."
+    }
+  ],
+  "open_questions_remaining": [
+    "Mock agent vs real LLM backing \u2014 unchanged from assess; a scope decision, not a research question.",
+    "Store reduction semantics for streamed events \u2014 a design question for plan. @ag-ui/client's rxjs Observable shape constrains it, since events arrive as a stream rather than callbacks."
+  ],
+  "blocking_prerequisites": [
+    {
+      "gap_id": "G-6",
+      "title": "Phase records overwritten by `migrate --apply`",
+      "severity": "BLOCKING",
+      "carried_from": "handoffs/assess.json::blocking_precondition",
+      "resolvable_by_analyze": false,
+      "why_not": "Record-restoration decision, not a research question. Analyze cannot resolve it; it must not be dropped either.",
+      "status": "recoverable \u2014 nothing committed; `git show HEAD:<path>` holds every original",
+      "risk": "a single `git add -A` makes the loss permanent and silent",
+      "plan_requirement": "Before the first phase-7 code change: restore phase progress.json files from git HEAD, OR record an explicit decision that runtime counters supersede the narrative records."
+    },
+    {
+      "gap_id": "G-7",
+      "title": "Runtime reports committedLocally:true for writes absent from the audit log",
+      "severity": "WARNING",
+      "carried_from": "handoffs/assess.json",
+      "reproduced": "again during phase-7 stage recording \u2014 `kbd audit` mentions phase-7 zero times",
+      "plan_requirement": "Do not treat the canonical runtime as the record until understood. Filesystem is authoritative."
+    }
+  ]
+}
