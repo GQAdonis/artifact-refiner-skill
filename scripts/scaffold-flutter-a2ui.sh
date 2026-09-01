@@ -202,6 +202,48 @@ separate v0.9 messages.
 populated and renders empty with no error. The identical translation exists in
 the web host and the MCP-UI guest — all three must agree.
 
+## Testing constraints — two real ones, both found by hitting them
+
+These are properties of \`genui\`, not of this scaffold. Neither affects a running
+app; both affect how you write tests.
+
+### 1. Do not use a bare \`pumpAndSettle()\`
+
+\`SurfaceController\` holds a **one-minute \`pendingUpdateTimeout\`** timer for
+updates buffered ahead of their surface. \`pumpAndSettle()\` waits for every
+pending timer, so it either spends a real minute or exceeds its own budget and
+reports:
+
+\`\`\`
+pumpAndSettle timed out
+\`\`\`
+
+That reads like a rendering failure and is not one. Pump a bounded number of
+frames instead:
+
+\`\`\`dart
+for (var i = 0; i < 5; i++) {
+  await tester.pump(const Duration(milliseconds: 50));
+}
+\`\`\`
+
+### 2. One A2UI screen mount per test file
+
+A second \`pumpWidget()\` of an A2UI-bearing screen in the same file renders
+**nothing** — no surface, no error, no loading state. A silently empty screen.
+
+The store is not at fault: two independent \`A2uiSurfaceStore\`s each ingest the
+same document and both report \`ready\` with a non-null definition. The leak is
+\`BasicCatalogItems\`, which exposes its \`CatalogItem\`s as \`static final\` —
+catalog state is process-global and shared by every \`SurfaceController\` in a
+test run.
+
+A test that mounts the screen once passes. A second mount in the same file does
+not. Split them across files, or mark the second \`skip: true\` **with this
+reason recorded** — a bare skip looks like a flaky test, and this is not flaky.
+
+An app mounts once, so shipped behaviour is unaffected.
+
 ## A note on \`a2ui_flutter\`
 
 The \`a2ui_flutter\` package on pub.dev is **not** the SDK. At \`0.0.1-wip002\` it

@@ -13,6 +13,12 @@
 //
 // If this fails after a dependency bump, the surfaces have drifted. Fix the
 // drift; do not relax the assertion.
+//
+// ON pumpFrames() RATHER THAN pumpAndSettle(): genui's SurfaceController holds
+// a one-minute `pendingUpdateTimeout` timer for updates buffered ahead of their
+// surface. `pumpAndSettle()` waits for every pending timer, so it either spends
+// a real minute or reports "pumpAndSettle timed out" — which reads as a
+// rendering failure and is not one. Nothing here waits on that timer.
 
 import 'dart:convert';
 import 'dart:io';
@@ -22,6 +28,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:__PACKAGE__/a2ui/a2ui_surface_controller.dart';
 import 'package:__PACKAGE__/a2ui/a2ui_surface_widget.dart';
+
+/// Pump a bounded number of frames. See the note above on why this is not
+/// `pumpAndSettle()`.
+Future<void> pumpFrames(WidgetTester tester) async {
+  for (var i = 0; i < 5; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
 
 void main() {
   testWidgets('renders the shared A2UI document identically to the web host',
@@ -37,7 +51,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFrames(tester);
 
     // The web host's browser gate asserts exactly these facts.
     expect(find.text('Enable notifications'), findsOneWidget,
@@ -67,7 +81,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFrames(tester);
 
     expect(find.text('A2UI surface failed to render'), findsOneWidget);
   });
