@@ -2,190 +2,23 @@
   "schemaVersion": "1",
   "generatedBy": "kbd-runtime",
   "projectionContractVersion": 2,
-  "sourceRevision": 42,
-  "derivedRevision": 42,
+  "sourceRevision": 43,
+  "derivedRevision": 43,
   "frontier": {
-    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 42
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 43
   },
   "conflictCount": 0,
-  "updatedAt": "2026-08-31T10:18:10.260826Z",
-  "cursor": [
-    "phase-0-unblock",
-    "probe"
-  ],
+  "updatedAt": "2026-09-01T09:47:33.562052Z",
+  "cursor": [],
   "root": {
     "type": "phase",
     "id": "d4d5c8ba-3a2a-404d-915d-bdf985019c93",
-    "status": "completed",
+    "status": "ready",
     "progress": {
-      "done": 89,
-      "total": 91
+      "done": 0,
+      "total": 0
     },
-    "children": [
-      {
-        "type": "phase",
-        "id": "phase-0-unblock",
-        "canonicalId": "phase-0-unblock",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 7,
-          "total": 7
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-1-submodule-topology",
-        "canonicalId": "phase-1-submodule-topology",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 6,
-          "total": 6
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-1b-inference-routing",
-        "canonicalId": "phase-1b-inference-routing",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 6,
-          "total": 6
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-2-scaffold-react-vite",
-        "canonicalId": "phase-2-scaffold-react-vite",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 9,
-          "total": 9
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-3-conversion-layer",
-        "canonicalId": "phase-3-conversion-layer",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 7,
-          "total": 7
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-3b-aux-conversions",
-        "canonicalId": "phase-3b-aux-conversions",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 8,
-          "total": 8
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-4-scaffold-tauri-desktop",
-        "canonicalId": "phase-4-scaffold-tauri-desktop",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 15,
-          "total": 15
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-ideation-to-app-pipeline",
-        "canonicalId": "phase-ideation-to-app-pipeline",
-        "status": "PENDING",
-        "progress": {
-          "done": 0,
-          "total": 0
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-prefer-endpoint-consumption",
-        "canonicalId": "phase-prefer-endpoint-consumption",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 6,
-          "total": 6
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-rust-workspace-bootstrap",
-        "canonicalId": "phase-rust-workspace-bootstrap",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 9,
-          "total": 9
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "phase-sc-extraction",
-        "canonicalId": "phase-sc-extraction",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 5,
-          "total": 5
-        },
-        "children": [],
-        "annotations": []
-      },
-      {
-        "type": "phase",
-        "id": "polish-pass",
-        "canonicalId": "polish-pass",
-        "status": "COMPLETE",
-        "progress": {
-          "done": 11,
-          "total": 13
-        },
-        "children": [
-          {
-            "type": "change",
-            "id": "p7-01-restore-phase-records",
-            "status": "IN_PROGRESS",
-            "progress": {
-              "done": 2,
-              "total": 3
-            }
-          },
-          {
-            "type": "change",
-            "id": "p9-01-mcp-ui-content-type",
-            "status": "IN_PROGRESS",
-            "progress": {
-              "done": 5,
-              "total": 6
-            }
-          }
-        ],
-        "annotations": []
-      }
-    ],
+    "children": [],
     "annotations": []
   }
 }

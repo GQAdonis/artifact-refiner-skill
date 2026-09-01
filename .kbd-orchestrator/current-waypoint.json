@@ -2,31 +2,27 @@
   "schemaVersion": "5",
   "generatedBy": "kbd-runtime",
   "projectionContractVersion": 2,
-  "sourceRevision": 42,
-  "derivedRevision": 42,
+  "sourceRevision": 43,
+  "derivedRevision": 43,
   "frontier": {
-    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 42
+    "e56d94d7-e8ef-471a-b090-70ef44ec55af": 43
   },
   "conflictCount": 0,
   "projectId": "d4d5c8ba-3a2a-404d-915d-bdf985019c93",
-  "runId": "(awaiting next assessment)-20260827T132829Z",
-  "path": [
-    "phase-0-unblock"
-  ],
-  "phaseIds": [
-    "phase-0-unblock"
-  ],
-  "activePhaseId": "polish-pass",
-  "phase": "phase-0-unblock",
+  "runId": "phase-6-a2ui-flutter-host-20260901T050000Z",
+  "path": [],
+  "phaseIds": [],
+  "activePhaseId": null,
+  "phase": "d4d5c8ba-3a2a-404d-915d-bdf985019c93",
   "childPointer": null,
   "change": null,
   "currentTask": null,
-  "status": "completed",
+  "status": "ready",
   "completionMetric": "implementation",
-  "implementationCompleted": 89,
-  "implementationTotal": 91,
+  "implementationCompleted": 0,
+  "implementationTotal": 0,
   "planRevision": 1,
-  "revision": 42,
-  "exactNextCommand": null,
-  "updatedAt": "2026-08-31T10:18:10.260826Z"
+  "revision": 43,
+  "exactNextCommand": "/kbd-reflect phase-6-a2ui-flutter-host",
+  "updatedAt": "2026-09-01T09:47:33.562052Z"
 }
