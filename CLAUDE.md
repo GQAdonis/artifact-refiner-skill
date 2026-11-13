@@ -157,6 +157,14 @@ See `references/content-types.md` for the full taxonomy and detection heuristics
 | `finalize-session.sh` | Session cleanup |
 | `validate-constraints.sh` | Constraint validation |
 
+`validate-constraints.sh [constraints.json]` validates the consumer file with
+Python 3 and the `jsonschema` package against the schema bundled beside the
+script. The default input is relative to the caller's working directory; the
+schema is always resolved from the skill installation. Invalid input, a missing
+explicit input, missing schema, or unavailable validator exits 2. Missing default
+input during initial setup still skips validation. Blocking constraints without
+an optional validation hook remain advisory warnings.
+
 ## Design Principles
 
 1. **Provider-agnostic** — All state operations go through the resolved provider; never hardcode filesystem paths in prompts

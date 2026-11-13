@@ -8,7 +8,7 @@
   "properties": {
     "artifact_type": {
       "type": "string",
-      "enum": ["logo", "ui", "a2ui", "image", "content"],
+      "enum": ["logo", "ui", "a2ui", "image", "content", "code", "meta-prompt"],
       "description": "Domain of the artifact being refined."
     },
     "constraints": {
